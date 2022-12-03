@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    <string name="app_name">CurrencyExchangeBC</string>-->
+<!--    <string name="facebook_app_id">815301812893536</string>-->
+<!--    <string name="fb_login_protocol_scheme">fb815301812893536</string>-->
+
+    <string name="app_name">CurrencyExchangeFireba - Test1</string>
+    <string name="facebook_app_id">631136015476503</string>
+    <string name="fb_login_protocol_scheme">fb631136015476503</string>
+    <string name="facebook_client_token">7f6823b1568e8834c606e3405d26186f</string>
+
+</resources>
