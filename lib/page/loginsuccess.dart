@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:testprojectbc/page/emailFA.dart';
+import 'package:testprojectbc/page/emailOTP.dart';
 
 import '../models/profile.dart';
 import 'login.dart';
@@ -89,7 +90,7 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
                       if (!mounted) return;
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context){
-                            return EmailFAPage();
+                            return EmailotpPage();
                           }));
                     });
                   },

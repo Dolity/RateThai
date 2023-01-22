@@ -4,6 +4,7 @@ import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 // import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:testprojectbc/page/authenticator.dart';
+import 'package:testprojectbc/page/googleFA.dart';
 import 'package:testprojectbc/page/smsFA.dart';
 import '../models/profile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -248,10 +249,10 @@ class _LoginPage extends State<LoginPage> {
                         child: const Text("Forgot your password?"),
                         onPressed: () {
 
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context){
-                                return SmsPage();
-                              }));
+                          // Navigator.pushReplacement(context,
+                          //     MaterialPageRoute(builder: (context){
+                          //       return SmsPage();
+                          //     }));
 
                         },
                       ),
@@ -368,7 +369,7 @@ class _LoginPage extends State<LoginPage> {
     if (!mounted) return;
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (context){
-          return (LoginSuccessPage());
+          return (GooglefaPage());
 
         })); // after success route to home.
   }
@@ -402,7 +403,7 @@ class _LoginPage extends State<LoginPage> {
     if (!mounted) return;
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (context){
-          return LoginSuccessPage();
+          return GooglefaPage();
         }));
 
   }
