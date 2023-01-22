@@ -4,6 +4,7 @@ import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 // import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:testprojectbc/page/authenticator.dart';
+import 'package:testprojectbc/page/smsFA.dart';
 import '../models/profile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
@@ -19,6 +20,12 @@ import 'loginsuccess.dart';
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
+
+
+
+
+
+
     return _LoginPage();
   }
 }
@@ -239,7 +246,14 @@ class _LoginPage extends State<LoginPage> {
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                       child: TextButton(
                         child: const Text("Forgot your password?"),
-                        onPressed: () {},
+                        onPressed: () {
+
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context){
+                                return SmsPage();
+                              }));
+
+                        },
                       ),
                     )),
                     Row(
@@ -347,13 +361,18 @@ class _LoginPage extends State<LoginPage> {
     GoogleSignInAuthentication userAuth = await user!.authentication;
 
     await FirebaseAuth.instance.signInWithCredential(GoogleAuthProvider.credential(
-        idToken: userAuth.idToken, accessToken: userAuth.accessToken,));
+        idToken: userAuth.idToken, accessToken: userAuth.accessToken, ));
+    print(user);
+    print(userAuth);
+
     if (!mounted) return;
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (context){
-          return LoginSuccessPage();
+          return (LoginSuccessPage());
+
         })); // after success route to home.
   }
+
 
   Future loginWithFacebook(BuildContext context) async {
 
@@ -387,5 +406,11 @@ class _LoginPage extends State<LoginPage> {
         }));
 
   }
+
+
+
+
+
+
 
 }

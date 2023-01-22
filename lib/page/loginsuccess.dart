@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:testprojectbc/page/emailFA.dart';
 
 import '../models/profile.dart';
 import 'login.dart';
@@ -23,6 +24,14 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final authen = FirebaseAuth.instance;
 
+  String? keepRes;
+
+//   void checkNull() {
+//     if(authen.currentUser!.displayName! == null){
+//       keepRes = authen.currentUser.;
+//     }
+// }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,12 +40,29 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
           children: [
             Padding(
               padding: EdgeInsets.fromLTRB(50, 100, 50, 0),
-              child: Text(authen.currentUser!.email!,
+              child: Text(authen.currentUser!.displayName!, //email! || displayname!
                 textAlign: TextAlign.center,
                 // style: Theme.of(context).textTheme.headlineSmall,
                 style: TextStyle(fontSize: 30),
               ),
             ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(50, 100, 50, 0),
+              child: Text(authen.currentUser!.email!, //email! || displayname!
+                textAlign: TextAlign.center,
+                // style: Theme.of(context).textTheme.headlineSmall,
+                style: TextStyle(fontSize: 20),
+              ),
+            ),
+
+            // Padding(
+            //   padding: EdgeInsets.fromLTRB(50, 100, 50, 0),
+            //   child: Text(authen.currentUser!.phoneNumber!, //email! || displayname!
+            //     textAlign: TextAlign.center,
+            //     // style: Theme.of(context).textTheme.headlineSmall,
+            //     style: TextStyle(fontSize: 30),
+            //   ),
+            // ),
 
             Padding(
               padding: EdgeInsets.fromLTRB(50, 50, 50, 0),
@@ -53,7 +79,26 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
                   child: Text("Sign out")
 
               ),
+            ),
+
+            Padding(
+              padding: EdgeInsets.fromLTRB(50, 50, 50, 0),
+              child: ElevatedButton(
+                  onPressed: () {
+                    authen.signOut().then((value){
+                      if (!mounted) return;
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context){
+                            return EmailFAPage();
+                          }));
+                    });
+                  },
+                  child: Text("Email OTP")
+
+              ),
             )
+
+
 
 
           ],
