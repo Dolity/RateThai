@@ -65,6 +65,7 @@ class _RegisterPage extends State<RegisterPage> {
             return Scaffold(
               body: Form(
                 key: formKey,
+                child: SingleChildScrollView(
                 child: GestureDetector(
                   onTap: () => FocusScope.of(context).unfocus(),
                   child: Container(
@@ -161,7 +162,7 @@ class _RegisterPage extends State<RegisterPage> {
                                   // fontSize: 14,
                                   // fontWeight: FontWeight.normal,
 
-                                  maxLines: null,
+
                                 ),
                               ),
                               Padding(
@@ -175,8 +176,10 @@ class _RegisterPage extends State<RegisterPage> {
                                   validator: RequiredValidator(errorText: "Please enter password!"),
 
                                   controller: passwordInputController,
-                                  // maxLines: 1,
+                                  //maxLines: null,
+
                                   decoration: InputDecoration(
+
                                     labelStyle: Theme.of(context).textTheme.bodyMedium,
                                     // fontFamily: 'Lexend Deca',
                                     // color: Color(0xFF57636C),
@@ -237,10 +240,15 @@ class _RegisterPage extends State<RegisterPage> {
                                   // onSaved: (String? password) {
                                   //   profile.password = password;
                                   // },
+                                  obscureText: true,
+                                  validator: RequiredValidator(errorText: "Please Re-enter password!"),
 
                                   controller: repassInputController,
+                                  //maxLines: null,
+
                                   // obscureText: true,
                                   decoration: InputDecoration(
+
                                     labelStyle: Theme.of(context).textTheme.bodyMedium,
                                     // fontFamily: 'Lexend Deca',
                                     // color: Color(0xFF57636C),
@@ -293,7 +301,7 @@ class _RegisterPage extends State<RegisterPage> {
                                   // fontSize: 14,
                                   // fontWeight: FontWeight.normal,
 
-                                  maxLines: null,
+
                                 ),
                               ),
 
@@ -384,7 +392,19 @@ class _RegisterPage extends State<RegisterPage> {
                                 padding: EdgeInsetsDirectional.fromSTEB(15, 20, 15, 15),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    print('Button pressed ...');
+
+                                    if (formKey.currentState!.validate()) {
+                                      formKey.currentState?.save();
+                                      print("email = ${profile
+                                          .email}, password = ${profile
+                                          .password}");
+                                      setState(() {
+
+                                      });
+
+                                    }
+
+
                                   },
                                   child: const Text('Login'),
                                   style: ElevatedButton.styleFrom(
@@ -421,6 +441,7 @@ class _RegisterPage extends State<RegisterPage> {
                   ),
                 ),
               ),
+            ),
             );
           }
 

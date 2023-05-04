@@ -81,7 +81,7 @@ class _ScreenotpPageState extends State<ScreenotpPage> {
             height: 40,
           ),
           const Text(
-            "Enter Mary's PIN",
+            "Enter PIN",
             style: TextStyle(fontSize: 40),
           ),
           Row(
@@ -104,10 +104,10 @@ class _ScreenotpPageState extends State<ScreenotpPage> {
           const SizedBox(
             height: 40,
           ),
-          const Text(
-            "Rider can't find a pin",
-            style: TextStyle(fontSize: 20),
-          ),
+          // const Text(
+          //   "Rider can't find a pin",
+          //   style: TextStyle(fontSize: 20),
+          // ),
           const SizedBox(
             height: 40,
           ),

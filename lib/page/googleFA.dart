@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:otp/otp.dart';
 import 'package:base32/base32.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:testprojectbc/page/loginsuccess.dart';
+import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
 
 
 

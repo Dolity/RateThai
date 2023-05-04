@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:testprojectbc/page/login.dart';
-import 'package:testprojectbc/page/loginsuccess.dart';
+import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
 import '../models/profile.dart';
 
 

@@ -1,10 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 // import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:testprojectbc/page/authenticator.dart';
+import 'package:testprojectbc/page/curTest.dart';
+import 'package:testprojectbc/page/currency.dart';
 import 'package:testprojectbc/page/googleFA.dart';
+import 'package:testprojectbc/page/selectCurency.dart';
 import 'package:testprojectbc/page/smsFA.dart';
 import '../models/profile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,8 +16,10 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'addPost.dart';
+import 'curinfo.dart';
+import 'Navbar/loginsuccess.dart';
 
-import 'loginsuccess.dart';
 
 // import com.facebook.FacebookSdk;
 // import com.facebook.appevents.AppEventsLogger;
@@ -21,11 +27,6 @@ import 'loginsuccess.dart';
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-
-
-
-
-
 
     return _LoginPage();
   }
@@ -40,63 +41,14 @@ class _LoginPage extends State<LoginPage> {
   Profile profile = Profile();
   final Future<FirebaseApp> firebase = Firebase.initializeApp();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   final fb = FacebookLogin();
 
   var loading = false;
 
-  // void _logInWithFacebook() async {
-  //   setState(() {
-  //     loading = true;
-  //   });
+  final db = FirebaseFirestore.instance;
 
-  //   try {
-  //     final facebookLoginResult = await FacebookAuth.instance.login();
-  //     final userData = await FacebookAuth.instance.getUserData();
-  //
-  //     final facebookAuthCredential = FacebookAuthProvider.credential(facebookLoginResult.accessToken!.token);
-  //     await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-  //
-  //     if (!mounted) return;
-  //     Navigator.pushReplacement(context,
-  //         MaterialPageRoute(builder: (context){
-  //           return LoginSuccessPage();
-  //         }));
-  //
-  //   }on FirebaseAuthException catch (e) {
-  //     var content = '';
-  //
-  //     switch (e.code) {
-  //       case 'account-exists-with-diffrent-credental':
-  //         content = 'This account exists with a different sign in provider';
-  //         break;
-  //       case 'invalid-credential':
-  //         content = 'Unknow error has occurred';
-  //         break;
-  //       case 'operation-not-allowed':
-  //         content = 'This operation is not allowed';
-  //         break;
-  //       case 'user-disabled':
-  //         content = 'This user you tried to log into is disabled';
-  //         break;
-  //       case 'user-not-found':
-  //         content = 'This user you tried to log into was not found';
-  //         break;
-  //
-  //     }
-  //     showDialog(context: context, builder: (context) => AlertDialog(
-  //       title: Text('Log in with facebook failed'),
-  //       content: Text(content),
-  //       actions: [TextButton(onPressed: () {
-  //         Navigator.of(context).pop();
-  //       }, child: Text('Ok'),
-  //       )],
-  //     ));
-  //   } finally {
-  //     setState(() {
-  //       loading = false;
-  //     });
-  //   }
-  // }
+  late final String displayName;
 
 
   @override
@@ -126,7 +78,7 @@ class _LoginPage extends State<LoginPage> {
                     Padding(
                       padding: EdgeInsets.fromLTRB(70, 100, 0, 0),
                       child: Text(
-                        "HI",
+                        "Thai",
                         textAlign: TextAlign.left,
                         style: TextStyle(fontSize: 60),
                       ),
@@ -134,12 +86,13 @@ class _LoginPage extends State<LoginPage> {
                     Padding(
                       padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
                       child: Text(
-                        "Welcome",
+                        "Exchange",
                         textAlign: TextAlign.center,
                         // style: Theme.of(context).textTheme.headlineSmall,
                         style: TextStyle(fontSize: 60),
                       ),
                     ),
+                    
                     Padding(
                       padding: const EdgeInsets.fromLTRB(80, 50, 80, 0),
                       child: TextFormField(
@@ -165,6 +118,7 @@ class _LoginPage extends State<LoginPage> {
                         controller: _usernameController,
                       ),
                     ),
+
                     Padding(
                       padding: const EdgeInsets.fromLTRB(80, 20, 80, 0),
                       child: TextFormField(
@@ -204,7 +158,9 @@ class _LoginPage extends State<LoginPage> {
 
 
                               if (formKey.currentState!.validate()) {
+
                                 formKey.currentState?.save();
+                                displayName = profile.nickname!;
                                 print("email = ${profile.email}, password = ${profile.password}");
                                 try {
                                   await FirebaseAuth.instance
@@ -216,8 +172,11 @@ class _LoginPage extends State<LoginPage> {
                                             Navigator.pushReplacement(context,
                                                 MaterialPageRoute(builder: (context){
                                                   return LoginSuccessPage();
+                                                  //GooglefaPage()
                                                 }));
                                   });
+
+
                                 } on FirebaseAuthException catch (e) {
                                   // print(e);
                                   // print(e.languageCode);
@@ -249,10 +208,10 @@ class _LoginPage extends State<LoginPage> {
                         child: const Text("Forgot your password?"),
                         onPressed: () {
 
-                          // Navigator.pushReplacement(context,
-                          //     MaterialPageRoute(builder: (context){
-                          //       return SmsPage();
-                          //     }));
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context){
+                                return AddpostPage();
+                              }));
 
                         },
                       ),
@@ -363,35 +322,48 @@ class _LoginPage extends State<LoginPage> {
 
     await FirebaseAuth.instance.signInWithCredential(GoogleAuthProvider.credential(
         idToken: userAuth.idToken, accessToken: userAuth.accessToken, ));
+
+    await saveUser(user);
+
+    // if(user != null){
+    //   String displayName = user.displayName??user.email;
+    //   String email = user.email;
+    //   String id = user.id;
+    //   String photoUrl = user.photoUrl??"";
+    // }
+
     print(user);
-    print(userAuth);
+    // print(userAuth);
 
     if (!mounted) return;
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (context){
-          return (GooglefaPage());
+          return (CurTest());
 
         })); // after success route to home.
+  }
+
+  Future <void> saveUser (GoogleSignInAccount account) async{
+     FirebaseFirestore.instance.collection("Users")
+        .doc(account.email)
+        .set({
+          "email" : account.email,
+          "name"  : account.displayName,
+          "profilepic" : account.photoUrl
+    });
+     print("Saved User data");
   }
 
 
   Future loginWithFacebook(BuildContext context) async {
 
-    FacebookLogin facebookLogin = FacebookLogin();
-    // FacebookLoginResult result = await facebookLogin
-    //     .logIn(permissions: [
-    //   FacebookPermission.publicProfile,
-    //   FacebookPermission.email,
-    // ]);
-    //
-    // String token = result.accessToken!.token;
-    // print("Access token = $token");
-    // await _auth.signInWithCredential(FacebookAuthProvider.credential(token));
 
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login();
       final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
       await _auth.signInWithCredential(facebookAuthCredential);
+
+      print(loginResult);
 
     } on FirebaseAuthException catch (e){
       Fluttertoast.showToast(
@@ -400,10 +372,11 @@ class _LoginPage extends State<LoginPage> {
         // backgroundColor: Colors.blueGrey);
       );
     }
+
     if (!mounted) return;
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (context){
-          return GooglefaPage();
+          return SelectCur();
         }));
 
   }
