@@ -162,7 +162,7 @@ class _HomeNavSate extends State<HomeNav> {
                                     );
                                   } else {
                                     final documentHeader = snapshot.data!.docs;
-                                    final agencySPO = documentHeader[7]
+                                    final agencySPO = documentHeader[6]
                                         ["agency"]; //index document
 
                                     final curIndex0 = agencySPO[0]
@@ -221,7 +221,7 @@ class _HomeNavSate extends State<HomeNav> {
                                         );
                                       } else {
                                         final document = snapshot.data!.docs;
-                                        final agencySPO = document[7]
+                                        final agencySPO = document[6]
                                             ["agency"]; //index document
 
                                         final dem1Index0 = agencySPO[0]
@@ -375,7 +375,7 @@ class _HomeNavSate extends State<HomeNav> {
                                     );
                                   } else {
                                     final documentHeader = snapshot.data!.docs;
-                                    final agencySPO = documentHeader[7]
+                                    final agencySPO = documentHeader[6]
                                         ["agency"]; //index document
 
                                     final curIndex0 = agencySPO[0]
@@ -417,7 +417,7 @@ class _HomeNavSate extends State<HomeNav> {
                                         );
                                       } else {
                                         final document = snapshot.data!.docs;
-                                        final agencySPO = document[7]
+                                        final agencySPO = document[6]
                                             ["agency"]; //index document
 
                                         final dem1Index0 = agencySPO[0]

@@ -147,7 +147,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                         //var apiKey = 'e50a59e299ef0bae5bc03139';
                                         var url =
                                             //'https://v6.exchangerate-api.com/v6/$apiKey/latest/$_fromCurrency';
-                                            'http://192.168.0.103:5100/getagencies/$_fromCurrency';
+                                            'http://192.168.0.104:5100/getagencies/$_fromCurrency';
                                         var response =
                                             await http.get(Uri.parse(url));
                                         print('before response');
@@ -191,8 +191,8 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                                       setState(() {
 
                                                         _exchangeRate = highestSellRate; // เอาค่า sellRate จาก conversionMap
-                                                        print('Agen name: $_agenName');
-                                                        print('Sell rate: $_exchangeRate');
+                                                        print('Agen name: $agenName');
+                                                        print('Sell rate: $sellRate');
                                                       
                                                         print('Invalid currency');
                                                       
