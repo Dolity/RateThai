@@ -14,9 +14,44 @@ class CalculatorNav extends StatefulWidget {
 
 class _CalculatorNavState extends State<CalculatorNav> {
   final TextEditingController _textEditingController = TextEditingController();
-  List<String> _currencies = ['AED', 'AUD', 'BHD', 'BND', 'CAD', 'CHF', 'CNY', 'DKK', 'EUR', 'GBP', 
-    'HKD', 'IDR', 'INR', 'JOD', 'JPY', 'KRW', 'KWD','LAK', 'MMK', 'MOP', 'MYR', 'NOK', 'NPR', 'NZD', 
-    'OMR', 'PHP', 'QAR', 'RUB', 'SAR', 'SEK', 'SGD', 'TRY', 'TWD','USD', 'VND', 'ZAR'];
+  List<String> _currencies = [
+    'AED',
+    'AUD',
+    'BHD',
+    'BND',
+    'CAD',
+    'CHF',
+    'CNY',
+    'DKK',
+    'EUR',
+    'GBP',
+    'HKD',
+    'IDR',
+    'INR',
+    'JOD',
+    'JPY',
+    'KRW',
+    'KWD',
+    'LAK',
+    'MMK',
+    'MOP',
+    'MYR',
+    'NOK',
+    'NPR',
+    'NZD',
+    'OMR',
+    'PHP',
+    'QAR',
+    'RUB',
+    'SAR',
+    'SEK',
+    'SGD',
+    'TRY',
+    'TWD',
+    'USD',
+    'VND',
+    'ZAR'
+  ];
   String? _fromCurrency = 'USD';
   String? _toCurrency = 'THB';
   String? _agenName = '';
@@ -86,18 +121,17 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                           });
                                         },
                                         items: _currencies
-                                        .map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
-                                        child: Text(value),
-                                      );
-                                    }).toList(),
+                                            .map<DropdownMenuItem<String>>(
+                                                (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
                                       ),
                                       IconButton(
                                         icon: Icon(Icons.arrow_forward_ios),
-                                        onPressed: () {
-                                        },
+                                        onPressed: () {},
                                       ),
                                       DropdownButton<String>(
                                         value: _toCurrency,
@@ -154,61 +188,91 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                         if (response.statusCode == 200) {
                                           print('if response OK');
 
-                                          var jsonResponse = jsonDecode(response.body);
+                                          var jsonResponse =
+                                              jsonDecode(response.body);
                                           print(jsonResponse);
-                                          if (jsonResponse is List && jsonResponse.isNotEmpty) {
+                                          if (jsonResponse is List &&
+                                              jsonResponse.isNotEmpty) {
                                             var agencies = jsonResponse;
-                                            var conversionMap = Map<String, dynamic>();
+                                            var conversionMap =
+                                                Map<String, dynamic>();
                                             for (var agency in agencies) {
-                                              if (agency is Map && agency.containsKey('agency') && agency is Map && agency.containsKey('agenName')) {
-                                                var agencyData = agency['agency'];
+                                              if (agency is Map &&
+                                                  agency
+                                                      .containsKey('agency') &&
+                                                  agency is Map &&
+                                                  agency.containsKey(
+                                                      'agenName')) {
+                                                var agencyData =
+                                                    agency['agency'];
 
-                                                var agenName = agency['agenName'];
+                                                var agenName =
+                                                    agency['agenName'];
 
-                                                if (agencyData is List && agencyData.isNotEmpty) {
+                                                if (agencyData is List &&
+                                                    agencyData.isNotEmpty) {
                                                   for (var data in agencyData) {
-                                                    if (data is Map && data.containsKey('cur') && data.containsKey('sell')) {
+                                                    if (data is Map &&
+                                                        data.containsKey(
+                                                            'cur') &&
+                                                        data.containsKey(
+                                                            'sell')) {
+                                                      String currency =
+                                                          data['cur'];
+                                                      double sellRate =
+                                                          double.parse(
+                                                              data['sell']);
+                                                      conversionMap[currency] =
+                                                          {
+                                                        'agenName': agenName,
+                                                        'sellRate': sellRate
+                                                      }; // เพิ่ม agenName ลงใน conversionMap พร้อมกับ sellRate
+                                                      print(
+                                                          "Agen: $agenName // Cur: $currency // Sell: $sellRate");
 
-                                                      String currency = data['cur'];
-                                                      double sellRate = double.parse(data['sell']);
-                                                      conversionMap[currency] = {'agenName': agenName, 'sellRate': sellRate};  // เพิ่ม agenName ลงใน conversionMap พร้อมกับ sellRate
-                                                      print("Agen: $agenName // Cur: $currency // Sell: $sellRate");
-
-                                                      for (var entry in conversionMap.entries) {
-                                                        var currency = entry.key;
+                                                      for (var entry
+                                                          in conversionMap
+                                                              .entries) {
+                                                        var currency =
+                                                            entry.key;
                                                         var value = entry.value;
-                                                        var agenName = value['agenName'];
-                                                        var sellRate = value['sellRate'];
+                                                        var agenName =
+                                                            value['agenName'];
+                                                        var sellRate =
+                                                            value['sellRate'];
 
-                                                        if (sellRate > highestSellRate) {
-                                                          highestSellRate = sellRate; // update the highest sell rate if a higher value is found
-                                                          maxSellRateAgen = agenName; // update the agenName with the highest sell rate
+                                                        if (sellRate >
+                                                            highestSellRate) {
+                                                          highestSellRate =
+                                                              sellRate; // update the highest sell rate if a higher value is found
+                                                          maxSellRateAgen =
+                                                              agenName; // update the agenName with the highest sell rate
                                                         }
                                                       }
-                                                      
-
 
                                                       setState(() {
+                                                        _exchangeRate =
+                                                            highestSellRate; // เอาค่า sellRate จาก conversionMap
+                                                        print(
+                                                            'Agen name: $agenName');
+                                                        print(
+                                                            'Sell rate: $sellRate');
 
-                                                        _exchangeRate = highestSellRate; // เอาค่า sellRate จาก conversionMap
-                                                        print('Agen name: $agenName');
-                                                        print('Sell rate: $sellRate');
-                                                      
-                                                        print('Invalid currency');
-                                                      
+                                                        print(
+                                                            'Invalid currency');
                                                       });
                                                     }
                                                   }
-                                                  
+                                                }
+                                              } else {
+                                                print('Invalid JSON data');
+                                              }
                                             }
-                                          } else {
-                                            print('Invalid JSON data');
                                           }
-                            }
-                              }
-                              print('Max sell rate Agen name: $maxSellRateAgen // HighestSell: $highestSellRate');
-                                }
-                                  }
+                                          print(
+                                              'Max sell rate Agen name: $maxSellRateAgen // HighestSell: $highestSellRate');
+                                        }
+                                      }
                                     },
                                     child: Text(
                                       'คำนวณอัตราแลกเปลี่ยนสกุลเงิน',
@@ -225,12 +289,12 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                   ),
                                   SizedBox(height: 20),
                                   Text(
-                                    'Exchange rate: $_exchangeRate',
+                                    '${_textEditingController.text} $_fromCurrency = ${((_exchangeRate ?? 0.0) * (double.tryParse(_textEditingController?.text?.toString() ?? '0.0') ?? 0.0)).toStringAsFixed(2)} THB',
                                     style: TextStyle(fontSize: 20),
                                   ),
                                   SizedBox(height: 20),
                                   Text(
-                                    'Result: ${((_exchangeRate ?? 0.0) * (double.tryParse(_textEditingController?.text?.toString() ?? '0.0') ?? 0.0)).toStringAsFixed(2)}',
+                                    '1 $_fromCurrency = ${(_exchangeRate ?? 0.0).toStringAsFixed(2)} THB',
                                     style: TextStyle(fontSize: 20),
                                   ),
                                 ])))),
@@ -238,7 +302,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: SizedBox(
                       //Box1
-                      height: 50,
+                      height: 80,
                       width: MediaQuery.of(context).size.width * 1.0,
                       child: Card(
                           margin:
@@ -251,37 +315,104 @@ class _CalculatorNavState extends State<CalculatorNav> {
                             ),
                           ),
                           elevation: 8, // Add a shadow
-                          child: InkWell(
-                            onTap: () {
-                              // Do something when the ListTile is tapped
-                            },
+                          // Shows the largest companies and currencies.
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                              ),
+                              if (maxSellRateAgen != null &&
+                                  highestSellRate != null)
+                                if (maxSellRateAgen == 'SRO')
+                                  Image.network(
+                                    'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SPRO.png?alt=media&token=bb3a5e94-dcbd-457e-8134-4ce0bc59e65a',
+                                    width: 150,
+                                    height: 150,
+                                  ),
+                              if (maxSellRateAgen == 'SRG')
+                                Image.network(
+                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SRG.png?alt=media&token=db8f7a00-76fd-4f6b-a49b-56b9393f09ac',
+                                  width: 150,
+                                  height: 150,
+                                ),
+                              if (maxSellRateAgen == 'VPC')
+                                Image.network(
+                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_VP.png?alt=media&token=f288196a-5abb-422b-b487-85919a4b25f9',
+                                  width: 120,
+                                  height: 120,
+                                ),
+                              Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
+                                    child: Text(
+                                      'This agency best exchange rates!',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
+                                    child: Text(
+                                      '1 $_fromCurrency = ${(_exchangeRate ?? 0.0).toStringAsFixed(2)} THB',
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (maxSellRateAgen == 'K79')
+                                Image.network(
+                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_K79.png?alt=media&token=1c7787bc-dc5b-4e83-8653-830ddcfe5700',
+                                  width: 150,
+                                  height: 150,
+                                ),
+                              if (maxSellRateAgen == 'SME')
+                                Image.network(
+                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_siam.png?alt=media&token=b26dda49-ed85-4140-822c-40e933dd4f22',
+                                  width: 150,
+                                  height: 150,
+                                ),
+                              if (maxSellRateAgen == 'VSU')
+                                Image.network(
+                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_vasu.png?alt=media&token=e6da328d-3b95-4f32-bc00-6346e21e1009',
+                                  width: 150,
+                                  height: 150,
+                                ),
+                              if (maxSellRateAgen == 'XNE')
+                                Image.network(
+                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_xne.png?alt=media&token=15fc6416-5d2f-4e63-9b62-086bd641d006',
+                                  width: 150,
+                                  height: 150,
+                                ),
+                            ],
                           ))),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
                   child: SizedBox(
-                      //Box1
-                      height: 50,
-                      width: MediaQuery.of(context).size.width * 1.0,
-                      child: Card(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            side: BorderSide(
-                              color: Colors.grey.shade300,
-                              width: 1, // Add a border
-                            ),
-                          ),
-                          elevation: 8, // Add a shadow
-                          child: InkWell(
-                            onTap: () {
-                              // Do something when the ListTile is tapped
-                            },
-                          ))),
+                    //Box1
+                    height: 50,
+                    width: MediaQuery.of(context).size.width * 1.0,
+                    child: Card(
+                      margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        side: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1, // Add a border
+                        ),
+                      ),
+                      elevation: 8, // Add a shadow
+
+                      child: InkWell(
+                        onTap: () {
+                          // Do something when the ListTile is tapped
+                        },
+                        // Shows the largest companies and currencies.
+                      ),
+                    ),
+                  ),
                 ),
               ])),
         ]));
   }
 }
-

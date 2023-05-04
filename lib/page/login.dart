@@ -338,7 +338,7 @@ class _LoginPage extends State<LoginPage> {
     if (!mounted) return;
     Navigator.pushReplacement(context,
         MaterialPageRoute(builder: (context){
-          return (CurTest());
+          return (LoginSuccessPage());
 
         })); // after success route to home.
   }
