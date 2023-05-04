@@ -1,19 +1,31 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:testprojectbc/page/curinfo2.dart';
-import '../login.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
+import 'package:flutter/material.dart';
 
-class ReservationNav extends StatelessWidget {
+import '../curinfo2.dart';
+import '../login.dart';
+import 'loginsuccess.dart';
+
+class ReservationNav extends StatefulWidget {
+  @override
+  _ReservationNav createState() => _ReservationNav();
+  static const String routeName = '/ReservationNav'; // เพิ่มตรงนี้
+}
+
+class _ReservationNav extends State<ReservationNav> {
   final authen = FirebaseAuth.instance;
   String usernameData = FirebaseAuth.instance.currentUser!.email!;
   final PageController _controller = PageController(initialPage: 0);
   final List<String> _tabs = ['1', '2'];
   int _selectedIndex = 0;
+
+  Future<void> _onPinSuccess() async {
+    Navigator.pop(context, true);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +34,7 @@ class ReservationNav extends StatelessWidget {
         title: Text('สวัสดีคุณ $usernameData'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () {
               authen.signOut().then((value) {
                 Navigator.pushReplacement(context,
@@ -32,27 +44,23 @@ class ReservationNav extends StatelessWidget {
               });
             },
           ),
+          // IconButton(
+          //   icon: const Icon(Icons.lock),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => CreatePinPage()),
+          //     );
+          //   },
+          // ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Navigator.push(
-          // context,
-          // MaterialPageRoute(builder: (context) => NotificationPage()),
-          // );
-        },
-        child: Icon(Icons.notifications),
-        backgroundColor: Colors.blue,
-        elevation: 4,
-        shape: CircleBorder(),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       body: ListView(
         children: [
           SizedBox(
             height: 200,
             child: Padding(
-              padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+              padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
               child: Stack(
                 children: [
                   ClipRRect(
@@ -80,16 +88,16 @@ class ReservationNav extends StatelessWidget {
                       children: List.generate(
                         2,
                         (index) => Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 2.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
                           child: GestureDetector(
                             onTap: () {
                               _selectedIndex = index;
                               _controller.animateToPage(index,
-                                  duration: Duration(milliseconds: 300),
+                                  duration: const Duration(milliseconds: 300),
                                   curve: Curves.easeInOut);
                             },
                             child: AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                               height: 10,
                               width: _selectedIndex == index ? 10 : 10,
                               decoration: BoxDecoration(
@@ -108,15 +116,15 @@ class ReservationNav extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 10),
-          Divider(
+          const SizedBox(height: 10),
+          const Divider(
             color: Colors.white,
           ),
           SizedBox(
             //Box1
             height: 300,
             child: Card(
-              margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
                 side: BorderSide(
@@ -131,12 +139,12 @@ class ReservationNav extends StatelessWidget {
                 },
                 child: Container(
                   child: ListTile(
-                    trailing: Icon(Icons.arrow_forward),
+                    trailing: const Icon(Icons.arrow_forward),
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => CurInfo2()));
                     },
-                    contentPadding: EdgeInsets.only(left: 20, right: 20),
+                    contentPadding: const EdgeInsets.only(left: 20, right: 20),
                     dense: true,
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,15 +158,15 @@ class ReservationNav extends StatelessWidget {
                                 builder: (context,
                                     AsyncSnapshot<QuerySnapshot> snapshot) {
                                   if (!snapshot.hasData) {
-                                    return Center(
+                                    return const Center(
                                       child: CircularProgressIndicator(),
                                     );
                                   } else {
                                     final documentHeader = snapshot.data!.docs;
-                                    final agencySPO = documentHeader[6]
+                                    final agencySPO = documentHeader[7]
                                         ["agency"]; //index document
 
-                                    final curIndex0 = agencySPO[1]
+                                    final curIndex0 = agencySPO[0]
                                         ["cur"]; //index agency with map[]
                                     final cur_SPO_USA = (curIndex0);
 
@@ -170,8 +178,8 @@ class ReservationNav extends StatelessWidget {
                                             fit: BoxFit.cover,
                                           ),
                                         ),
-                                        SizedBox(width: 10),
-                                        Text(
+                                        const SizedBox(width: 10),
+                                        const Text(
                                           "จาก THB",
                                           style: TextStyle(
                                             color: Colors.black,
@@ -185,7 +193,7 @@ class ReservationNav extends StatelessWidget {
                                 }),
                           ],
                         ),
-                        Divider(
+                        const Divider(
                           color: Colors.black,
                         ),
                         Column(
@@ -197,8 +205,8 @@ class ReservationNav extends StatelessWidget {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              SizedBox(width: 10),
-                              Text(
+                              const SizedBox(width: 10),
+                              const Text(
                                 "ไปยัง USD ",
                                 style: TextStyle(
                                   color: Colors.black,
@@ -216,23 +224,23 @@ class ReservationNav extends StatelessWidget {
                                     builder: (context,
                                         AsyncSnapshot<QuerySnapshot> snapshot) {
                                       if (!snapshot.hasData) {
-                                        return Center(
+                                        return const Center(
                                           child: CircularProgressIndicator(),
                                         );
                                       } else {
                                         final document = snapshot.data!.docs;
-                                        final agencySPO = document[6]
+                                        final agencySPO = document[7]
                                             ["agency"]; //index document
 
-                                        final dem1Index0 = agencySPO[1]
+                                        final dem1Index0 = agencySPO[0]
                                             ["dem1"]; //index agency with map[]
                                         final parsedDem1_SPO_USA = (dem1Index0);
 
-                                        final buyIndex0 = agencySPO[1]
+                                        final buyIndex0 = agencySPO[0]
                                             ["buy"]; //index agency with map[]
                                         final parsedBuy_SPO_USA = (buyIndex0);
 
-                                        final sellIndex0 = agencySPO[1]
+                                        final sellIndex0 = agencySPO[0]
                                             ["sell"]; //index agency with map[]
                                         final parsedSell_SPO_USA = (sellIndex0);
 
@@ -241,27 +249,27 @@ class ReservationNav extends StatelessWidget {
                                             Text(
                                               parsedDem1_SPO_USA,
                                               //"dem1: ${document["agency"][0]["dem1"]}",
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            SizedBox(width: 105),
+                                            const SizedBox(width: 105),
                                             Text(
                                               parsedBuy_SPO_USA,
                                               //"dem1: ${document["agency"][0]["dem1"]}",
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            SizedBox(width: 40),
+                                            const SizedBox(width: 40),
                                             Text(
                                               parsedSell_SPO_USA,
                                               //"dem1: ${document["agency"][0]["dem1"]}",
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -282,7 +290,7 @@ class ReservationNav extends StatelessWidget {
               ),
             ),
           ),
-          Divider(
+          const Divider(
             color: Colors.black,
           ),
         ],
@@ -290,3 +298,7 @@ class ReservationNav extends StatelessWidget {
     );
   }
 }
+
+
+// PAGE ReservationNav!!
+//class ReservationNav extends StatelessWidget {}

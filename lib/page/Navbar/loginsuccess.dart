@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -8,10 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:testprojectbc/models/notifyModel.dart';
-import 'package:testprojectbc/page/Navbar/convertNav.dart';
-import 'package:testprojectbc/page/Navbar/homeNav.dart';
-import 'package:testprojectbc/page/Navbar/profileNav.dart';
-import 'package:testprojectbc/page/Navbar/reservationNav.dart';
+import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
 import 'package:testprojectbc/page/Setting/detailNotify.dart';
 import 'package:testprojectbc/page/Setting/havePin.dart';
 import 'package:testprojectbc/page/Setting/makePin.dart';
@@ -29,6 +25,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:http/http.dart' as http;
 
+import 'CalculatorNav.dart';
+import 'HomeNav.dart';
+import '../Navbar/ProfileNav.dart';
+
 class LoginSuccessPage extends StatefulWidget {
   State<StatefulWidget> createState() {
     return _LoginSuccessPage();
@@ -43,18 +43,26 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final screens = [
-    HomeNav(),
-    CalculatorNav(),
+    const HomeNav(),
+    const CalculatorNav(),
     ReservationNav(),
     ProfileNav(),
   ];
-
-  void checkclickReservation() {
+  void checkClickReservation() async {
     if (currentIndex == 2) {
-      Navigator.push(
+      final result = await Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => HavePinPage()),
       );
+      if (result == true) {
+        setState(() {
+          currentIndex = 2;
+        });
+      } else {
+        setState(() {
+          currentIndex = 0;
+        });
+      }
     }
   }
 
@@ -67,7 +75,7 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
         onTap: (indexz) {
           setState(() {
             currentIndex = indexz;
-            checkclickReservation();
+            checkClickReservation();
           });
         },
         selectedItemColor: Colors.black,
@@ -101,30 +109,3 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
     );
   }
 }
-
-// PAGE HomeNav!!
-
-// PAGE CalculatorNav!!
-
-// PAGE ProfileNav!!
-// class ProfileNav extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('ProfilePage'),
-//         actions: [
-//           IconButton(
-//             icon: Icon(Icons.logout),
-//             onPressed: () {},
-//           ),
-//         ],
-//       ),
-//       body: Center(
-//         child: ListView(
-//           children: [],
-//         ),
-//       ),
-//     );
-//   }
-// }

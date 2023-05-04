@@ -1,16 +1,19 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_pin_code_widget/flutter_pin_code_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../Navbar/ReservationNav.dart';
 import 'makePin.dart';
 
 class HavePinPage extends StatefulWidget {
   @override
   _HavePinPage createState() => _HavePinPage();
+  static const String routeName = '/havePinPage'; // เพิ่มตรงนี้
 }
 
 class _HavePinPage extends State<HavePinPage> {
@@ -21,7 +24,8 @@ class _HavePinPage extends State<HavePinPage> {
   int _failedAttempts = 0;
   bool _isLocked = false;
   Timer? _timer;
-
+  late DateTime _loginTime; // สร้างตัวแปรเก็บเวลาที่ login สำเร็จ
+  int _remainingSeconds = 0;
   @override
   void dispose() {
     _timer?.cancel();
@@ -44,37 +48,46 @@ class _HavePinPage extends State<HavePinPage> {
     }
   }
 
+  void _onPinSuccess() {
+    Navigator.pop(context, true); // ส่งค่า true กลับไปยังหน้า ReservationNav
+  }
+
   Future<void> _checkPin(String pin) async {
     final querySnapshot = await usersRef.where('UID', isEqualTo: user).get();
     if (querySnapshot.docs.isNotEmpty) {
       final documentSnapshot = querySnapshot.docs.first;
       final existingPin = documentSnapshot.get('pin');
       if (existingPin == pin) {
-        Navigator.of(context).pop(); // กลับไปยังหน้าก่อนหน้านี้
-        // Navigator.of(context).pushReplacement(MaterialPageRoute(
-        //     builder: ((context) =>
-        //         ReservationNav()))); คือการไปหน้าใหม่ อธิบายง่ายกว่าคือการเปิดหน้ามาซ้อนทับอีกที
-        return;
+        // กลับไปยังหน้าแรกของ BottomNavigationBar และ navigate ไปยังหน้าที่ต้องการ
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context, true);
+      } else {
+        _onPinFail(); // เรียกใช้ฟังก์ชัน _onPinFail() ในกรณีที่ PINCODE ผิด
+      }
+    }
+  }
+
+  void _onPinFail() {
+    setState(() {
+      _failedAttempts++;
+      if (_failedAttempts >= 3) {
+        _isLocked = true;
+        _remainingSeconds = 30;
+        _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+          setState(() {
+            if (_remainingSeconds > 0) {
+              _remainingSeconds--;
+            } else {
+              _timer?.cancel();
+              _timer = null;
+              _isLocked = false;
+              _failedAttempts = 0;
+            }
+          });
+        });
       } else {
         clearPin();
       }
-    }
-
-    setState(() {
-      _failedAttempts++;
-      if (_failedAttempts >= 1) {
-        _isLocked = true;
-        _startTimer();
-      }
-    });
-  }
-
-  void _startTimer() {
-    _timer = Timer(Duration(minutes: 3), () {
-      setState(() {
-        _failedAttempts = 0;
-        _isLocked = false;
-      });
     });
   }
 
@@ -91,28 +104,45 @@ class _HavePinPage extends State<HavePinPage> {
             MaterialPageRoute(builder: (context) => CreatePinPage()),
           );
         }
+
+        if (_isLocked && _remainingSeconds <= 0) {
+          setState(() {
+            _isLocked = false;
+            _remainingSeconds = 30;
+          });
+        }
       },
     );
   }
 
-  Widget _buildLockedWidget() {
+  Widget _buildLockedWidget(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          if (_isLocked) // display the countdown timer if the screen is locked
+            Column(
+              children: [
+                const SizedBox(height: 20),
+                Text(
+                  'กรุณารอ $_remainingSeconds วินาที',
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
           Text(
             'You have entered all wrong passwords.\nPlease make sure the code is correct.',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          SizedBox(height: 300),
+          const SizedBox(height: 50),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => HavePinPage()),
               );
             },
-            child: Text('Got it'),
+            child: const Text('Got it'),
             style: ElevatedButton.styleFrom(
               fixedSize: const Size(350, 60), // กำหนดขนาดของปุ่ม
               padding: const EdgeInsets.symmetric(
@@ -148,12 +178,17 @@ class _HavePinPage extends State<HavePinPage> {
             const SizedBox(height: 20),
             const Text('You can use this PIN to unlock the Reservation'),
             const SizedBox(height: 20),
-            //const Text('Pin length is 6 digits'),
+            Text(
+              'Number of failed attempts: $_failedAttempts',
+              style: TextStyle(fontSize: 18),
+            ),
             const SizedBox(height: 50),
             const Text('Please enter your PIN code:'),
             const SizedBox(height: 10),
             Expanded(
-              child: _isLocked ? _buildLockedWidget() : _buildPinCodeWidget(),
+              child: _isLocked
+                  ? _buildLockedWidget(context)
+                  : _buildPinCodeWidget(),
             ),
           ],
         ),

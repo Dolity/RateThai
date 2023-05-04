@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:otp/otp.dart';
+import 'package:provider/provider.dart';
 import 'package:testprojectbc/models/notifyModel.dart';
+import 'package:testprojectbc/page/Navbar/HomeNav.dart';
+import 'package:testprojectbc/page/Navbar/ProfileNav.dart';
+import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
+import 'package:testprojectbc/page/Setting/Theme.dart';
+
 import 'package:testprojectbc/page/Setting/detailNotify.dart';
 import 'package:testprojectbc/page/Setting/notify.dart';
 import 'package:testprojectbc/page/Setting/notifyService.dart';
@@ -31,7 +37,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    // Firebase Messaging Background Handler
+  // Firebase Messaging Background Handler
 
   // Firebase Messaging Initialisation
   await Firebase.initializeApp();
@@ -41,45 +47,73 @@ Future<void> main() async {
     sound: true,
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   // final NotificationModel notification;
   // const notify({required this.notification});
 
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: Colors.grey
-      ),
-      
-      debugShowCheckedModeBanner: false, 
-      home: LoginPage(),
-      routes: {
-        "/register-page": (context) => RegisterPage(),
-        "/confirm-page": (context) => ConfirmPage(),
-        "/authenticator-page": (context) => AuthenticatorPage(),
-        "/loginsuccess-page": (context) => LoginSuccessPage(),
-        "/smsfa-page": (context) => SmsPage(),
-        "/emailfa-page": (context) => EmailFAPage(),
-        "googlefa-page": (context) => GooglefaPage(),
-        "otpsuccess-page": (context) => OtpSuccessPage(),
-        "addpost-page": (context) => AddpostPage(),
-        "currency-page1": (context) => CurrencyPage(),
-        "currinfo-page2": (context) => CurInfo(),
-        "currinfo-test": (context) => CurTest(),
-        "selectCurency-page": (context) => SelectCur(),
-        "makePing-page": (context) => CreatePinPage(),
-        "notify-page": (context) => notify(notification: NotificationModel(amount: '', fromCurrency: ''),),
-        "detailNotify-page": (context) => DetailNotifyPage(),
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
+  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
+
+  @override
+  void initState() {
+    super.initState();
+    getCurrentAppTheme();
+  }
+
+  void getCurrentAppTheme() async {
+    themeChangeProvider.darkTheme =
+        await themeChangeProvider.darkThemePreference.getTheme();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) {
+        return themeChangeProvider;
       },
+      child: Consumer<DarkThemeProvider>(
+        builder: (BuildContext context, value, Widget? child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: Styles.themeData(themeChangeProvider.darkTheme, context),
+            home: LoginPage(),
+            routes: {
+              "/register-page": (context) => RegisterPage(),
+              "/confirm-page": (context) => ConfirmPage(),
+              "/authenticator-page": (context) => AuthenticatorPage(),
+              "/loginsuccess-page": (context) => LoginSuccessPage(),
+              "/smsfa-page": (context) => SmsPage(),
+              "/emailfa-page": (context) => EmailFAPage(),
+              "googlefa-page": (context) => GooglefaPage(),
+              "otpsuccess-page": (context) => OtpSuccessPage(),
+              "addpost-page": (context) => AddpostPage(),
+              "currency-page1": (context) => CurrencyPage(),
+              "currinfo-page2": (context) => CurInfo(),
+              "currinfo-test": (context) => CurTest(),
+              "selectCurency-page": (context) => SelectCur(),
+              "makePing-page": (context) => CreatePinPage(),
+              "notify-page": (context) => notify(
+                    notification:
+                        NotificationModel(amount: '', fromCurrency: ''),
+                  ),
+              "detailNotify-page": (context) => DetailNotifyPage(),
+              "reservaionsNav-page": (context) => ReservationNav(),
+              "HomeNav": (context) => const HomeNav(),
+              "ProfileNav": (context) => ProfileNav()
+            },
+          );
+        },
+      ),
     );
   }
 }
-

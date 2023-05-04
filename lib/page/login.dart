@@ -16,10 +16,10 @@ import 'package:form_field_validator/form_field_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'Setting/Theme.dart';
 import 'addPost.dart';
 import 'curinfo.dart';
 import 'Navbar/loginsuccess.dart';
-
 
 // import com.facebook.FacebookSdk;
 // import com.facebook.appevents.AppEventsLogger;
@@ -27,13 +27,13 @@ import 'Navbar/loginsuccess.dart';
 class LoginPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-
     return _LoginPage();
   }
 }
 
 class _LoginPage extends State<LoginPage> {
-
+  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
+  bool isDarkTheme = false;
   bool value = false;
   var _usernameController = TextEditingController();
   var _passwordController = TextEditingController();
@@ -50,12 +50,11 @@ class _LoginPage extends State<LoginPage> {
 
   late final String displayName;
 
-
   @override
   Widget build(BuildContext context) {
+    isDarkTheme = isDarkTheme;
     return FutureBuilder(
         future: firebase,
-
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Scaffold(
@@ -92,7 +91,6 @@ class _LoginPage extends State<LoginPage> {
                         style: TextStyle(fontSize: 60),
                       ),
                     ),
-                    
                     Padding(
                       padding: const EdgeInsets.fromLTRB(80, 50, 80, 0),
                       child: TextFormField(
@@ -105,20 +103,22 @@ class _LoginPage extends State<LoginPage> {
                           EmailValidator(
                               errorText: "email formation not correct!")
                         ]),
-
                         style: Theme.of(context).textTheme.headline6,
                         textAlign: TextAlign.center,
                         decoration: InputDecoration(
                             labelText: 'Username',
                             enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 2, color: Colors.black),
+                                borderSide: BorderSide(
+                                    width: 2,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.black
+                                        : Colors.white),
                                 borderRadius: BorderRadius.circular(50)),
                             prefixIcon: const Icon(Icons.verified_user)),
                         controller: _usernameController,
                       ),
                     ),
-
                     Padding(
                       padding: const EdgeInsets.fromLTRB(80, 20, 80, 0),
                       child: TextFormField(
@@ -133,8 +133,12 @@ class _LoginPage extends State<LoginPage> {
                         decoration: InputDecoration(
                             labelText: 'Password',
                             enabledBorder: OutlineInputBorder(
-                                borderSide:
-                                    BorderSide(width: 2, color: Colors.black),
+                                borderSide: BorderSide(
+                                    width: 2,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.light
+                                        ? Colors.black
+                                        : Colors.white),
                                 borderRadius: BorderRadius.circular(50)),
                             prefixIcon: const Icon(Icons.password_rounded)),
                         controller: _passwordController,
@@ -147,51 +151,43 @@ class _LoginPage extends State<LoginPage> {
                           padding: const EdgeInsets.fromLTRB(0, 55, 0, 0),
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.black,
-                              // minimumSize: const Size.fromWidth(20),
+                              primary: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.black
+                                  : Colors.white,
+                              onPrimary: Theme.of(context).brightness ==
+                                      Brightness.light
+                                  ? Colors.white
+                                  : Colors.black,
                               fixedSize: const Size(260, 50),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50)),
                             ),
-
                             onPressed: () async {
-
-
                               if (formKey.currentState!.validate()) {
-
                                 formKey.currentState?.save();
                                 displayName = profile.nickname!;
-                                print("email = ${profile.email}, password = ${profile.password}");
+                                print(
+                                    "email = ${profile.email}, password = ${profile.password}");
                                 try {
                                   await FirebaseAuth.instance
                                       .signInWithEmailAndPassword(
                                           email: profile.email!,
-                                          password: profile.password!).then((value){
-                                            formKey.currentState!.reset();
-                                            if (!mounted) return;
-                                            Navigator.pushReplacement(context,
-                                                MaterialPageRoute(builder: (context){
-                                                  return LoginSuccessPage();
-                                                  //GooglefaPage()
-                                                }));
+                                          password: profile.password!)
+                                      .then((value) {
+                                    formKey.currentState!.reset();
+                                    if (!mounted) return;
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(builder: (context) {
+                                      return LoginSuccessPage();
+                                    }));
                                   });
-
-
                                 } on FirebaseAuthException catch (e) {
-                                  // print(e);
-                                  // print(e.languageCode);
-
                                   Fluttertoast.showToast(
                                       msg: e.message!,
-                                      gravity: ToastGravity.CENTER
-                                      // backgroundColor: Colors.blueGrey);
-                                  );
+                                      gravity: ToastGravity.CENTER);
                                 }
                               }
-
-                              // Navigator.pushNamed(context, "/loginsuccess-page", arguments: [
-                              //
-                              // ]);
                             },
                             child: const Text(
                               'Login',
@@ -207,12 +203,10 @@ class _LoginPage extends State<LoginPage> {
                       child: TextButton(
                         child: const Text("Forgot your password?"),
                         onPressed: () {
-
                           Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context){
-                                return AddpostPage();
-                              }));
-
+                              MaterialPageRoute(builder: (context) {
+                            return AddpostPage();
+                          }));
                         },
                       ),
                     )),
@@ -230,22 +224,8 @@ class _LoginPage extends State<LoginPage> {
                                   borderRadius: BorderRadius.circular(50)),
                             ),
                             onPressed: () {
-
                               loginWithFacebook(context);
                               print(loginWithFacebook(context));
-
-                            //   ScaffoldMessenger.of(context).showSnackBar(
-                            //     const SnackBar(
-                            //       content: Text('A SnackBar has been shown.'),
-                            //     ),
-                            //   );
-                            // },
-                              // message = _usernameController.text;
-
-                              // Navigator.pushNamed(context, "/photo-page", arguments: [
-                              //   // _usernameController.text,
-                              //   // _passwordController.text
-                              // ]);
                             },
                             label: Text(
                               'Facebook',
@@ -254,28 +234,17 @@ class _LoginPage extends State<LoginPage> {
                             icon: Icon(Icons.facebook),
                           ),
                         ),
-
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               primary: Colors.lightGreen,
-                              // minimumSize: const Size.fromWidth(20),
                               fixedSize: const Size(150, 50),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50)),
                             ),
                             onPressed: () {
-
                               loginWithGoogle(context);
-
-
-
-                              // Navigator.pushNamed(context, "/photo-page", arguments: [
-                              //   // _usernameController.text,
-                              //   // _passwordController.text
-                              // ]);
-
                             },
                             label: Text(
                               'Google',
@@ -320,8 +289,11 @@ class _LoginPage extends State<LoginPage> {
     GoogleSignInAccount? user = await _googleSignIn.signIn();
     GoogleSignInAuthentication userAuth = await user!.authentication;
 
-    await FirebaseAuth.instance.signInWithCredential(GoogleAuthProvider.credential(
-        idToken: userAuth.idToken, accessToken: userAuth.accessToken, ));
+    await FirebaseAuth.instance
+        .signInWithCredential(GoogleAuthProvider.credential(
+      idToken: userAuth.idToken,
+      accessToken: userAuth.accessToken,
+    ));
 
     await saveUser(user);
 
@@ -336,55 +308,37 @@ class _LoginPage extends State<LoginPage> {
     // print(userAuth);
 
     if (!mounted) return;
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context){
-          return (LoginSuccessPage());
-
-        })); // after success route to home.
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+      return (CurTest());
+    })); // after success route to home.
   }
 
-  Future <void> saveUser (GoogleSignInAccount account) async{
-     FirebaseFirestore.instance.collection("Users")
-        .doc(account.email)
-        .set({
-          "email" : account.email,
-          "name"  : account.displayName,
-          "profilepic" : account.photoUrl
+  Future<void> saveUser(GoogleSignInAccount account) async {
+    FirebaseFirestore.instance.collection("Users").doc(account.email).set({
+      "email": account.email,
+      "name": account.displayName,
+      "profilepic": account.photoUrl
     });
-     print("Saved User data");
+    print("Saved User data");
   }
-
 
   Future loginWithFacebook(BuildContext context) async {
-
-
     try {
       final LoginResult loginResult = await FacebookAuth.instance.login();
-      final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+      final OAuthCredential facebookAuthCredential =
+          FacebookAuthProvider.credential(loginResult.accessToken!.token);
       await _auth.signInWithCredential(facebookAuthCredential);
 
       print(loginResult);
-
-    } on FirebaseAuthException catch (e){
-      Fluttertoast.showToast(
-          msg: e.message!,
-          gravity: ToastGravity.CENTER
-        // backgroundColor: Colors.blueGrey);
-      );
+    } on FirebaseAuthException catch (e) {
+      Fluttertoast.showToast(msg: e.message!, gravity: ToastGravity.CENTER
+          // backgroundColor: Colors.blueGrey);
+          );
     }
 
     if (!mounted) return;
-    Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (context){
-          return SelectCur();
-        }));
-
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+      return SelectCur();
+    }));
   }
-
-
-
-
-
-
-
 }
