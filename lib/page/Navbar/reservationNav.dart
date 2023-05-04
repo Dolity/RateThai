@@ -163,7 +163,7 @@ class _ReservationNav extends State<ReservationNav> {
                                     );
                                   } else {
                                     final documentHeader = snapshot.data!.docs;
-                                    final agencySPO = documentHeader[7]
+                                    final agencySPO = documentHeader[6]
                                         ["agency"]; //index document
 
                                     final curIndex0 = agencySPO[0]
@@ -229,18 +229,18 @@ class _ReservationNav extends State<ReservationNav> {
                                         );
                                       } else {
                                         final document = snapshot.data!.docs;
-                                        final agencySPO = document[7]
+                                        final agencySPO = document[6]
                                             ["agency"]; //index document
 
-                                        final dem1Index0 = agencySPO[0]
+                                        final dem1Index0 = agencySPO[1]
                                             ["dem1"]; //index agency with map[]
                                         final parsedDem1_SPO_USA = (dem1Index0);
 
-                                        final buyIndex0 = agencySPO[0]
+                                        final buyIndex0 = agencySPO[1]
                                             ["buy"]; //index agency with map[]
                                         final parsedBuy_SPO_USA = (buyIndex0);
 
-                                        final sellIndex0 = agencySPO[0]
+                                        final sellIndex0 = agencySPO[1]
                                             ["sell"]; //index agency with map[]
                                         final parsedSell_SPO_USA = (sellIndex0);
 

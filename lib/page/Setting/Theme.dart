@@ -12,9 +12,9 @@ class Styles {
       primarySwatch: Colors.blue, // color defult
       primaryColor: isDarkTheme ? Colors.pink : Colors.white,
       indicatorColor: isDarkTheme ? Colors.black54 : Colors.white,
-      buttonColor: isDarkTheme ? Colors.black54 : Colors.white,
+      //buttonColor: isDarkTheme ? Colors.black54 : Colors.white,
       hintColor: isDarkTheme ? Colors.white : Colors.black54,
-      highlightColor: isDarkTheme ? Colors.black54 : Colors.white,
+      highlightColor: isDarkTheme ? Colors.white : Colors.white,
       hoverColor: isDarkTheme ? Colors.green : Colors.white,
       focusColor: isDarkTheme ? Colors.green : Colors.white,
       disabledColor: Colors.grey,

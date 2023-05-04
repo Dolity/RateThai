@@ -1,31 +1,10 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:form_field_validator/form_field_validator.dart';
-import 'package:testprojectbc/models/notifyModel.dart';
 import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
-import 'package:testprojectbc/page/Setting/detailNotify.dart';
 import 'package:testprojectbc/page/Setting/havePin.dart';
-import 'package:testprojectbc/page/Setting/makePin.dart';
-import 'package:testprojectbc/page/Setting/notify.dart';
-import 'package:testprojectbc/page/curinfo2.dart';
-import 'package:testprojectbc/page/currency.dart';
-import 'package:testprojectbc/page/emailFA.dart';
-import 'package:testprojectbc/page/emailOTP.dart';
-import 'package:testprojectbc/page/otpsuccess.dart';
-import 'package:testprojectbc/page/screenOTP.dart';
-import '../../models/profile.dart';
-import '../curinfo.dart';
-import '../login.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:http/http.dart' as http;
 
-import 'CalculatorNav.dart';
+import 'convertNav.dart';
 import 'HomeNav.dart';
 import '../Navbar/ProfileNav.dart';
 
@@ -44,7 +23,7 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final screens = [
     const HomeNav(),
-    const CalculatorNav(),
+    CalculatorNav(),
     ReservationNav(),
     ProfileNav(),
   ];

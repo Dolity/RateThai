@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:testprojectbc/models/notifyModel.dart';
@@ -14,7 +12,7 @@ class CalculatorNav extends StatefulWidget {
 
 class _CalculatorNavState extends State<CalculatorNav> {
   final TextEditingController _textEditingController = TextEditingController();
-  List<String> _currencies = [
+  final List<String> _currencies = [
     'AED',
     'AUD',
     'BHD',
@@ -54,7 +52,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
   ];
   String? _fromCurrency = 'USD';
   String? _toCurrency = 'THB';
-  String? _agenName = '';
+  final String? _agenName = '';
   double? _exchangeRate = 0.0;
 
   double? maxSellRate = 0.0;
@@ -181,7 +179,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                         //var apiKey = 'e50a59e299ef0bae5bc03139';
                                         var url =
                                             //'https://v6.exchangerate-api.com/v6/$apiKey/latest/$_fromCurrency';
-                                            'http://192.168.0.104:5100/getagencies/$_fromCurrency';
+                                            'http://192.168.1.12:5100/getagencies/$_fromCurrency';
                                         var response =
                                             await http.get(Uri.parse(url));
                                         print('before response');
