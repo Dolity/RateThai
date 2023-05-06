@@ -5,6 +5,7 @@ import 'package:testprojectbc/models/notifyModel.dart';
 import 'package:testprojectbc/page/Navbar/HomeNav.dart';
 import 'package:testprojectbc/page/Navbar/ProfileNav.dart';
 import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
+import 'package:testprojectbc/page/Navbar/ChangeEmailScreen.dart';
 import 'package:testprojectbc/page/Setting/Theme.dart';
 
 import 'package:testprojectbc/page/Setting/detailNotify.dart';
@@ -109,7 +110,8 @@ class _MyAppState extends State<MyApp> {
               "detailNotify-page": (context) => DetailNotifyPage(),
               "reservaionsNav-page": (context) => ReservationNav(),
               "HomeNav": (context) => const HomeNav(),
-              "ProfileNav": (context) => ProfileNav()
+              "ProfileNav": (context) => ProfileNav(),
+              "changeEmailNav": (context) => changeEmailNav(),
             },
           );
         },

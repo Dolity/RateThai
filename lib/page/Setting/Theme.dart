@@ -4,82 +4,42 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Styles {
   static ThemeData themeData(bool isDarkTheme, BuildContext context) {
     Color textColor = isDarkTheme ? Colors.white : Colors.black;
-    Color cardColor = isDarkTheme
-        ? Colors.black //Color.fromARGB(0, 70, 65, 65)
-        : Colors.white; // nvrbar ด้านบน
+    Color? cardColor = isDarkTheme ? Colors.grey[900] : Colors.white;
 
     return ThemeData(
-      primarySwatch: Colors.blue, // color defult
-      primaryColor: isDarkTheme ? Colors.pink : Colors.white,
-      indicatorColor: isDarkTheme ? Colors.black54 : Colors.white,
-      //buttonColor: isDarkTheme ? Colors.black54 : Colors.white,
-      hintColor: isDarkTheme ? Colors.white : Colors.black54,
-      highlightColor: isDarkTheme ? Colors.white : Colors.white,
-      hoverColor: isDarkTheme ? Colors.green : Colors.white,
-      focusColor: isDarkTheme ? Colors.green : Colors.white,
-      disabledColor: Colors.grey,
+      primaryColor: isDarkTheme ? Colors.grey[800] : Colors.blue[700],
+      scaffoldBackgroundColor:
+          isDarkTheme ? Colors.grey[900] : Colors.grey[100],
       cardColor: cardColor,
-      canvasColor: isDarkTheme
-          ? Color.fromARGB(255, 70, 65, 65)
-          : Colors.grey[50], // change color blackgrund
-      brightness: isDarkTheme ? Brightness.dark : Brightness.light,
-      buttonTheme: Theme.of(context).buttonTheme.copyWith(
-            colorScheme: isDarkTheme
-                ? const ColorScheme.dark(
-                    primary: Colors.green,
-                    onPrimary: Colors.black,
-                  )
-                : const ColorScheme.light(
-                    primary: Colors.blue,
-                    onPrimary: Colors.white,
-                  ),
-          ),
-      appBarTheme: const AppBarTheme(
-        elevation: 3.0,
-      ),
-      textSelectionTheme: TextSelectionThemeData(
-          selectionColor: isDarkTheme ? Colors.greenAccent : Colors.green),
       textTheme: TextTheme(
-        bodyText1: TextStyle(
+        bodyLarge: TextStyle(color: textColor),
+        bodyMedium: TextStyle(color: textColor),
+        titleLarge: TextStyle(
           color: textColor,
-        ),
-        bodyText2: TextStyle(
-          color: textColor,
-        ),
-        subtitle1: TextStyle(
-          color: textColor,
-        ),
-        subtitle2: TextStyle(
-          color: textColor,
-        ),
-        headline1: TextStyle(
-          color: textColor,
-        ),
-        headline2: TextStyle(
-          color: textColor,
-        ),
-        headline3: TextStyle(
-          color: textColor,
-        ),
-        headline4: TextStyle(
-          color: textColor,
-        ),
-        headline5: TextStyle(
-          color: textColor,
-        ),
-        headline6: TextStyle(
-          color: textColor,
+          fontWeight: FontWeight.bold,
         ),
       ),
-      cardTheme: CardTheme(
-        color: cardColor,
-        shadowColor: isDarkTheme ? Colors.white30 : Colors.black45,
-        elevation: 100.0,
+      buttonTheme: ButtonThemeData(
+        buttonColor: isDarkTheme ? Colors.blue[700] : Colors.grey[800],
+        textTheme: ButtonTextTheme.primary,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(3.0),
+          borderRadius: BorderRadius.circular(8.0),
         ),
-        margin: const EdgeInsets.all(3.0),
       ),
+      appBarTheme: AppBarTheme(
+        elevation: 0.0,
+        backgroundColor: isDarkTheme ? Colors.grey[900] : Colors.grey[100],
+        foregroundColor: isDarkTheme ? Colors.white : Colors.black,
+      ),
+      colorScheme: ColorScheme.fromSwatch()
+          .copyWith(
+            primary: isDarkTheme ? Colors.grey[800] : Colors.blue[700],
+            secondary: isDarkTheme ? Colors.blue[700] : Colors.grey[800],
+            brightness: isDarkTheme ? Brightness.dark : Brightness.light,
+          )
+          .copyWith(background: isDarkTheme ? Colors.grey[800] : Colors.white)
+          .copyWith(
+              secondary: isDarkTheme ? Colors.blue[700] : Colors.grey[800]),
     );
   }
 }

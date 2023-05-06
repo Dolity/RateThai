@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../Setting/makePin.dart';
 import '../otpsuccess.dart';
 import '../Setting/Theme.dart';
+import '../Navbar/ChangeEmailScreen.dart';
 
 class ProfileNav extends StatefulWidget {
   @override
@@ -66,6 +67,11 @@ class _ProfileNav extends State<ProfileNav> {
         context, MaterialPageRoute(builder: (context) => OtpSuccessPage()));
   }
 
+  void changeEmail() {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const changeEmailNav()));
+  }
+
   void _forgotPassword() {
     // navigate to forgot password page
   }
@@ -124,6 +130,12 @@ class _ProfileNav extends State<ProfileNav> {
               title: const Text('Forgot Password'),
               onTap: () {
                 _forgotPassword();
+              },
+            ),
+            ListTile(
+              title: const Text('Change Email'),
+              onTap: () {
+                changeEmail();
               },
             ),
           ],
