@@ -1,14 +1,23 @@
+import 'dart:collection';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:testprojectbc/Service/provider/reservationData.dart';
+import 'package:testprojectbc/models/notifyModel.dart';
+import 'package:testprojectbc/page/Reservation/detailAgency.dart';
+import 'package:testprojectbc/page/Reservation/detailCur.dart';
 
 import '../curinfo2.dart';
 import '../login.dart';
 import 'loginsuccess.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ReservationNav extends StatefulWidget {
   @override
@@ -17,288 +26,433 @@ class ReservationNav extends StatefulWidget {
 }
 
 class _ReservationNav extends State<ReservationNav> {
-  final authen = FirebaseAuth.instance;
-  String usernameData = FirebaseAuth.instance.currentUser!.email!;
-  final PageController _controller = PageController(initialPage: 0);
-  final List<String> _tabs = ['1', '2'];
-  int _selectedIndex = 0;
+  final TextEditingController _textEditingController = TextEditingController();
+  final List<String> _currencies = [
+    'AED',
+    'AUD',
+    'BHD',
+    'BND',
+    'CAD',
+    'CHF',
+    'CNY',
+    'DKK',
+    'EUR',
+    'GBP',
+    'HKD',
+    'IDR',
+    'INR',
+    'JOD',
+    'JPY',
+    'KRW',
+    'KWD',
+    'LAK',
+    'MMK',
+    'MOP',
+    'MYR',
+    'NOK',
+    'NPR',
+    'NZD',
+    'OMR',
+    'PHP',
+    'QAR',
+    'RUB',
+    'SAR',
+    'SEK',
+    'SGD',
+    'TRY',
+    'TWD',
+    'USD',
+    'VND',
+    'ZAR'
+  ];
+  String? _fromCurrency = 'USD';
+  String? _toCurrency = 'THB';
+  final String? _agenName = '';
+  double? _exchangeRate = 0.0;
 
-  Future<void> _onPinSuccess() async {
-    Navigator.pop(context, true);
-  }
+  double? maxSellRate = 0.0;
+  String? maxSellRateAgen = '';
+  var highestSellRate = 0.0;
+
+  bool showPadding = false;
+
+  Set<String> allAgenNames = {};
+  List<String> agenNamesList = [];
+  Set<double> allSellRate = {};
+
+  var sellRateComparator =
+      (double a, double b) => b.compareTo(a); // เรียงลำดับจากมากไปหาน้อย
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('สวัสดีคุณ $usernameData'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              authen.signOut().then((value) {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) {
-                  return LoginPage();
-                }));
-              });
-            },
-          ),
-          // IconButton(
-          //   icon: const Icon(Icons.lock),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) => CreatePinPage()),
-          //     );
-          //   },
-          // ),
-        ],
-      ),
-      body: ListView(
-        children: [
-          SizedBox(
-            height: 200,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(25),
-                    child: PageView(
-                      controller: _controller,
-                      children: [
-                        Image.network(
-                          'https://www.superrichthailand.com/uploads/images/cd8811cfdce0375be9a599e6c19922f11669868861014.jpeg',
-                          fit: BoxFit.cover,
-                        ),
-                        Image.network(
-                          'https://superrichrate2.ztidev.com/superRich/download?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBlclJpY2giLCJleHAiOjQ4MzczNDM4MzUsImlhdCI6MTY4MTY0ODYzNSwia2V5IjoiajFTOHNkR3hyeHpKcnNad3NIU2NHd1BjIn0.biWX-uWdD01OXTnZBFL_GZJwqvwmRt0cs5-GB0kLRQY&file=4d46819f-b327-4db8-9740-da53feb28aeb1676947947227.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    left: 0,
-                    right: 0,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        2,
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: GestureDetector(
-                            onTap: () {
-                              _selectedIndex = index;
-                              _controller.animateToPage(index,
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut);
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              height: 10,
-                              width: _selectedIndex == index ? 10 : 10,
-                              decoration: BoxDecoration(
-                                color: _selectedIndex == index
-                                    ? Colors.black
-                                    : Colors.black,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                            ),
-                          ),
-                        ),
+        appBar: AppBar(
+          title: Text('Currency Converter'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.logout),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        body: ListView(children: [
+          Container(
+              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              child: Column(mainAxisSize: MainAxisSize.max, children: [
+                SizedBox(
+                    width: 350,
+                    height: 450,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          const Divider(
-            color: Colors.white,
-          ),
-          SizedBox(
-            //Box1
-            height: 300,
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(
-                  color: Colors.grey.shade300,
-                  width: 1, // Add a border
-                ),
-              ),
-              elevation: 8, // Add a shadow
-              child: InkWell(
-                onTap: () {
-                  // Do something when the ListTile is tapped
-                },
-                child: Container(
-                  child: ListTile(
-                    trailing: const Icon(Icons.arrow_forward),
-                    onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => CurInfo2()));
-                    },
-                    contentPadding: const EdgeInsets.only(left: 20, right: 20),
-                    dense: true,
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            StreamBuilder(
-                                stream: FirebaseFirestore.instance
-                                    .collection("getCurrency")
-                                    .snapshots(),
-                                builder: (context,
-                                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  if (!snapshot.hasData) {
-                                    return const Center(
-                                      child: CircularProgressIndicator(),
-                                    );
+                      elevation: 5,
+                      child: Container(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  DropdownButton<String>(
+                                    value: _fromCurrency,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _fromCurrency = value;
+                                        print('fromCurrency: $_fromCurrency');
+                                      });
+                                    },
+                                    items: _currencies
+                                        .map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.arrow_forward_ios),
+                                    onPressed: () {},
+                                  ),
+                                  DropdownButton<String>(
+                                    value: _toCurrency,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _toCurrency = value;
+                                        print('toCurrency: $_toCurrency');
+                                      });
+                                    },
+                                    items: [
+                                      DropdownMenuItem(
+                                        child: Text('THB'),
+                                        value: 'THB',
+                                      ),
+                                      // Add more currencies here
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              TextFormField(
+                                controller: _textEditingController,
+                                validator: RequiredValidator(
+                                    errorText: "กรุณาใส่ค่าตัวเลข"),
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                    border: UnderlineInputBorder(),
+                                    hintText: '0.00',
+                                    hintStyle: TextStyle(fontSize: 30)),
+                              ),
+                              SizedBox(height: 20),
+                              Container(
+                                padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+                                // decoration: BoxDecoration(
+                                //   color: Color.fromRGBO(192, 238, 242, 1),
+                                //   borderRadius: BorderRadius.circular(50),
+                                // ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '${_textEditingController.text} $_fromCurrency = ${((_exchangeRate ?? 0.0) * (double.tryParse(_textEditingController?.text?.toString() ?? '0.0') ?? 0.0)).toStringAsFixed(2)} THB',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.blue,
+                                        fontStyle: FontStyle.normal,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                    SizedBox(height: 15),
+                                    Text(
+                                      '1 $_fromCurrency = ${(_exchangeRate ?? 0.0).toStringAsFixed(2)} THB',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.blue,
+                                        fontStyle: FontStyle.normal,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    // เพิ่ม Widget อื่น ๆ ตามต้องการ
+                                  ],
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              ElevatedButton(
+                                onPressed: () async {
+                                  allSellRate.clear();
+                                  highestSellRate = 0.0;
+                                  var message = "";
+                                  message = "กรุณาใส่ค่าตัวเลข";
+                                  if (_textEditingController.text.isEmpty) {
+                                    setState(() {
+                                      _exchangeRate = 0.0;
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text(message)));
+                                    print('Error: Please enter amount');
+
+                                    Container myContainer() {
+                                      return Container(
+                                          // Container properties
+                                          );
+                                    }
+
+                                    return;
                                   } else {
-                                    final documentHeader = snapshot.data!.docs;
-                                    final agencySPO = documentHeader[6]
-                                        ["agency"]; //index document
+                                    //var apiKey = 'e50a59e299ef0bae5bc03139';
+                                    var url =
+                                        //'https://v6.exchangerate-api.com/v6/$apiKey/latest/$_fromCurrency';
+                                        'http://192.168.0.104:5100/getagencies/$_fromCurrency';
+                                    var response =
+                                        await http.get(Uri.parse(url));
+                                    print('before response');
+                                    if (response.statusCode == 200) {
+                                      print('if response OK');
 
-                                    final curIndex0 = agencySPO[0]
-                                        ["cur"]; //index agency with map[]
-                                    final cur_SPO_USA = (curIndex0);
+                                      var jsonResponse =
+                                          jsonDecode(response.body);
+                                      print(jsonResponse);
+                                      if (jsonResponse is List &&
+                                          jsonResponse.isNotEmpty) {
+                                        var agencies = jsonResponse;
+                                        //var conversionMap = Map<String, dynamic>();
+                                        var conversionList =
+                                            <Map<String, dynamic>>[];
 
-                                    return (Row(
-                                      children: [
-                                        ClipOval(
-                                          child: Image.network(
-                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Currency%2FTH.png?alt=media&token=0dfc94dd-60cd-4dba-9e0d-f5408da39d5b',
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
-                                        const Text(
-                                          "จาก THB",
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ));
-                                  }
-                                }),
-                          ],
-                        ),
-                        const Divider(
-                          color: Colors.black,
-                        ),
-                        Column(
-                          children: [
-                            Row(children: [
-                              ClipOval(
-                                child: Image.network(
-                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Currency%2FUSD.png?alt=media&token=97b728ff-edcb-42f4-9b31-138298453e83',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              const Text(
-                                "ไปยัง USD ",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ]),
-                            Row(
-                              children: [
-                                StreamBuilder(
-                                    stream: FirebaseFirestore.instance
-                                        .collection("getCurrency")
-                                        .snapshots(),
-                                    builder: (context,
-                                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                                      if (!snapshot.hasData) {
-                                        return const Center(
-                                          child: CircularProgressIndicator(),
-                                        );
-                                      } else {
-                                        final document = snapshot.data!.docs;
-                                        final agencySPO = document[6]
-                                            ["agency"]; //index document
+                                        for (var agency in agencies) {
+                                          if (agency is Map &&
+                                              agency.containsKey('agency') &&
+                                              agency is Map &&
+                                              agency.containsKey('agenName')) {
+                                            var agencyData = agency['agency'];
 
-                                        final dem1Index0 = agencySPO[1]
-                                            ["dem1"]; //index agency with map[]
-                                        final parsedDem1_SPO_USA = (dem1Index0);
+                                            if (agencyData is List &&
+                                                agencyData.isNotEmpty) {
+                                              for (var data in agencyData) {
+                                                if (data is Map &&
+                                                    data.containsKey('cur') &&
+                                                    data.containsKey('sell')) {
+                                                  var agenName =
+                                                      agency['agenName'];
+                                                  String currency = data['cur'];
+                                                  double sellRate =
+                                                      double.parse(
+                                                          data['sell']);
+                                                  // conversionMap[currency] = {
+                                                  //   'agenName': agenName,
+                                                  //   'sellRate': sellRate
+                                                  // }; // เพิ่ม agenName ลงใน conversionMap พร้อมกับ sellRate
 
-                                        final buyIndex0 = agencySPO[1]
-                                            ["buy"]; //index agency with map[]
-                                        final parsedBuy_SPO_USA = (buyIndex0);
+                                                  var conversionData = {
+                                                    'agenName': agenName,
+                                                    'sellRate': sellRate
+                                                  };
+                                                  print(
+                                                      "**************** Agen: ${agenName}  ||| Sell: ${sellRate}  ||| Cur: ${currency}  ****************");
 
-                                        final sellIndex0 = agencySPO[1]
-                                            ["sell"]; //index agency with map[]
-                                        final parsedSell_SPO_USA = (sellIndex0);
+                                                  // ตรวจสอบค่าซ้ำกันก่อนเพิ่มเข้าไปใน conversionList
+                                                  if (!conversionList.any(
+                                                      (element) =>
+                                                          element['agenName'] ==
+                                                              conversionData[
+                                                                  'agenName'] &&
+                                                          element['sellRate'] ==
+                                                              conversionData[
+                                                                  'sellRate'])) {
+                                                    conversionList
+                                                        .add(conversionData);
+                                                  }
 
-                                        return Row(
-                                          children: [
-                                            Text(
-                                              parsedDem1_SPO_USA,
-                                              //"dem1: ${document["agency"][0]["dem1"]}",
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 105),
-                                            Text(
-                                              parsedBuy_SPO_USA,
-                                              //"dem1: ${document["agency"][0]["dem1"]}",
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 40),
-                                            Text(
-                                              parsedSell_SPO_USA,
-                                              //"dem1: ${document["agency"][0]["dem1"]}",
-                                              style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        );
+                                                  conversionList.sort((a, b) =>
+                                                      b['sellRate'].compareTo(
+                                                          a['sellRate']));
+                                                  print(
+                                                      "Sort Lost : $conversionList");
+                                                  String allResavaDataString =
+                                                      conversionList
+                                                          .map((element) =>
+                                                              '{${element['agenName']}, ${element['sellRate']}}')
+                                                          .join(', ');
+                                                  allResavaDataString =
+                                                      allResavaDataString
+                                                          .replaceAll('{', '')
+                                                          .replaceAll('}', '');
+                                                  print(
+                                                      "Sort String! : $allResavaDataString");
+
+                                                  // conversionList.add(conversionData);
+                                                  // conversionList.sort((a, b) => b['sellRate'].compareTo(a['sellRate']));
+                                                  // print("List Sort : $conversionList");
+                                                  // List<Map<String, dynamic>> uniqueConversionList = conversionList.toSet().toList();
+                                                  // String allResavaDataString = uniqueConversionList.join(', ');
+                                                  // print("not same Sort : $uniqueConversionList");
+                                                  // print("Sort String! : ${allResavaDataString}");
+
+                                                  for (var entry
+                                                      in conversionList) {
+                                                    // var currency = entry.key;
+                                                    // var value = entry.value;
+                                                    var agenName =
+                                                        entry['agenName'];
+                                                    var sellRate =
+                                                        entry['sellRate'];
+
+                                                    if (sellRate >
+                                                        highestSellRate) {
+                                                      highestSellRate =
+                                                          sellRate; // update the highest sell rate if a higher value is found
+                                                      maxSellRateAgen =
+                                                          agenName; // update the agenName with the highest sell rate
+
+                                                      print(
+                                                          'loop > name: $agenName');
+                                                      print(
+                                                          'loop > rate: $sellRate');
+                                                    }
+
+                                                    allAgenNames.add(
+                                                        agenName); // เก็บ agenName ลงใน List
+
+                                                    allSellRate.add(sellRate);
+                                                    List<double> sellRateList =
+                                                        allSellRate.toList();
+                                                    print(
+                                                        'Rate: ${sellRateList}');
+                                                    sellRateList.sort(
+                                                        sellRateComparator);
+                                                    String allSellRateString =
+                                                        sellRateList.join(', ');
+
+                                                    context
+                                                            .read<ReservationData>()
+                                                            .resevaAgen_Rate =
+                                                        allResavaDataString;
+
+                                                    context
+                                                            .read<ReservationData>()
+                                                            .resevaFromCur =
+                                                        _fromCurrency!;
+                                                    context
+                                                        .read<ReservationData>()
+                                                        .resevaToCur = _toCurrency!;
+                                                    //context.read<ReservationData>().resevaAgency = maxSellRateAgen!; //allAgenNames.join(', ');  // กำหนดค่าทั้งหมดใน List เป็นค่าใหม่ของ resevaAgency
+                                                    context
+                                                            .read<ReservationData>()
+                                                            .resevaAmount =
+                                                        _textEditingController
+                                                            .text;
+                                                    //context.read<ReservationData>().resevaRateMoney = highestSellRate.toString(); //allSellRateString;
+
+                                                    context
+                                                            .read<ReservationData>()
+                                                            .resevaAgency =
+                                                        allAgenNames.join(', ');
+                                                    context
+                                                            .read<ReservationData>()
+                                                            .resevaRateMoney =
+                                                        allSellRateString;
+                                                    context
+                                                        .read<ReservationData>()
+                                                        .notifyChange();
+
+                                                    print(
+                                                        'Agen name Provider: ${context.read<ReservationData>().resevaAgency = allAgenNames.join(', ')}');
+                                                    print(
+                                                        'Rate Money Provider: ${context.read<ReservationData>().resevaRateMoney = allSellRateString}');
+                                                    //print('Sort Name: ${agenNamesList}');
+                                                    //print('Sort Rate: ${sellRateList}');
+                                                  }
+
+                                                  setState(() {
+                                                    showPadding = true;
+                                                    _exchangeRate =
+                                                        highestSellRate; // เอาค่า sellRate จาก conversionMap
+                                                    print(
+                                                        'Agen name: $agenName');
+                                                    print(
+                                                        'Sell rate: $sellRate');
+
+                                                    print('Invalid currency');
+                                                  });
+                                                }
+                                              }
+                                            }
+                                          } else {
+                                            print('Invalid JSON data');
+                                          }
+                                        }
+
+                                        // print('tttttttttttttttttttttttt: $conversionMap');
                                       }
-                                    }),
-                              ],
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const Divider(
-            color: Colors.black,
-          ),
-        ],
-      ),
-    );
+                                      print(
+                                          'Max sell rate Agen name: $maxSellRateAgen // HighestSell: $highestSellRate');
+
+                                      //log(context.read<ReservationData>().resevaCur);
+                                    }
+                                  }
+                                },
+                                child: Text(
+                                  'คำนวณอัตราแลกเปลี่ยนสกุลเงิน',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 40, vertical: 16),
+                                  primary: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(245, 20, 0, 0),
+                                child: Row(
+                                  children: [
+                                    FloatingActionButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                DetailAgency(),
+                                          ),
+                                        );
+                                      },
+                                      child: Icon(Icons.keyboard_arrow_right),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ]),
+                      ),
+                    )),
+              ])),
+        ]));
   }
 }
-
-
-// PAGE ReservationNav!!
-//class ReservationNav extends StatelessWidget {}

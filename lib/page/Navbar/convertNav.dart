@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:provider/provider.dart';
+import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/models/notifyModel.dart';
 import 'package:testprojectbc/page/Setting/notify.dart';
 import 'package:http/http.dart' as http;
@@ -50,6 +53,24 @@ class _CalculatorNavState extends State<CalculatorNav> {
     'VND',
     'ZAR'
   ];
+  Map<String, String> imageUrls = {
+    'SRO':
+        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SPRO.png?alt=media&token=bb3a5e94-dcbd-457e-8134-4ce0bc59e65a',
+    'SRG':
+        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SRG.png?alt=media&token=db8f7a00-76fd-4f6b-a49b-56b9393f09ac',
+    'VPC':
+        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_VP.png?alt=media&token=f288196a-5abb-422b-b487-85919a4b25f9',
+    'K79':
+        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_K79.png?alt=media&token=1c7787bc-dc5b-4e83-8653-830ddcfe5700',
+    'SME':
+        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_siam.png?alt=media&token=b26dda49-ed85-4140-822c-40e933dd4f22',
+    'VSU':
+        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_vasu.png?alt=media&token=e6da328d-3b95-4f32-bc00-6346e21e1009',
+    'XNE':
+        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_xne.png?alt=media&token=15fc6416-5d2f-4e63-9b62-086bd641d006',
+  };
+  List<Widget> images = [];
+
   String? _fromCurrency = 'USD';
   String? _toCurrency = 'THB';
   final String? _agenName = '';
@@ -58,6 +79,8 @@ class _CalculatorNavState extends State<CalculatorNav> {
   double? maxSellRate = 0.0;
   String? maxSellRateAgen = '';
   var highestSellRate = 0.0;
+
+  bool showPadding = false;
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +99,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => notify(
-                  notification: NotificationModel(amount: '', fromCurrency: ''),
-                ),
+                builder: (context) => notify(),
               ),
             );
           },
@@ -94,7 +115,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
               child: Column(mainAxisSize: MainAxisSize.max, children: [
                 SizedBox(
                     width: 350,
-                    height: 335,
+                    height: 400,
                     child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
@@ -174,12 +195,19 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                             .showSnackBar(SnackBar(
                                                 content: Text(message)));
                                         print('Error: Please enter amount');
+
+                                        Container myContainer() {
+                                          return Container(
+                                              // Container properties
+                                              );
+                                        }
+
                                         return;
                                       } else {
                                         //var apiKey = 'e50a59e299ef0bae5bc03139';
                                         var url =
                                             //'https://v6.exchangerate-api.com/v6/$apiKey/latest/$_fromCurrency';
-                                            'http://192.168.1.12:5100/getagencies/$_fromCurrency';
+                                            'http://192.168.0.104:5100/getagencies/$_fromCurrency';
                                         var response =
                                             await http.get(Uri.parse(url));
                                         print('before response');
@@ -249,6 +277,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                                       }
 
                                                       setState(() {
+                                                        showPadding = true;
                                                         _exchangeRate =
                                                             highestSellRate; // เอาค่า sellRate จาก conversionMap
                                                         print(
@@ -259,6 +288,18 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                                         print(
                                                             'Invalid currency');
                                                       });
+                                                      // String? keepRate = _exchangeRate.toString();
+                                                      context
+                                                              .read<
+                                                                  ReservationData>()
+                                                              .notifyCur =
+                                                          _fromCurrency!;
+                                                      context
+                                                              .read<
+                                                                  ReservationData>()
+                                                              .notifyRate =
+                                                          highestSellRate
+                                                              .toString();
                                                     }
                                                   }
                                                 }
@@ -270,6 +311,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                           print(
                                               'Max sell rate Agen name: $maxSellRateAgen // HighestSell: $highestSellRate');
                                         }
+                                        if (showPadding) {}
                                       }
                                     },
                                     child: Text(
@@ -296,120 +338,147 @@ class _CalculatorNavState extends State<CalculatorNav> {
                                     style: TextStyle(fontSize: 20),
                                   ),
                                 ])))),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                  child: SizedBox(
+
+                if (showPadding)
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: SizedBox(
                       //Box1
                       height: 80,
                       width: MediaQuery.of(context).size.width * 1.0,
-                      child: Card(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            side: BorderSide(
-                              color: Colors.grey.shade300,
-                              width: 1, // Add a border
-                            ),
-                          ),
-                          elevation: 8, // Add a shadow
-                          // Shows the largest companies and currencies.
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: GestureDetector(
+                          onTap: () {
+                            print('OK');
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => notify(),
                               ),
-                              if (maxSellRateAgen != null &&
-                                  highestSellRate != null)
-                                if (maxSellRateAgen == 'SRO')
-                                  Image.network(
-                                    'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SPRO.png?alt=media&token=bb3a5e94-dcbd-457e-8134-4ce0bc59e65a',
-                                    width: 150,
-                                    height: 150,
-                                  ),
-                              if (maxSellRateAgen == 'SRG')
-                                Image.network(
-                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SRG.png?alt=media&token=db8f7a00-76fd-4f6b-a49b-56b9393f09ac',
-                                  width: 150,
-                                  height: 150,
+                            );
+                          },
+                          child: Card(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 0, vertical: 0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                                side: BorderSide(
+                                  color: Colors.grey.shade300,
+                                  width: 1, // Add a border
                                 ),
-                              if (maxSellRateAgen == 'VPC')
-                                Image.network(
-                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_VP.png?alt=media&token=f288196a-5abb-422b-b487-85919a4b25f9',
-                                  width: 120,
-                                  height: 120,
-                                ),
-                              Column(
+                              ),
+                              elevation: 8, // Add a shadow
+                              // Shows the largest companies and currencies.
+                              child: Row(
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-                                    child: Text(
-                                      'This agency best exchange rates!',
-                                      style: TextStyle(fontSize: 14),
+                                    padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                                  ),
+                                  if (maxSellRateAgen != null &&
+                                      highestSellRate != null)
+                                    if (maxSellRateAgen == 'SRO')
+                                      Image.network(
+                                        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SPRO.png?alt=media&token=bb3a5e94-dcbd-457e-8134-4ce0bc59e65a',
+                                        width: 130,
+                                        height: 130,
+                                      ),
+                                  if (maxSellRateAgen == 'SRG')
+                                    Image.network(
+                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SRG.png?alt=media&token=db8f7a00-76fd-4f6b-a49b-56b9393f09ac',
+                                      width: 130,
+                                      height: 130,
+                                    ),
+                                  if (maxSellRateAgen == 'VPC')
+                                    Image.network(
+                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_VP.png?alt=media&token=f288196a-5abb-422b-b487-85919a4b25f9',
+                                      width: 130,
+                                      height: 130,
+                                    ),
+                                  if (maxSellRateAgen == 'K79')
+                                    Image.network(
+                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_K79.png?alt=media&token=1c7787bc-dc5b-4e83-8653-830ddcfe5700',
+                                      width: 130,
+                                      height: 130,
+                                    ),
+                                  if (maxSellRateAgen == 'SME')
+                                    Image.network(
+                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_siam.png?alt=media&token=b26dda49-ed85-4140-822c-40e933dd4f22',
+                                      width: 130,
+                                      height: 130,
+                                    ),
+                                  if (maxSellRateAgen == 'VSU')
+                                    Image.network(
+                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_vasu.png?alt=media&token=e6da328d-3b95-4f32-bc00-6346e21e1009',
+                                      width: 130,
+                                      height: 130,
+                                    ),
+                                  if (maxSellRateAgen == 'XNE')
+                                    Image.network(
+                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_xne.png?alt=media&token=15fc6416-5d2f-4e63-9b62-086bd641d006',
+                                      width: 130,
+                                      height: 130,
+                                    ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(10, 20, 0, 0),
+                                          child: Text(
+                                            'This agency best exchange rates!',
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.fromLTRB(10, 5, 0, 0),
+                                          child: Text(
+                                            '1 $_fromCurrency = ${(_exchangeRate ?? 0.0).toStringAsFixed(2)} THB',
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.fromLTRB(10, 10, 0, 0),
-                                    child: Text(
-                                      '1 $_fromCurrency = ${(_exchangeRate ?? 0.0).toStringAsFixed(2)} THB',
-                                      style: TextStyle(fontSize: 14),
+                                    padding: EdgeInsets.fromLTRB(0, 30, 10, 0),
+                                    child: Icon(
+                                      FontAwesomeIcons.bell,
+                                      size: 22,
                                     ),
-                                  ),
+                                  )
                                 ],
-                              ),
-                              if (maxSellRateAgen == 'K79')
-                                Image.network(
-                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_K79.png?alt=media&token=1c7787bc-dc5b-4e83-8653-830ddcfe5700',
-                                  width: 150,
-                                  height: 150,
-                                ),
-                              if (maxSellRateAgen == 'SME')
-                                Image.network(
-                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_siam.png?alt=media&token=b26dda49-ed85-4140-822c-40e933dd4f22',
-                                  width: 150,
-                                  height: 150,
-                                ),
-                              if (maxSellRateAgen == 'VSU')
-                                Image.network(
-                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_vasu.png?alt=media&token=e6da328d-3b95-4f32-bc00-6346e21e1009',
-                                  width: 150,
-                                  height: 150,
-                                ),
-                              if (maxSellRateAgen == 'XNE')
-                                Image.network(
-                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_xne.png?alt=media&token=15fc6416-5d2f-4e63-9b62-086bd641d006',
-                                  width: 150,
-                                  height: 150,
-                                ),
-                            ],
-                          ))),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                  child: SizedBox(
-                    //Box1
-                    height: 50,
-                    width: MediaQuery.of(context).size.width * 1.0,
-                    child: Card(
-                      margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        side: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 1, // Add a border
-                        ),
-                      ),
-                      elevation: 8, // Add a shadow
-
-                      child: InkWell(
-                        onTap: () {
-                          // Do something when the ListTile is tapped
-                        },
-                        // Shows the largest companies and currencies.
-                      ),
+                              ))),
                     ),
-                  ),
-                ),
+                  )
+
+                // Padding(
+                //   padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                //   child: SizedBox(
+                //     //Box1
+                //     height: 50,
+                //     width: MediaQuery.of(context).size.width * 1.0,
+                //     child: Card(
+                //       margin: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                //       shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(25),
+                //         side: BorderSide(
+                //           color: Colors.grey.shade300,
+                //           width: 1, // Add a border
+                //         ),
+                //       ),
+                //       elevation: 8, // Add a shadow
+
+                //       child: InkWell(
+                //         onTap: () {
+                //           // Do something when the ListTile is tapped
+                //         },
+                //         // Shows the largest companies and currencies.
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ])),
         ]));
   }

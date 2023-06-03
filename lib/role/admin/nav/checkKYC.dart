@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:testprojectbc/page/Setting/Theme.dart';
+import 'package:testprojectbc/page/Setting/makePin.dart';
 import 'package:testprojectbc/screen/testBlockchain.dart';
-import '../Setting/makePin.dart';
-import '../otpsuccess.dart';
-import '../Setting/Theme.dart';
 
-class ProfileNav extends StatefulWidget {
+class CheckKYCPage extends StatefulWidget {
   @override
-  _ProfileNav createState() => _ProfileNav();
+  _CheckKYCPage createState() => _CheckKYCPage();
 }
 
-class _ProfileNav extends State<ProfileNav> {
+class _CheckKYCPage extends State<CheckKYCPage> {
   bool _notificationEnabled = true;
   String _username = 'John Doe';
 

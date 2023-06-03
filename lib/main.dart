@@ -1,15 +1,19 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:otp/otp.dart';
 import 'package:provider/provider.dart';
-import 'package:testprojectbc/models/notifyModel.dart';
+import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/page/Navbar/HomeNav.dart';
 import 'package:testprojectbc/page/Navbar/ProfileNav.dart';
 import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
+import 'package:testprojectbc/page/Reservation/detailAgency.dart';
+import 'package:testprojectbc/page/Reservation/detailCur.dart';
+import 'package:testprojectbc/page/Reservation/genQR.dart';
+import 'package:testprojectbc/page/Reservation/reservaServices.dart';
 import 'package:testprojectbc/page/Setting/Theme.dart';
-
 import 'package:testprojectbc/page/Setting/detailNotify.dart';
 import 'package:testprojectbc/page/Setting/notify.dart';
-import 'package:testprojectbc/page/Setting/notifyService.dart';
 import 'package:testprojectbc/page/addPost.dart';
 import 'package:testprojectbc/page/authenticator.dart';
 import 'package:testprojectbc/page/confirm.dart';
@@ -18,17 +22,20 @@ import 'package:testprojectbc/page/curinfo.dart';
 import 'package:testprojectbc/page/currency.dart';
 import 'package:testprojectbc/page/emailFA.dart';
 import 'package:testprojectbc/page/googleFA.dart';
-import 'package:testprojectbc/page/login.dart';
 import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
+import 'package:testprojectbc/page/login.dart';
 import 'package:testprojectbc/page/otpsuccess.dart';
 import 'package:testprojectbc/page/register.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:testprojectbc/page/screenOTP.dart';
 import 'package:testprojectbc/page/smsFA.dart';
-import 'package:testprojectbc/page/Setting/notifyService.dart';
+import 'package:testprojectbc/role/admin/nav/checkKYC.dart';
+import 'package:testprojectbc/role/admin/nav/homeAdmin.dart';
+import 'package:testprojectbc/role/admin/nav/navHelperAdmin.dart';
+import 'package:testprojectbc/role/agency/nav/checkReservation.dart';
+import 'package:testprojectbc/role/agency/nav/homeAgency.dart';
+import 'package:testprojectbc/role/agency/nav/navHelper.dart';
+import 'package:testprojectbc/screen/testBlockchain.dart';
 import 'page/selectCurency.dart';
 import 'page/Setting/makePin.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -36,18 +43,47 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Firebase Messaging Background Handler
-
-  // Firebase Messaging Initialisation
-  await Firebase.initializeApp();
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
+  AwesomeNotifications().initialize(
+    //'resource://drawable/res_notification_app_icon',
+    null,
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic Notifications',
+        defaultColor: Colors.teal,
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+      ),
+      NotificationChannel(
+        channelKey: 'scheduled_channel',
+        channelName: 'Scheduled Notifications',
+        defaultColor: Colors.teal,
+        locked: true,
+        importance: NotificationImportance.High,
+        soundSource: 'resource://raw/res_custom_notification',
+      ),
+    ],
   );
+  WidgetsFlutterBinding.ensureInitialized();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(const MyApp());
+  await Firebase.initializeApp();
+  // Firebase Messaging Background Handler
+  // Firebase Messaging Initialisation
+  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+  //   alert: true,
+  //   badge: true,
+  //   sound: true,
+  // );
+
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider<ReservationData>(
+      create: (context) =>
+          ReservationData(), //id: 0, title: '', description: ''
+    ),
+    ChangeNotifierProvider<NotesServices>(
+      create: (context) => NotesServices(),
+    ),
+  ], child: MyApp()));
 }
 
 class MyApp extends StatefulWidget {
@@ -68,6 +104,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     getCurrentAppTheme();
+    // createReservationPositiveNotification(context);
   }
 
   void getCurrentAppTheme() async {
@@ -102,14 +139,25 @@ class _MyAppState extends State<MyApp> {
               "currinfo-test": (context) => CurTest(),
               "selectCurency-page": (context) => SelectCur(),
               "makePing-page": (context) => CreatePinPage(),
-              "notify-page": (context) => notify(
-                    notification:
-                        NotificationModel(amount: '', fromCurrency: ''),
-                  ),
+              // "notify-page": (context) => notify(
+              //       notification:
+              //           NotificationModel(amount: '', fromCurrency: ''),
+              //     ),
+              "notify-page": (context) => notify(),
               "detailNotify-page": (context) => DetailNotifyPage(),
               "reservaionsNav-page": (context) => ReservationNav(),
-              "HomeNav": (context) => const HomeNav(),
-              "ProfileNav": (context) => ProfileNav()
+              "HomeNav": (context) => HomeNav(),
+              "ProfileNav": (context) => ProfileNav(),
+              "DetailCur": (context) => DetailCur(),
+              "DetailAgency": (context) => DetailAgency(),
+              "QRCode-Page": (context) => QRCodePage(),
+              "testBC-Page": (context) => testBC(),
+              "NavHelper-Page": (context) => NavHleperAgencyPage(),
+              "HomeAgency-Page": (context) => HomeAgencyPage(),
+              "CheckReservation-Page": (context) => CheckReservationPage(),
+              "NavHelperAdmin-Page": (context) => NavHleperAdminPage(),
+              "HomeAdmin-Page": (context) => HomeAdminPage(),
+              "CheckKYC-Page": (context) => CheckKYCPage(),
             },
           );
         },
