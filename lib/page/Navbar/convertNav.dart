@@ -9,7 +9,10 @@ import 'package:testprojectbc/page/Setting/notify.dart';
 import 'package:http/http.dart' as http;
 
 class CalculatorNav extends StatefulWidget {
+  const CalculatorNav({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _CalculatorNavState createState() => _CalculatorNavState();
 }
 
@@ -84,6 +87,7 @@ class _CalculatorNavState extends State<CalculatorNav> {
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Theme.of(context);
     return Scaffold(
         appBar: AppBar(
           title: Text('Currency Converter'),
@@ -112,6 +116,9 @@ class _CalculatorNavState extends State<CalculatorNav> {
         body: ListView(children: [
           Container(
               padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              decoration: BoxDecoration(
+                color: themeData.cardColor,
+              ),
               child: Column(mainAxisSize: MainAxisSize.max, children: [
                 SizedBox(
                     width: 350,
