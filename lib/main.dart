@@ -6,6 +6,7 @@ import 'package:testprojectbc/page/Navbar/HomeNav.dart';
 import 'package:testprojectbc/page/Navbar/ProfileNav.dart';
 import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
 import 'package:testprojectbc/page/Navbar/ChangeEmailScreen.dart';
+import 'package:testprojectbc/page/Navbar/convertNav.dart';
 import 'package:testprojectbc/page/Setting/Theme.dart';
 
 import 'package:testprojectbc/page/Setting/detailNotify.dart';
@@ -24,7 +25,7 @@ import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
 import 'package:testprojectbc/page/otpsuccess.dart';
 import 'package:testprojectbc/page/register.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:testprojectbc/page/screenOTP.dart';
+import 'package:testprojectbc/page/Navbar/ForgotPasswordScreen.dart';
 import 'package:testprojectbc/page/smsFA.dart';
 import 'package:testprojectbc/page/Setting/notifyService.dart';
 import 'page/selectCurency.dart';
@@ -97,7 +98,7 @@ class _MyAppState extends State<MyApp> {
               "/emailfa-page": (context) => EmailFAPage(),
               "googlefa-page": (context) => GooglefaPage(),
               "otpsuccess-page": (context) => OtpSuccessPage(),
-              "addpost-page": (context) => AddpostPage(),
+              "addpost-page": (context) => const AddpostPage(),
               "currency-page1": (context) => CurrencyPage(),
               "currinfo-page2": (context) => CurInfo(),
               "currinfo-test": (context) => CurTest(),
@@ -111,7 +112,9 @@ class _MyAppState extends State<MyApp> {
               "reservaionsNav-page": (context) => ReservationNav(),
               "HomeNav": (context) => const HomeNav(),
               "ProfileNav": (context) => ProfileNav(),
-              "changeEmailNav": (context) => changeEmailNav(),
+              "changeEmailNav": (context) => const changeEmailNav(),
+              "CalculatorNav": (context) => CalculatorNav(),
+              "ForgotPasswordNav": (context) => ForgotPasswordScreen(),
             },
           );
         },

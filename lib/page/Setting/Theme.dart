@@ -18,6 +18,12 @@ class Styles {
           color: textColor,
           fontWeight: FontWeight.bold,
         ),
+        titleMedium: TextStyle(color: textColor),
+        labelLarge: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
       ),
       buttonTheme: ButtonThemeData(
         buttonColor: isDarkTheme ? Colors.blue[700] : Colors.grey[800],
@@ -31,15 +37,21 @@ class Styles {
         backgroundColor: isDarkTheme ? Colors.grey[900] : Colors.grey[100],
         foregroundColor: isDarkTheme ? Colors.white : Colors.black,
       ),
-      colorScheme: ColorScheme.fromSwatch()
-          .copyWith(
-            primary: isDarkTheme ? Colors.grey[800] : Colors.blue[700],
-            secondary: isDarkTheme ? Colors.blue[700] : Colors.grey[800],
-            brightness: isDarkTheme ? Brightness.dark : Brightness.light,
-          )
-          .copyWith(background: isDarkTheme ? Colors.grey[800] : Colors.white)
-          .copyWith(
-              secondary: isDarkTheme ? Colors.blue[700] : Colors.grey[800]),
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: isDarkTheme ? Colors.grey[800] : Colors.blue[700],
+        secondary: isDarkTheme ? Colors.blue[700] : Colors.grey[800],
+        brightness: isDarkTheme ? Brightness.dark : Brightness.light,
+        onPrimary: isDarkTheme ? Colors.white : Colors.black,
+        onSecondary: isDarkTheme ? Colors.black : Colors.white,
+        onBackground: isDarkTheme ? Colors.white : Colors.black,
+        surface: isDarkTheme ? Colors.grey[900]! : Colors.grey[100]!,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        labelStyle: TextStyle(color: textColor),
+        hintStyle: TextStyle(
+          color: textColor.withOpacity(0.5),
+        ),
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ import '../Setting/makePin.dart';
 import '../otpsuccess.dart';
 import '../Setting/Theme.dart';
 import '../Navbar/ChangeEmailScreen.dart';
+import '../Navbar/ForgotPasswordScreen.dart';
 
 class ProfileNav extends StatefulWidget {
   @override
@@ -73,8 +74,10 @@ class _ProfileNav extends State<ProfileNav> {
   }
 
   void _forgotPassword() {
-    // navigate to forgot password page
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
   }
+
   final IconData _iconLight = Icons.wb_sunny;
   final IconData _iconDark = Icons.nights_stay;
   @override
