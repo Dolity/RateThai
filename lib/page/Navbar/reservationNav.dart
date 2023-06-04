@@ -228,7 +228,7 @@ class _ReservationNav extends State<ReservationNav> {
                                     //var apiKey = 'e50a59e299ef0bae5bc03139';
                                     var url =
                                         //'https://v6.exchangerate-api.com/v6/$apiKey/latest/$_fromCurrency';
-                                        'http://192.168.0.104:5100/getagencies/$_fromCurrency';
+                                        'https://back-end-rate-thai.vercel.app/getagencies/$_fromCurrency';
                                     var response =
                                         await http.get(Uri.parse(url));
                                     print('before response');
