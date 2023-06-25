@@ -1,19 +1,27 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:testprojectbc/Service/global/dataGlobal.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/page/Navbar/HomeNav.dart';
 import 'package:testprojectbc/page/Navbar/ProfileNav.dart';
 import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
+import 'package:testprojectbc/page/Reservation/cashCheer.dart';
+import 'package:testprojectbc/page/Reservation/debitCard.dart';
 import 'package:testprojectbc/page/Reservation/detailAgency.dart';
 import 'package:testprojectbc/page/Reservation/detailCur.dart';
 import 'package:testprojectbc/page/Reservation/genQR.dart';
+import 'package:testprojectbc/page/Reservation/qrCode.dart';
 import 'package:testprojectbc/page/Reservation/reservaServices.dart';
 import 'package:testprojectbc/page/Setting/Theme.dart';
 import 'package:testprojectbc/page/Setting/detailNotify.dart';
 import 'package:testprojectbc/page/Setting/notify.dart';
+import 'package:testprojectbc/page/Setting/notifyAwesome.dart';
 import 'package:testprojectbc/page/addPost.dart';
 import 'package:testprojectbc/page/authenticator.dart';
 import 'package:testprojectbc/page/confirm.dart';
@@ -30,19 +38,48 @@ import 'package:testprojectbc/page/smsFA.dart';
 import 'package:testprojectbc/role/admin/nav/checkKYC.dart';
 import 'package:testprojectbc/role/admin/nav/homeAdmin.dart';
 import 'package:testprojectbc/role/admin/nav/navHelperAdmin.dart';
+import 'package:testprojectbc/role/agency/checkReservation/completedPage.dart';
+import 'package:testprojectbc/role/agency/checkReservation/qrCodeScanPage.dart';
+import 'package:testprojectbc/role/agency/checkReservation/upComingPage.dart';
 import 'package:testprojectbc/role/agency/nav/checkReservation.dart';
 import 'package:testprojectbc/role/agency/nav/homeAgency.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
+import 'package:testprojectbc/role/agency/nav/statusReservation.dart';
 import 'package:testprojectbc/screen/testBlockchain.dart';
 import 'page/selectCurency.dart';
 import 'page/Setting/makePin.dart';
 
+double previousPrice = 0.0; // ราคาก่อนหน้า
+double thresholdPercentage = 1.0; // เปอร์เซ็นต์ที่กำหนด
+String keepCur = "";
+String keepRate = "";
+String keepResevaProviRateUpdate = "";
+final user = FirebaseAuth.instance.currentUser!.uid;
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  //print('Handling a background message ${message.messageId}');
   await Firebase.initializeApp();
   print('Handling a background message ${message.messageId}');
+  await AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: message.hashCode,
+      channelKey: "high_importance_channel",
+      title: message.data['title'],
+      body: message.data['body'],
+      bigPicture: message.data['image'],
+      notificationLayout: NotificationLayout.BigPicture,
+      largeIcon: message.data['image'],
+      payload: Map<String, String>.from(message.data),
+      hideLargeIconOnExpand: true,
+    ),
+  );
 }
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   AwesomeNotifications().initialize(
     //'resource://drawable/res_notification_app_icon',
     null,
@@ -62,11 +99,26 @@ Future<void> main() async {
         importance: NotificationImportance.High,
         soundSource: 'resource://raw/res_custom_notification',
       ),
+      NotificationChannel(
+        channelKey: 'high_importance_channel',
+        channelName: 'high_importance_channel',
+        channelDescription: 'High_importance_channel',
+        ledColor: Colors.white,
+        defaultColor: Color.fromARGB(255, 157, 181, 207),
+        enableVibration: true,
+        playSound: true,
+        enableLights: true,
+        importance: NotificationImportance.High,
+      ),
     ],
   );
-  WidgetsFlutterBinding.ensureInitialized();
+
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  await Firebase.initializeApp();
+
+  AwesomeNotifications().actionStream.listen((event) {
+    print(event.payload!);
+  });
+
   // Firebase Messaging Background Handler
   // Firebase Messaging Initialisation
   // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -84,6 +136,9 @@ Future<void> main() async {
       create: (context) => NotesServices(),
     ),
   ], child: MyApp()));
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 }
 
 class MyApp extends StatefulWidget {
@@ -150,7 +205,9 @@ class _MyAppState extends State<MyApp> {
               "ProfileNav": (context) => ProfileNav(),
               "DetailCur": (context) => DetailCur(),
               "DetailAgency": (context) => DetailAgency(),
-              "QRCode-Page": (context) => QRCodePage(),
+              "QRCode-Page": (context) => QRCodePage(
+                    user: '',
+                  ),
               "testBC-Page": (context) => testBC(),
               "NavHelper-Page": (context) => NavHleperAgencyPage(),
               "HomeAgency-Page": (context) => HomeAgencyPage(),
@@ -158,6 +215,13 @@ class _MyAppState extends State<MyApp> {
               "NavHelperAdmin-Page": (context) => NavHleperAdminPage(),
               "HomeAdmin-Page": (context) => HomeAdminPage(),
               "CheckKYC-Page": (context) => CheckKYCPage(),
+              "PayDebitCard-Page": (context) => PayDebitCardPage(),
+              "PayQrCode-Page": (context) => PayQRCodePage(),
+              "PayCashCheer-Page": (context) => PayCashCheerPage(),
+              "BookingStatus-Page": (context) => BookingStatusPage(),
+              "QRScan-Page": (context) => QRScanPage(),
+              "UpComing-Page": (context) => UpComingPage(),
+              "Completed-Page": (context) => CompletedPage(),
             },
           );
         },

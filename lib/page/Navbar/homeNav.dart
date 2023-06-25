@@ -1,9 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:testprojectbc/Service/provider/reservationData.dart';
 
 import '../Setting/Theme.dart';
 import '../login.dart';
+
+import 'package:testprojectbc/page/Setting/notifyAwesome.dart';
 
 class HomeNav extends StatefulWidget {
   const HomeNav({super.key});
@@ -20,6 +25,10 @@ class _HomeNavState extends State<HomeNav> {
   final List<String> _tabs = ['1', '2'];
   int _selectedIndex = 0;
   bool isDarkTheme = false;
+  String keepCur = "";
+  String keepRate = "";
+  String keepResevaProviRateUpdate = "";
+  final user = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {

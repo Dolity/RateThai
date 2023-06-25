@@ -6,11 +6,16 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:testprojectbc/models/qrModel.dart';
 import 'package:testprojectbc/page/Reservation/reservaServices.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 
 class QRCodePage extends StatefulWidget {
+  final String user;
+  QRCodePage({required this.user});
+
   @override
   _QRCodePageState createState() => _QRCodePageState();
 }
@@ -22,6 +27,7 @@ class _QRCodePageState extends State<QRCodePage> {
   String _payReserva = '';
   String _subAgencyReserva = '';
   String _total = '';
+  late final qrCodeDataProvider;
 
   @override
   void initState() {
@@ -47,6 +53,14 @@ class _QRCodePageState extends State<QRCodePage> {
           _subAgencyReserva = data['SubAgencyReserva'] ?? '';
         });
       }
+
+      usersRef.doc(user).update({
+        'Total': '$_total',
+      });
+      print('UID user:  ${user}');
+      // globals.globalUID = user;
+
+      print('UID widget:  ${globals.globalUID}');
     } catch (error) {
       print('Error fetching reservation data: $error');
     }
@@ -62,8 +76,10 @@ class _QRCodePageState extends State<QRCodePage> {
     String amount = context.watch<ReservationData>().resevaAmount.toString();
     _total = ((double.parse(rate)) * (double.tryParse(amount ?? '0.0') ?? 0.0))
         .toStringAsFixed(2);
-
+    final qrCodeDataProvider =
+        Provider.of<ReservationData>(context, listen: false);
     var notesServices = context.watch<NotesServices>();
+
     return notesServices.isLoading
         ? const Center(
             child: CircularProgressIndicator(),
@@ -98,13 +114,15 @@ class _QRCodePageState extends State<QRCodePage> {
                         'SubAgency': _subAgencyReserva,
                         'Pay': _payReserva,
                       };
-
                       final jsonReservationData = jsonEncode(jsonMap);
                       setState(() {
                         _qrCodeData = jsonReservationData;
                       });
+                      final qrCodeData = QRCodeData.fromJson(jsonMap);
+
                       notesServices.addNote(
                           agency, currency, rate, amount, _total, _dateReserva);
+                      qrCodeDataProvider.setQRCodeData(qrCodeData);
 
                       Fluttertoast.showToast(
                         msg: 'Reservation Save On Blockchian Success \u2714',

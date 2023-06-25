@@ -5,12 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/models/notifyModel.dart';
 import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
+import 'package:testprojectbc/page/Reservation/cashCheer.dart';
+import 'package:testprojectbc/page/Reservation/debitCard.dart';
 import 'package:testprojectbc/page/Reservation/genQR.dart';
+import 'package:testprojectbc/page/Reservation/qrCode.dart';
 import 'package:testprojectbc/page/Setting/notify.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 
 class DetailAgency extends StatefulWidget {
   @override
@@ -19,7 +23,7 @@ class DetailAgency extends StatefulWidget {
 
 class _DetailAgencyState extends State<DetailAgency> {
   String? _fromAgency = 'BKK';
-  String? _fromPay = 'Dabit Card';
+  String? _fromPay = 'Visa';
   double? maxSellRate = 0.0;
   String? maxSellRateAgen = '';
   var highestSellRate = 0.0;
@@ -229,7 +233,7 @@ class _DetailAgencyState extends State<DetailAgency> {
     ];
 
     List<String> payMethod = [
-      'Dabit Card',
+      'Visa',
       'QR Code',
       'Cash Cheer',
     ];
@@ -237,6 +241,7 @@ class _DetailAgencyState extends State<DetailAgency> {
     final user = FirebaseAuth.instance.currentUser!.uid;
     final usersRef = FirebaseFirestore.instance.collection('usersPIN');
     final data1 = usersRef.doc(user).get();
+    // context.read<ReservationData>().getUID = user;
 
     // Function to show the AlertDialog
     void showCustomDialog(BuildContext context) {
@@ -277,6 +282,25 @@ class _DetailAgencyState extends State<DetailAgency> {
                           SizedBox(height: 10),
                           InkWell(
                             onTap: () async {
+                              // final DateTime? pickedDate = await showDatePicker(
+                              //   context: context,
+                              //   initialDate: DateTime.now(),
+                              //   firstDate: DateTime.now(),
+                              //   lastDate:
+                              //       DateTime.now().add(Duration(days: 365)),
+                              // );
+
+                              // if (pickedDate != null) {
+                              //   // Update the selected date
+
+                              //   final DateFormat formatter =
+                              //       DateFormat('yyyy-MM-dd HH:mm');
+                              //   selectedDate = formatter.format(pickedDate);
+                              //   setState(() {
+                              //     dateController.text = selectedDate;
+                              //   });
+                              // }
+
                               final DateTime? pickedDate = await showDatePicker(
                                 context: context,
                                 initialDate: DateTime.now(),
@@ -286,13 +310,28 @@ class _DetailAgencyState extends State<DetailAgency> {
                               );
 
                               if (pickedDate != null) {
-                                // Update the selected date
-                                final DateFormat formatter =
-                                    DateFormat('yyyy-MM-dd');
-                                selectedDate = formatter.format(pickedDate);
-                                setState(() {
-                                  dateController.text = selectedDate;
-                                });
+                                final TimeOfDay? pickedTime =
+                                    await showTimePicker(
+                                  context: context,
+                                  initialTime: TimeOfDay.now(),
+                                );
+
+                                if (pickedTime != null) {
+                                  final DateTime selectedDateTime = DateTime(
+                                    pickedDate.year,
+                                    pickedDate.month,
+                                    pickedDate.day,
+                                    pickedTime.hour,
+                                    pickedTime.minute,
+                                  );
+                                  setState(() {
+                                    final DateFormat formatter =
+                                        DateFormat('yyyy-MM-dd HH:mm');
+                                    selectedDate =
+                                        formatter.format(selectedDateTime);
+                                    dateController.text = selectedDate;
+                                  });
+                                }
                               }
                             },
                             child: IgnorePointer(
@@ -356,6 +395,8 @@ class _DetailAgencyState extends State<DetailAgency> {
                       ),
                       TextButton(
                         onPressed: () async {
+                          globals.globalUID = user;
+
                           print('Selected Date: $selectedDate');
                           print('Selected Sub-Agency: $_fromAgency');
                           print('Selected Payment: $_fromPay');
@@ -388,12 +429,33 @@ class _DetailAgencyState extends State<DetailAgency> {
                               );
                             });
                           }
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => QRCodePage()),
-                          );
-                          // Navigator.of(context).pop();
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) => QRCodePage()),
+                          // );
+                          if (_fromPay == 'Visa') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PayDebitCardPage(),
+                              ),
+                            );
+                          } else if (_fromPay == 'QR Code') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PayQRCodePage(),
+                              ),
+                            );
+                          } else if (_fromPay == 'Cash Cheer') {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PayCashCheerPage(),
+                              ),
+                            );
+                          }
                         },
                         child: Text('Done'),
                       ),

@@ -11,14 +11,13 @@ import 'package:convert/convert.dart';
 
 class NotesServices extends ChangeNotifier {
   List<Note> notes = [];
-  final String _rpcUrl =
-      Platform.isAndroid ? 'http://10.0.2.2:7545' : 'HTTP://127.0.0.1:7545';
-  final String _wsUrl =
-      Platform.isAndroid ? 'http://10.0.2.2:7545' : 'ws://127.0.0.1:7545';
+  final String _rpcUrl = 'HTTP://192.168.1.178:7545';
+  final String _wsUrl = 'ws://192.168.1.178:7545';
+  //'http://10.0.2.2:7545'
   bool isLoading = true;
 
   final String _privatekey =
-      '0xd60ed024407d209e8c5a1fe2d4bc9caa32c7af6ff821a332df3ee28b4dc472ee';
+      '0x49ad2885e86e1b38f7dc1eee80e54f17ab826713b8aed9087b0a559b579ebf05';
   late Web3Client _web3cient;
 
   NotesServices() {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:testprojectbc/page/Reservation/genQR.dart';
+import 'package:testprojectbc/page/Setting/getQR.dart';
 import 'package:testprojectbc/screen/testBlockchain.dart';
 import '../Setting/makePin.dart';
 import '../otpsuccess.dart';
@@ -81,6 +83,15 @@ class _ProfileNav extends State<ProfileNav> {
         MaterialPageRoute(builder: (context) => ForgotPasswordScreen()));
   }
 
+  void verifyQR() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => GetQRCodePage(
+                  qrCodeData: '',
+                )));
+  }
+
   final IconData _iconLight = Icons.wb_sunny;
   final IconData _iconDark = Icons.nights_stay;
   @override
@@ -124,6 +135,12 @@ class _ProfileNav extends State<ProfileNav> {
               title: const Text('Change PIN'),
               onTap: () {
                 _editPin();
+              },
+            ),
+            ListTile(
+              title: const Text('Verify QR Code'),
+              onTap: () {
+                verifyQR();
               },
             ),
             ListTile(

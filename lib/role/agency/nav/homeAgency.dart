@@ -24,7 +24,7 @@ class _HomeAgencyPage extends State<HomeAgencyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('สวัสดีคุณ $usernameData'),
+          title: Text('สวัสดีบริษัท $usernameData'),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),

@@ -122,9 +122,9 @@ class _DetailNotifyPageState extends State<DetailNotifyPage> {
                                             ),
                                           );
                                         }).catchError((error) {
-                                          setState(() {
-                                            // _isLoading = false;
-                                          });
+                                          // setState(() {
+                                          //   // _isLoading = false;
+                                          // });
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(

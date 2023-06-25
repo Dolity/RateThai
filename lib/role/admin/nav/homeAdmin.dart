@@ -24,7 +24,7 @@ class _HomeAdminPage extends State<HomeAdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('สวัสดีคุณ $usernameData'),
+          title: Text('สวัสดีผู้ดูแลระบบ $usernameData'),
           actions: [
             IconButton(
               icon: const Icon(Icons.logout),

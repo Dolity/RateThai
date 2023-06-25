@@ -5,6 +5,7 @@ import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
 import 'package:testprojectbc/page/Setting/havePin.dart';
 import 'package:testprojectbc/role/agency/nav/checkReservation.dart';
 import 'package:testprojectbc/role/agency/nav/homeAgency.dart';
+import 'package:testprojectbc/role/agency/nav/statusReservation.dart';
 
 class NavHleperAgencyPage extends StatefulWidget {
   State<StatefulWidget> createState() {
@@ -20,8 +21,8 @@ class _NavHleperAgencyPage extends State<NavHleperAgencyPage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final screens = [
-    const HomeAgencyPage(),
-    CheckReservationPage(),
+    HomeAgencyPage(),
+    BookingStatusPage(),
   ];
   void checkClickReservation() async {
     if (currentIndex == 2) {

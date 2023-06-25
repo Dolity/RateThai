@@ -55,6 +55,7 @@ dependencies:
   awesome_notifications: ^0.0.6+10
   flutter_launcher_icons: ^0.13.1
   font_awesome_flutter: ^10.4.0
+  qr_code_scanner: ^1.0.1
 
   web3dart: ^2.3.5
   web_socket_channel: ^2.2.0

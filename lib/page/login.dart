@@ -386,17 +386,7 @@ class _LoginPage extends State<LoginPage> {
       accessToken: userAuth.accessToken,
     ));
 
-    await saveUser(user);
-
-    // if(user != null){
-    //   String displayName = user.displayName??user.email;
-    //   String email = user.email;
-    //   String id = user.id;
-    //   String photoUrl = user.photoUrl??"";
-    // }
-
     print(user);
-    // print(userAuth);
 
     if (!mounted) return;
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
@@ -404,14 +394,14 @@ class _LoginPage extends State<LoginPage> {
     })); // after success route to home.
   }
 
-  Future<void> saveUser(GoogleSignInAccount account) async {
-    FirebaseFirestore.instance.collection("Users").doc(account.email).set({
-      "email": account.email,
-      "name": account.displayName,
-      "profilepic": account.photoUrl
-    });
-    print("Saved User data");
-  }
+  // Future<void> saveUser(GoogleSignInAccount account) async {
+  //   FirebaseFirestore.instance.collection("Users").doc(account.email).set({
+  //     "email": account.email,
+  //     "name": account.displayName,
+  //     "profilepic": account.photoUrl
+  //   });
+  //   print("Saved User data");
+  // }
 
   Future loginWithFacebook(BuildContext context) async {
     try {

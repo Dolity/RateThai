@@ -33,6 +33,7 @@ class _notify extends State<notify> {
   String keepResevaProviRateUpdate = "";
   final user = FirebaseAuth.instance.currentUser!.uid;
   StreamSubscription<ReceivedAction>? _actionStreamSubscription;
+  bool ckIsReservation = false;
   // void initState() {
   //   super.initState();
   //   NotificationService.initFirebaseMessaging(context);
@@ -132,6 +133,7 @@ class _notify extends State<notify> {
     keepRate = context.watch<ReservationData>().notifyRate.toString();
     keepResevaProviRateUpdate =
         context.watch<ReservationData>().resevaProviRateUpdate.toString();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Notify'),
@@ -156,17 +158,32 @@ class _notify extends State<notify> {
             // final data = snapshot.data?.data() as Map<String, dynamic>?;
             fetchDatagetCurrency();
             final data1 = snapshot.data?[0];
-            final data2 = snapshot.data?[1];
 
-            if (data1?['RateNoti'] == keepRate &&
-                data1?['CurrencyNoti'] == keepCur) {
-              log("Show alert");
-              // NotificationService.showNotification(
-              //   title: 'Rate alert',
-              //   body: '1 $keepCur = $keepResevaProviRateUpdate THB',
-              // );
-              createReservationPositiveNotification(context);
+            // if (data1?['RateNoti'] == keepRate &&
+            //     data1?['CurrencyNoti'] == keepCur) {
+            //   // NotificationService.showNotification(
+            //   //   title: 'Rate alert',
+            //   //   body: '1 $keepCur = $keepResevaProviRateUpdate THB',
+            //   // );
+            //   createReservationPositiveNotification(context);
+            // }
+
+            if (data1?['RateNoti'] != null && data1?['CurrencyNoti'] != null) {
+              // keepCur
+              double previousRate =
+                  double.parse(data1?['RateNoti']); //Rate from User set
+              double currentRate =
+                  double.parse(keepRate); //Rate from agency Scarping
+
+              if (currentRate > previousRate) {
+                // แจ้งเตือนว่าราคาสกุลเงินขึ้น
+                createReservationPositiveNotification(context);
+              } else if (currentRate < previousRate) {
+                // แจ้งเตือนว่าราคาสกุลเงินลง
+                createReservationNegativeNotification(context);
+              }
             }
+
             print('Provider: $keepRate, $keepCur');
 
             if (snapshot.hasError) {
