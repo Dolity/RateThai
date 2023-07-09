@@ -27,6 +27,9 @@ class _QRCodePageState extends State<QRCodePage> {
   String _payReserva = '';
   String _subAgencyReserva = '';
   String _total = '';
+  String _fname = '';
+  String _lname = '';
+  String _gender = '';
   late final qrCodeDataProvider;
 
   @override
@@ -51,6 +54,9 @@ class _QRCodePageState extends State<QRCodePage> {
           _dateReserva = data['DateReserva'] ?? '';
           _payReserva = data['PayReserva'] ?? '';
           _subAgencyReserva = data['SubAgencyReserva'] ?? '';
+          _fname = data['FirstName'] ?? '';
+          _lname = data['LastName'] ?? '';
+          _gender = data['Gender'] ?? '';
         });
       }
 
@@ -104,6 +110,8 @@ class _QRCodePageState extends State<QRCodePage> {
                       print("DataProvider: $agency, $currency, $rate, $amount");
                       print(
                           "getFireStore: $_dateReserva, $_subAgencyReserva, $_payReserva");
+                      print('total Money: $_total');
+                      print('Fname: $_fname, Lname: $_lname, Gender: $_gender');
                       final jsonMap = {
                         'Agency': agency,
                         'Currency': currency,
@@ -119,10 +127,19 @@ class _QRCodePageState extends State<QRCodePage> {
                         _qrCodeData = jsonReservationData;
                       });
                       final qrCodeData = QRCodeData.fromJson(jsonMap);
-
-                      notesServices.addNote(
-                          agency, currency, rate, amount, _total, _dateReserva);
                       qrCodeDataProvider.setQRCodeData(qrCodeData);
+
+                      // เริ่มต้นเก็บค่า QR Code ลงใน Firestore ในฟังก์ชัน build ไม่ใช้ initState
+                      if (jsonMap != null) {
+                        final userPIN = FirebaseAuth.instance.currentUser!.uid;
+                        final usersRef =
+                            FirebaseFirestore.instance.collection('usersPIN');
+                        usersRef.doc(userPIN).update({'QRCode': jsonMap});
+                        print('QR Crate to FS');
+                      }
+
+                      notesServices.addNote(agency, currency, rate, amount,
+                          _total, _dateReserva, _fname, _lname, _gender);
 
                       Fluttertoast.showToast(
                         msg: 'Reservation Save On Blockchian Success \u2714',
@@ -132,7 +149,6 @@ class _QRCodePageState extends State<QRCodePage> {
                         textColor: Colors.white,
                       );
 
-                      print('total Money: $_total');
                       print('object: $_qrCodeData');
                       print('Data on BC: ${notesServices.notes}');
                     },

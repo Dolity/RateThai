@@ -3,21 +3,27 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import 'package:testprojectbc/Service/provider/reservationBlockchian.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/io.dart';
 import 'package:convert/convert.dart';
+import 'package:web_socket_channel/io.dart';
 
 class NotesServices extends ChangeNotifier {
   List<Note> notes = [];
-  final String _rpcUrl = 'HTTP://192.168.1.178:7545';
-  final String _wsUrl = 'ws://192.168.1.178:7545';
+
+  final String _rpcUrl =
+      'https://sepolia.infura.io/v3/868de39ad9c640cc987dd0b7a0174b49';
+  final String _wsUrl =
+      'wss://sepolia.infura.io/ws/v3/868de39ad9c640cc987dd0b7a0174b49';
   //'http://10.0.2.2:7545'
   bool isLoading = true;
-
+  final myAddress = '0x8936539b50667A6Be0ee5bCA2a0F1E9093FD30cf';
   final String _privatekey =
-      '0x49ad2885e86e1b38f7dc1eee80e54f17ab826713b8aed9087b0a559b579ebf05';
+      '0x8c35bda0169b6cb23e770af128aeb0fc3caeefb3301a05fe557e50a26d64f19c'; //0x49ad2885e86e1b38f7dc1eee80e54f17ab826713b8aed9087b0a559b579ebf05
+
   late Web3Client _web3cient;
 
   NotesServices() {
@@ -25,13 +31,10 @@ class NotesServices extends ChangeNotifier {
   }
 
   Future<void> init() async {
+    var httpClient = Client();
     _web3cient = Web3Client(
-      _rpcUrl,
-      http.Client(),
-      socketConnector: () {
-        return IOWebSocketChannel.connect(_wsUrl).cast<String>();
-      },
-    );
+        "https://sepolia.infura.io/v3/868de39ad9c640cc987dd0b7a0174b49",
+        httpClient);
     await getABI();
     await getCredentials();
     await getDeployedContract();
@@ -39,14 +42,17 @@ class NotesServices extends ChangeNotifier {
 
   late ContractAbi _abiCode;
   late EthereumAddress _contractAddress;
+
   Future<void> getABI() async {
     String abiFile =
         await rootBundle.loadString('build/contracts/NotesContract.json');
-    var jsonABI = jsonDecode(abiFile);
-    _abiCode =
-        ContractAbi.fromJson(jsonEncode(jsonABI['abi']), 'NotesContract');
-    _contractAddress =
-        EthereumAddress.fromHex(jsonABI["networks"]["5777"]["address"]);
+    String contractAddress =
+        "0x1e2D7e1706fC7630bD5E583FFF6DA78E023Fc235"; //Smart Contract Address (Deployed) 0x778F9c5d9191e02f7E83C05140dF8449cD1d3C12
+    // 0x1C846b0F77EB9829E82C95837e2e99839044e935 /0x00ae7cf4B689d673BA6de4122941C51A699857E4 /0x149a448eE173b2edea94DF578d9bd1759800254c
+    // 0x1e2D7e1706fC7630bD5E583FFF6DA78E023Fc235
+    _abiCode = ContractAbi.fromJson(abiFile, "NotesContract");
+    _contractAddress = EthereumAddress.fromHex(contractAddress);
+
     print('Decode ABI: $_contractAddress');
   }
 
@@ -75,38 +81,6 @@ class NotesServices extends ChangeNotifier {
     await fetchNotes();
   }
 
-  // Future<void> fetchNotes() async {
-  //   List totalTaskList = await _web3cient.call(
-  //     contract: _deployedContract,
-  //     function: _noteCount,
-  //     params: [],
-  //   );
-
-  //   int totalTaskLen = totalTaskList[0].toInt();
-  //   notes.clear();
-  //   for (var i = 0; i < totalTaskLen; i++) {
-  //     var temp = await _web3cient.call(
-  //         contract: _deployedContract,
-  //         function: _notes,
-  //         params: [BigInt.from(i)]);
-  //     if (temp[1] != "") {
-  //       notes.add(
-  //         Note(
-  //             id: (temp[0] as BigInt).toInt(),
-  //             title: temp[1],
-  //             description: temp[2],
-  //             currencyBC: temp[3],
-  //             rateBC: temp[4],
-  //             amountBC: temp[5],
-  //             dateBC: temp[6]),
-  //       );
-  //     }
-  //   }
-  //   isLoading = false;
-
-  //   notifyListeners();
-  // }
-
   Future<void> fetchNotes() async {
     List totalTaskList = await _web3cient.call(
       contract: _deployedContract,
@@ -125,13 +99,24 @@ class NotesServices extends ChangeNotifier {
         if (temp.isNotEmpty && temp[1] != "") {
           notes.add(
             Note(
-                id: (temp[0] as BigInt).toInt(),
-                agencyBC: temp[1],
-                currencyBC: temp[2],
-                rateBC: temp[3],
-                amountBC: temp[4],
-                totalBC: temp[5],
-                dateBC: temp[6]),
+              id: (temp[0] as BigInt).toInt(),
+              agencyBC: temp[1],
+              currencyBC: temp[2],
+              rateBC: temp[3],
+              amountBC: temp[4],
+              totalBC: temp[5],
+              dateBC: temp[6],
+              firstnameBC: temp[7],
+              lastnameBC: temp[8],
+              genderBC: temp[9],
+            ),
+
+            // agencyBC: temp[1],
+            // currencyBC: temp[2],
+            // rateBC: temp[3],
+            // amountBC: temp[4],
+            // totalBC: temp[5],
+            // dateBC: temp[6]),
           );
         }
         print("temp: $temp");
@@ -142,54 +127,42 @@ class NotesServices extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addNote(String agencyBC, String currencyBC, String rateBC,
-      String amountBC, String totalBC, String dateBC) async {
-    BigInt cId = await _web3cient.getChainId();
+  Future<void> addNote(
+      String agencyBC,
+      String currencyBC,
+      String rateBC,
+      String amountBC,
+      String totalBC,
+      String dateBC,
+      String firstnameBC,
+      String lastnameBC,
+      String genderBC) async {
+    // BigInt cId = await _web3cient.getChainId();
     await _web3cient.sendTransaction(
       _creds,
       Transaction.callContract(
         contract: _deployedContract,
         function: _createNote,
-        parameters: [agencyBC, currencyBC, rateBC, amountBC, totalBC, dateBC],
+        parameters: [
+          agencyBC,
+          currencyBC,
+          rateBC,
+          amountBC,
+          totalBC,
+          dateBC,
+          firstnameBC,
+          lastnameBC,
+          genderBC
+        ],
       ),
-      chainId: cId.toInt(),
+      chainId: 11155111,
     );
     isLoading = true;
     fetchNotes();
   }
 
-  // Future<void> addNote(String title, String description, String currencyBC,
-  //     String rateBC, String amountBC, String dateBC) async {
-  //   final jsonMap = {
-  //     'title': title,
-  //     'description': description,
-  //     'currency': currencyBC,
-  //     'rate': rateBC,
-  //     'amount': amountBC,
-  //     'date': dateBC,
-  //   };
-  //   final json = jsonEncode(jsonMap);
-
-  //   final jsonBytes = utf8.encode(json);
-  //   final hexData = hex.encode(jsonBytes);
-
-  //   BigInt cId = await _web3cient.getChainId();
-  //   await _web3cient.sendTransaction(
-  //     _creds,
-  //     Transaction.callContract(
-  //       contract: _deployedContract,
-  //       function: _createNote,
-  //       parameters: [hexData],
-  //     ),
-  //     chainId: cId.toInt(),
-  //   );
-
-  //   isLoading = true;
-  //   fetchNotes();
-  // }
-
   Future<void> deleteNote(int id) async {
-    BigInt cId = await _web3cient.getChainId();
+    // BigInt cId = await _web3cient.getChainId();
     await _web3cient.sendTransaction(
       _creds,
       Transaction.callContract(
@@ -197,29 +170,10 @@ class NotesServices extends ChangeNotifier {
         function: _deleteNote,
         parameters: [BigInt.from(id)],
       ),
-      chainId: cId.toInt(),
+      chainId: 11155111,
     );
     isLoading = true;
     notifyListeners();
     fetchNotes();
   }
-
-  // Future<void> addToBlockchain(String json) async {
-  //   final jsonBytes = utf8.encode(json);
-  //   final hexData = hex.encode(jsonBytes);
-
-  //   BigInt cId = await _web3cient.getChainId();
-  //   await _web3cient.sendTransaction(
-  //     _creds,
-  //     Transaction.callContract(
-  //       contract: _deployedContract,
-  //       function: _createNote,
-  //       parameters: [hexData],
-  //     ),
-  //     chainId: cId.toInt(),
-  //   );
-
-  //   isLoading = true;
-  //   fetchNotes();
-  // }
 }

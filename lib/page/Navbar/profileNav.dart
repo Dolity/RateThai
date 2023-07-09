@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:testprojectbc/page/Reservation/genQR.dart';
+import 'package:testprojectbc/page/Reservation/getBalance.dart';
 import 'package:testprojectbc/page/Setting/getQR.dart';
+import 'package:testprojectbc/page/Setting/verifyKYC.dart';
 import 'package:testprojectbc/screen/testBlockchain.dart';
 import '../Setting/makePin.dart';
 import '../otpsuccess.dart';
@@ -92,6 +94,16 @@ class _ProfileNav extends State<ProfileNav> {
                 )));
   }
 
+  void checkGetBalance() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => GetBalancePage()));
+  }
+
+  void checkVerification() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => VerificationPage()));
+  }
+
   final IconData _iconLight = Icons.wb_sunny;
   final IconData _iconDark = Icons.nights_stay;
   @override
@@ -159,6 +171,18 @@ class _ProfileNav extends State<ProfileNav> {
               title: const Text('Change Email'),
               onTap: () {
                 changeEmail();
+              },
+            ),
+            ListTile(
+              title: const Text('Check Blockchain'),
+              onTap: () {
+                checkGetBalance();
+              },
+            ),
+            ListTile(
+              title: const Text('Verification'),
+              onTap: () {
+                checkVerification();
               },
             ),
           ],

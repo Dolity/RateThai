@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
+import 'package:testprojectbc/Service/singleton/userUID.dart';
 
 class QRScanPage extends StatefulWidget {
   @override
@@ -14,6 +15,11 @@ class _QRScanPageState extends State<QRScanPage> {
   late QRViewController _qrViewController;
   List qrCodeData = [];
   bool isShowingDialog = false;
+  bool isDropMoney = false;
+  bool? checkStatus;
+  bool? keepStatus;
+  String? _UID;
+  bool? dropOffStatus;
 
   @override
   void dispose() {
@@ -22,9 +28,17 @@ class _QRScanPageState extends State<QRScanPage> {
   }
 
   void _onQRViewCreated(QRViewController controller) async {
-    final user = globals.globalUID;
+    print('User Null But Found UID ON FS');
+    final usersRefGet = FirebaseFirestore.instance.collection('keepUID');
+    final snapshotGet = await usersRefGet.doc("pin").get();
+    if (snapshotGet.exists) {
+      setState(() {
+        _UID = snapshotGet.get('uid');
+      });
+    }
+    print('Click UID: $_UID');
     final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-    final snapshot = await usersRef.doc(user).get();
+    final snapshot = await usersRef.doc(_UID).get();
     setState(() {
       _qrViewController = controller;
     });
@@ -50,7 +64,7 @@ class _QRScanPageState extends State<QRScanPage> {
           builder: (context) {
             isShowingDialog = true;
             return FutureBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-              future: usersRef.doc(user).get(),
+              future: usersRef.doc(_UID).get(),
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
                       snapshot) {
@@ -59,56 +73,96 @@ class _QRScanPageState extends State<QRScanPage> {
                     final firestoreData = snapshot.data!.data();
                     final qrCodeDataIndex = qrCodeData.join(',');
                     print('QR Code Data[index]: $qrCodeData');
+                    print('QR Code Data[8]: ${qrCodeData[8]}');
+                    print('QR Code Data[9]: ${qrCodeData[9]}');
                     // เปรียบเทียบข้อมูลใน qrCodeData กับ firestoreData
-                    if (qrCodeData[9] == firestoreData!['Total'] &&
-                        qrCodeData[14] == firestoreData['SubAgencyReserva']) {
-                      // qrCodeData[1] == firestoreData!['DateReserva'] &&
-                      // qrCodeData[16] == firestoreData!['PayReserva'] {
+                    // if (qrCodeData[9] == firestoreData!['Total'] &&
+                    //     qrCodeData[11] == firestoreData['SubAgencyReserva']) {
 
-                      return AlertDialog(
-                        title: Text('QR Code Scanned'),
-                        content: Column(children: [
-                          Text('ข้อมูลถูกต้องกรุณารอรเงิน'),
-                          // Text('Total in FS: ${firestoreData!['Total']}'),
-                          // Text(
-                          //     'SubAgency in FS: ${firestoreData!['SubAgencyReserva']}'),
-                          // Text(
-                          //     '///////////////////////////////////////////////////////////'),
-                          // Text(
-                          //   'QR Code Data[9]:${qrCodeData[9]}',
-                          //   style: TextStyle(fontSize: 20),
-                          // ),
-                          // Text(
-                          //   'QR Code Data[14]:${qrCodeData[14]}',
-                          //   style: TextStyle(fontSize: 20),
-                          // ),
-                          // Text(
-                          //     '///////////////////////////////////////////////////////////'),
-                          // Text(
-                          //   'QR Code Data Not IDX: ${qrCodeData}',
-                          //   style: TextStyle(fontSize: 16),
-                          // ),
-                          // Text(
-                          //   'QR Code Data IDX: ${qrCodeDataIndex}',
-                          //   style: TextStyle(fontSize: 16),
-                          // ),
-                          // Text(
-                          //   'QR Code Data:[14]: ${qrCodeData[14]}',
-                          //   style: TextStyle(fontSize: 16),
-                          // ),
-                        ]),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context); // ปิด AlertDialog
-                              isShowingDialog =
-                                  false; // กำหนดให้ตัวแปร isShowingDialog เป็น false เพื่อบอกว่า showDialog ปิดแล้ว
-                              Navigator.pop(context); // Pop หน้าปัจจุบัน
-                            },
-                            child: Text('OK'),
+                    for (var i = 0; i < qrCodeData.length; i++) {
+                      if (qrCodeData[i] == firestoreData!['Total']) {
+                        dropOffStatus = true;
+                        // qrCodeData[1] == firestoreData!['DateReserva'] &&
+                        // qrCodeData[16] == firestoreData!['PayReserva'] {
+
+                        return Dialog(
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(16), // ปรับขนาดของขอบมน
                           ),
-                        ],
-                      );
+                          child: Container(
+                            padding: EdgeInsets.all(16),
+                            width: 320, // กำหนดความกว้างของ Card
+                            // height: 300,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Text('QR Code Scanned'),
+                                // SizedBox(height: 16),
+                                Text('Total in FS: ${firestoreData!['Total']}'),
+                                Text(
+                                    'SubAgency in FS: ${firestoreData['SubAgencyReserva']}'),
+                                Text(
+                                  'QR Code Data[9]: ${qrCodeData[9]}',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Text(
+                                  'QR Code Data[14]: ${qrCodeData[14]}',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                SizedBox(height: 20),
+                                Center(
+                                  child: Text(
+                                    'ข้อมูลถูกต้องกรุณารอรับเงิน',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 22,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        // บันทึกข้อมูลลง Firestore หรือทำอย่างอื่นตามที่คุณต้องการ
+                                        // usersRef.doc(_UID).update({
+                                        //   'DropOffStatus': dropOffStatus,
+                                        // });
+
+                                        Navigator.pop(context); // ปิด Dialog
+                                        isShowingDialog =
+                                            false; // กำหนดให้ตัวแปร isShowingDialog เป็น false เพื่อบอกว่า showDialog ปิดแล้ว
+                                        Navigator.pop(
+                                            context); // Pop หน้าปัจจุบัน
+                                      },
+                                      child: Text('ยอมรับ'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        // ทำอย่างอื่นตามที่คุณต้องการเมื่อบริษัทปฏิเสธการรับเงิน
+                                        dropOffStatus = false;
+                                        usersRef.doc(_UID).update({
+                                          'DropOffStatus': dropOffStatus,
+                                        });
+
+                                        Navigator.pop(context); // ปิด Dialog
+                                        isShowingDialog =
+                                            false; // กำหนดให้ตัวแปร isShowingDialog เป็น false เพื่อบอกว่า showDialog ปิดแล้ว
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('ปฏิเสธ'),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }
                     }
                   }
 
@@ -154,7 +208,8 @@ class _QRScanPageState extends State<QRScanPage> {
     final decodedData = jsonDecode(qrData);
 
     // ดึงข้อมูลจาก Firestore ที่เกี่ยวข้องกับผู้ใช้
-    final user = globals.globalUID;
+    // final user = globals.globalUID;
+    String? user = UserSingleton().uid;
     final usersRef = FirebaseFirestore.instance.collection('usersPIN');
     final snapshot = await usersRef.doc(user).get();
 

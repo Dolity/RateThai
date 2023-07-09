@@ -30,6 +30,8 @@ class _DetailAgencyState extends State<DetailAgency> {
 
   bool showPadding = false;
   bool isExpanded = false;
+  bool checkStatus = false;
+  bool keepStatus = false;
 
   //String calRate = ((resevaRateMoney ?? 0.0) * (double.tryParse(_textEditingController?.text?.toString() ?? '0.0') ?? 0.0)).toStringAsFixed(2);
 
@@ -249,6 +251,7 @@ class _DetailAgencyState extends State<DetailAgency> {
         context: context,
         builder: (BuildContext context) {
           // Variables to store the selected values
+          String selectedDatePre = '';
           String selectedDate = '';
 
           return Dialog(
@@ -327,9 +330,10 @@ class _DetailAgencyState extends State<DetailAgency> {
                                   setState(() {
                                     final DateFormat formatter =
                                         DateFormat('yyyy-MM-dd HH:mm');
-                                    selectedDate =
+                                    selectedDatePre =
                                         formatter.format(selectedDateTime);
-                                    dateController.text = selectedDate;
+                                    dateController.text = selectedDatePre;
+                                    selectedDate = selectedDatePre;
                                   });
                                 }
                               }
@@ -397,6 +401,11 @@ class _DetailAgencyState extends State<DetailAgency> {
                         onPressed: () async {
                           globals.globalUID = user;
 
+                          final usersRefUpdate =
+                              FirebaseFirestore.instance.collection('keepUID');
+                          await usersRefUpdate.doc("pin").update({'uid': user});
+                          print('UID on Pin Saved');
+
                           print('Selected Date: $selectedDate');
                           print('Selected Sub-Agency: $_fromAgency');
                           print('Selected Payment: $_fromPay');
@@ -411,6 +420,8 @@ class _DetailAgencyState extends State<DetailAgency> {
                               'DateReserva': '$selectedDate',
                               'SubAgencyReserva': '$_fromAgency',
                               'PayReserva': '$_fromPay',
+                              'ReservationStatus': checkStatus,
+                              'ConditionCheckAgency': keepStatus,
                             }).then((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(

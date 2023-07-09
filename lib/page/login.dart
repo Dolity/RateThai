@@ -174,109 +174,123 @@ class _LoginPage extends State<LoginPage> {
                             onPressed: () async {
                               if (formKey.currentState!.validate()) {
                                 formKey.currentState?.save();
-                                // displayName = profile.email!;
                                 print(
                                     "email = ${profile.email}, password = ${profile.password}");
                                 try {
-                                  await FirebaseAuth.instance
+                                  final authResult = await FirebaseAuth.instance
                                       .signInWithEmailAndPassword(
-                                          email: profile.email!,
-                                          password: profile.password!)
-                                      .then((value) {
-                                    formKey.currentState!.reset();
-                                    if (!mounted) return;
-                                    final user =
-                                        FirebaseAuth.instance.currentUser!.uid;
-                                    // Navigator.pushReplacement(context,S
-                                    //     MaterialPageRoute(builder: (context) {
-                                    //   return LoginSuccessPage();
-                                    // }));
+                                    email: profile.email!,
+                                    password: profile.password!,
+                                  );
+                                  final user = authResult.user;
+                                  formKey.currentState!.reset();
+                                  if (user != null) {
+                                    print('user have data');
+                                    final userDoc =
+                                        await usersRef.doc(user.uid).get();
 
-                                    usersRef.doc(user).get().then(
-                                        (DocumentSnapshot documentSnapshot) {
-                                      if (documentSnapshot.exists) {
-                                        final data = documentSnapshot.data() as Map<
-                                            String,
-                                            dynamic>?; // แปลงเป็น Map<String, dynamic>
-                                        if (data != null &&
-                                            data.containsKey('role')) {
-                                          String role = data['role'];
-                                          switch (role) {
-                                            case "user":
-                                              // สำหรับผู้ใช้ทั่วไป
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                                  return LoginSuccessPage();
-                                                }),
-                                              );
-                                              break;
-                                            case "agency":
-                                              // สำหรับบริษัท
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                                  return NavHleperAgencyPage();
-                                                }),
-                                              );
-                                              break;
-                                            case "admin":
-                                              // สำหรับแอดมิน
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                                  return NavHleperAdminPage();
-                                                }),
-                                              );
-                                              break;
-                                            default:
-                                              // กรณีบทบาทไม่ตรงกับที่กำหนด
-                                              Fluttertoast.showToast(
-                                                  msg: "Error Can't Authorize!",
-                                                  gravity: ToastGravity.CENTER);
-                                              print("Error Can't Authorize!");
-                                              break;
-                                          }
+                                    Map<String, dynamic> userData = {
+                                      'displayName': user.email,
+                                      // เพิ่มข้อมูลอื่นๆ ที่คุณต้องการเก็บได้ตามต้องการ
+                                    };
+                                    await FirebaseFirestore.instance
+                                        .collection('usersPIN')
+                                        .doc(user.uid)
+                                        .set(userData, SetOptions(merge: true));
+
+                                    if (userDoc.exists) {
+                                      print('userDoc have exists');
+                                      final data = userDoc.data()
+                                          as Map<String, dynamic>?;
+
+                                      if (data != null &&
+                                          data.containsKey('role')) {
+                                        print('condition[role]');
+                                        String role = data['role'];
+                                        switch (role) {
+                                          case "user":
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      GooglefaPage()),
+                                            );
+                                            break;
+                                          case "agency":
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NavHleperAgencyPage()),
+                                            );
+                                            break;
+                                          case "admin":
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      NavHleperAdminPage()),
+                                            );
+                                            break;
+                                          default:
+                                            Fluttertoast.showToast(
+                                              msg: "Error Can't Authorize!",
+                                              gravity: ToastGravity.CENTER,
+                                            );
+                                            print("Error Can't Authorize!");
+                                            break;
                                         }
+                                      } else {
+                                        print('conditionCrateROLE');
+                                        await usersRef.doc(user.uid).update({
+                                          'role': "user",
+                                          'UID': user.uid,
+                                          'displayName': user.displayName,
+                                        });
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'Save to Status on Firestore Success! (Update)'),
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  GooglefaPage()),
+                                        );
                                       }
-                                    });
-
-                                    // usersRef.doc(user).get().then(
-                                    //     (DocumentSnapshot documentSnapshot) {
-                                    //   if (documentSnapshot.exists) {
-                                    //     final data = documentSnapshot.data() as Map<
-                                    //         String,
-                                    //         dynamic>?; // แปลงเป็น Map<String, dynamic>
-                                    //     if (data != null &&
-                                    //         data.containsKey('role')) {
-                                    //       String role = data['role'];
-                                    //       if (role == "user") {
-                                    //         // สำหรับผู้ใช้ทั่วไป
-                                    //         Navigator.pushReplacement(
-                                    //           context,
-                                    //           MaterialPageRoute(
-                                    //               builder: (context) {
-                                    //             return LoginSuccessPage();
-                                    //           }),
-                                    //         );
-                                    //       } else {
-                                    //         // กรณีบทบาทไม่ตรงกับที่กำหนด
-                                    //         Fluttertoast.showToast(
-                                    //           msg: "Error: Can't authorize!",
-                                    //           gravity: ToastGravity.CENTER,
-                                    //         );
-                                    //       }
-                                    //     }
-                                    //   }
-                                    // });
-                                  });
+                                    } else {
+                                      print(
+                                          'conditionCrateROLE userDoc.exists');
+                                      await usersRef.doc(user.uid).set({
+                                        'role': "user",
+                                        'UID': user.uid,
+                                        'displayName': user.displayName,
+                                      });
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Save to Status on Firestore Success! (Update)'),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                GooglefaPage()),
+                                      );
+                                    }
+                                  }
                                 } on FirebaseAuthException catch (e) {
                                   Fluttertoast.showToast(
-                                      msg: e.message!,
-                                      gravity: ToastGravity.CENTER);
+                                    msg: e.message!,
+                                    gravity: ToastGravity.CENTER,
+                                  );
                                 }
                               }
                             },
@@ -380,7 +394,7 @@ class _LoginPage extends State<LoginPage> {
     GoogleSignInAccount? user = await _googleSignIn.signIn();
     GoogleSignInAuthentication userAuth = await user!.authentication;
 
-    await FirebaseAuth.instance
+    final authResult = await FirebaseAuth.instance
         .signInWithCredential(GoogleAuthProvider.credential(
       idToken: userAuth.idToken,
       accessToken: userAuth.accessToken,
@@ -388,9 +402,19 @@ class _LoginPage extends State<LoginPage> {
 
     print(user);
 
+    final userDoc = authResult.user;
+    Map<String, dynamic> userData = {
+      'displayName': user.displayName,
+      // เพิ่มข้อมูลอื่นๆ ที่คุณต้องการเก็บได้ตามต้องการ
+    };
+    await FirebaseFirestore.instance
+        .collection('usersPIN')
+        .doc(userDoc!.uid)
+        .set(userData, SetOptions(merge: true));
+
     if (!mounted) return;
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return (LoginSuccessPage());
+      return (GooglefaPage());
     })); // after success route to home.
   }
 
@@ -411,6 +435,24 @@ class _LoginPage extends State<LoginPage> {
       await _auth.signInWithCredential(facebookAuthCredential);
 
       print(loginResult);
+
+      // Get the currently logged in user
+      User? user = _auth.currentUser;
+
+      if (user != null) {
+        Map<String, dynamic> userData = {
+          'displayName': user.displayName,
+          // เพิ่มข้อมูลอื่นๆ ที่คุณต้องการเก็บได้ตามต้องการ
+        };
+
+        await FirebaseFirestore.instance
+            .collection('usersPIN')
+            .doc(user.uid)
+            .set(
+              userData,
+              SetOptions(merge: true),
+            );
+      }
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message!, gravity: ToastGravity.CENTER
           // backgroundColor: Colors.blueGrey);
@@ -419,7 +461,7 @@ class _LoginPage extends State<LoginPage> {
 
     if (!mounted) return;
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-      return LoginSuccessPage();
+      return GooglefaPage();
     }));
   }
 }

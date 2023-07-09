@@ -1,56 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/Service/singleton/userUID.dart';
 
-class UpComingPage extends StatefulWidget {
+class UpComingAdminPage extends StatefulWidget {
   @override
-  _UpComingPageState createState() => _UpComingPageState();
+  _UpComingAdminPageState createState() => _UpComingAdminPageState();
 }
 
-class _UpComingPageState extends State<UpComingPage> {
-  String? _Cur;
-  String? _Total;
-  String? _Type;
-  String? _Rate;
-  String? _DateReservation;
-  String? _SubAgency;
-  bool? checkStatus;
-  bool? keepStatus;
-  String qrCodeData = '';
+class _UpComingAdminPageState extends State<UpComingAdminPage> {
   String? _UID;
-  bool? dropOffStatus;
+  String? Fname;
+  String? Lname;
+  String? Gender;
+  String? dayBirth;
+  String? monthBirth;
+  String? yearBirth;
+  String? idCard;
+  String? phoneNumber;
+  bool? checkStatusAdmin;
+  bool? keepStatusAdmin;
+  bool? isVerify = false;
 
   // Future<void> fetchData() async {
-  //   String? user = UserSingleton().uid;
-  //   print('UserSingleton: $user');
-
-  //   // บันทึกข้อมูลใน Firestore หาก user ไม่เป็น null
-  //   //if (user != null) {
-  //   // final usersRefUpdate = FirebaseFirestore.instance.collection('keepUID');
-  //   // await usersRefUpdate.doc("pin").update({'uid': user});
-  //   // print('UID Saved');
-
-  //   // ดึงข้อมูลจาก Firestore ตามปกติ
-  //   // final usersRef2 = FirebaseFirestore.instance.collection('usersPIN');
-  //   // final snapshot = await usersRef2.doc(user).get();
-
-  //   // if (snapshot.exists) {
-  //   //   setState(() {
-  //   //     // _Fname = snapshot.get('FirstName');
-  //   //     // _Lname = snapshot.get('LastName');
-  //   //     // _Gender = snapshot.get('Gender');
-  //   //     _Total = snapshot.get('Total');
-  //   //     _DateReservation = snapshot.get('DateReserva');
-  //   //     _Type = snapshot.get('PayReserva');
-  //   //     _SubAgency = snapshot.get('SubAgencyReserva');
-  //   //     checkStatus = snapshot.get('ReservationStatus');
-  //   //     keepStatus = snapshot.get('ConditionCheckAgency');
-  //   //     // _UID = snapshot.get('UID');
-  //   //   });
-  //   // }
-  //   //} else {
-  //   print('User Null But Found UID ON FS');
   //   final usersRefGet = FirebaseFirestore.instance.collection('keepUID');
   //   final snapshotGet = await usersRefGet.doc("pin").get();
   //   if (snapshotGet.exists) {
@@ -58,27 +29,24 @@ class _UpComingPageState extends State<UpComingPage> {
   //       _UID = snapshotGet.get('uid');
   //     });
   //   }
-  //   print('Click UID: $_UID');
 
-  //   // ดึงข้อมูลจาก Firestore ด้วย _UID ที่ได้จาก Firestore ก่อนหน้า
   //   final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-  //   final snapshot = await usersRef.doc(_UID).get();
+  //   final snapshot = await usersRef.doc(_UID!).get();
 
-  //   print('snapshotUpdate: $usersRef');
   //   if (snapshot.exists) {
   //     setState(() {
-  //       // _Fname = snapshot.get('FirstName');
-  //       // _Lname = snapshot.get('LastName');
-  //       // _Gender = snapshot.get('Gender');
-  //       _Total = snapshot.get('Total');
-  //       _DateReservation = snapshot.get('DateReserva');
-  //       _Type = snapshot.get('PayReserva');
-  //       _SubAgency = snapshot.get('SubAgencyReserva');
-  //       checkStatus = snapshot.get('ReservationStatus');
-  //       keepStatus = snapshot.get('ConditionCheckAgency');
+  //       Fname = snapshot.get('FirstName');
+  //       Lname = snapshot.get('LastName');
+  //       Gender = snapshot.get('Gender');
+  //       dayBirth = snapshot.get('DayofBirth');
+  //       monthBirth = snapshot.get('MonthofBirth');
+  //       yearBirth = snapshot.get('YearofBirth');
+  //       idCard = snapshot.get('IDCardNumber');
+  //       phoneNumber = snapshot.get('PhoneNumber');
+  //       checkStatusAdmin = snapshot.get('ReservationStatusAdmin');
+  //       keepStatusAdmin = snapshot.get('ConditionCheckAdmin');
   //     });
   //   }
-  //   // }
   // }
 
   @override
@@ -93,18 +61,17 @@ class _UpComingPageState extends State<UpComingPage> {
 
     if (snapshot.exists) {
       setState(() {
-        checkStatus = true;
-        keepStatus = true;
-        dropOffStatus = true;
-        // isVerify = true;
+        checkStatusAdmin = true;
+        keepStatusAdmin = true;
+        isVerify = true;
       });
 
       if (snapshot.data()!['DateReserva'] != null ||
           snapshot.data()!['DateReserva'] == null) {
         usersRef.doc(uid).update({
-          'ReservationStatus': checkStatus,
-          'ConditionCheckAgency': keepStatus,
-          'DropOffStatus': dropOffStatus,
+          'ReservationStatusAdmin': checkStatusAdmin,
+          'ConditionCheckAdmin': keepStatusAdmin,
+          'isVerify': isVerify,
         }).then((_) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -150,8 +117,8 @@ class _UpComingPageState extends State<UpComingPage> {
             itemBuilder: (context, index) {
               final userData = users[index].data() as Map<String, dynamic>;
               final bool isAdminStatusFalse =
-                  userData['ConditionCheckAgency'] == false &&
-                      userData['ReservationStatus'] == false;
+                  userData['ConditionCheckAdmin'] == false &&
+                      userData['ReservationStatusAdmin'] == false;
               if (isAdminStatusFalse) {
                 return Card(
                   shape: RoundedRectangleBorder(
@@ -163,8 +130,8 @@ class _UpComingPageState extends State<UpComingPage> {
                         context: context,
                         builder: (context) => AlertDialog(
                           title: Text('ยืนยันการจอง'),
-                          content: Text(
-                              'คุณต้องการยืนยันการจองสกุลเงินนี้ใช่หรือไม่?'),
+                          content:
+                              Text('คุณต้องการยืนยันตัวตนบุคคลนี้ใช่หรือไม่?'),
                           actions: [
                             TextButton(
                               onPressed: () async {
@@ -184,10 +151,14 @@ class _UpComingPageState extends State<UpComingPage> {
                       );
                     },
                     child: ListTile(
+                      // leading: checkStatusAdmin!
+                      //     ? Icon(Icons.check_circle)
+                      // : Icon(Icons.notification_important),
                       leading: Icon(Icons.notification_important),
-                      title: Text('${userData['Total']} THB'),
+                      title: Text(
+                          '${userData['FirstName']} ${userData['LastName']} (${userData['Gender']})'),
                       subtitle: Text(
-                          '${userData['DateReserva']}, ${userData['SubAgencyReserva']}, ${userData['PayReserva']}'),
+                          '${userData['DayofBirth']}:${userData['MonthofBirth']}:${userData['YearofBirth']}, ${userData['IDCardNumber']}, ${userData['PhoneNumber']}'),
                     ),
                   ),
                 );

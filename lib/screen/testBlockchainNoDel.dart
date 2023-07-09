@@ -5,14 +5,14 @@ import 'package:provider/provider.dart';
 import 'package:testprojectbc/page/Reservation/reservaServices.dart';
 import 'package:testprojectbc/screen/detailBlockchain.dart';
 
-class testBC extends StatefulWidget {
-  const testBC({Key? key}) : super(key: key);
+class testBCNoDel extends StatefulWidget {
+  const testBCNoDel({Key? key}) : super(key: key);
 
   @override
-  State<testBC> createState() => _testBCState();
+  State<testBCNoDel> createState() => _testBCNoDelState();
 }
 
-class _testBCState extends State<testBC> {
+class _testBCNoDelState extends State<testBCNoDel> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
@@ -48,15 +48,15 @@ class _testBCState extends State<testBC> {
                         '${notesServices.notes[index].firstnameBC} ${notesServices.notes[index].lastnameBC} (${notesServices.notes[index].genderBC})'),
                     subtitle: Text(
                         '${notesServices.notes[index].agencyBC} ${notesServices.notes[index].rateBC} ${notesServices.notes[index].currencyBC}, ${notesServices.notes[index].totalBC} THB, ${notesServices.notes[index].dateBC} '),
-                    trailing: IconButton(
-                      icon: const Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                      ),
-                      onPressed: () {
-                        notesServices.deleteNote(notesServices.notes[index].id);
-                      },
-                    ),
+                    // trailing: IconButton(
+                    //   icon: const Icon(
+                    //     Icons.delete,
+                    //     color: Colors.red,
+                    //   ),
+                    //   onPressed: () {
+                    //     notesServices.deleteNote(notesServices.notes[index].id);
+                    //   },
+                    // ),
                     onTap: () {
                       Navigator.push(
                         context,

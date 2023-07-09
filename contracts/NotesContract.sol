@@ -12,6 +12,9 @@ contract NotesContract {
         string amount;
         string total;
         string date;
+        string firstname;
+        string lastname;
+        string gender;
     }
 
     mapping(uint256 => Note) public notes;
@@ -23,7 +26,10 @@ contract NotesContract {
         string rate,
         string amount,
         string total,
-        string date
+        string date,
+        string firstname,
+        string lastname,
+        string gender
     );
     event NoteDeleted(uint256 id);
 
@@ -33,7 +39,10 @@ contract NotesContract {
         string memory _rate,
         string memory _amount,
         string memory _total,
-        string memory _date
+        string memory _date,
+        string memory _firstname,
+        string memory _lastname,
+        string memory _gender
     ) public {
         notes[noteCount] = Note(
             noteCount,
@@ -42,7 +51,10 @@ contract NotesContract {
             _rate,
             _amount,
             _total,
-            _date
+            _date,
+            _firstname,
+            _lastname,
+            _gender
         );
         emit NoteCreated(
             noteCount,
@@ -51,7 +63,10 @@ contract NotesContract {
             _rate,
             _amount,
             _total,
-            _date
+            _date,
+            _firstname,
+            _lastname,
+            _gender
         );
         noteCount++;
     }

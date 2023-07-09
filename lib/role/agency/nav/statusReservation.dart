@@ -11,6 +11,8 @@ import 'package:testprojectbc/role/agency/checkReservation/completedPage.dart';
 import 'package:testprojectbc/role/agency/checkReservation/qrCodeScanPage.dart';
 import 'package:testprojectbc/role/agency/checkReservation/upComingPage.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
+import 'package:testprojectbc/screen/testBlockchain.dart';
+import 'package:testprojectbc/screen/testBlockchainNoDel.dart';
 
 class BookingStatusPage extends StatefulWidget {
   @override
@@ -34,7 +36,7 @@ class _BookingStatusPageState extends State<BookingStatusPage>
   void initState() {
     super.initState();
     fetchUserData();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   Future<void> fetchUserData() async {
@@ -157,18 +159,20 @@ class _BookingStatusPageState extends State<BookingStatusPage>
           labelColor: Colors.black,
           controller: _tabController,
           tabs: [
-            Tab(text: 'QR Decode'),
             Tab(text: 'Upcoming'),
             Tab(text: 'Completed'),
+            Tab(text: 'QR Decode'),
+            Tab(text: 'Blockchain'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          QRScanPage(),
           UpComingPage(),
           CompletedPage(),
+          QRScanPage(),
+          testBCNoDel(),
         ],
       ),
     );

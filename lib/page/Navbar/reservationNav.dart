@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
+import 'package:testprojectbc/Service/singleton/userUID.dart';
 import 'package:testprojectbc/models/notifyModel.dart';
 import 'package:testprojectbc/page/Reservation/detailAgency.dart';
 import 'package:testprojectbc/page/Reservation/detailCur.dart';
@@ -79,12 +80,21 @@ class _ReservationNav extends State<ReservationNav> {
   Set<String> allAgenNames = {};
   List<String> agenNamesList = [];
   Set<double> allSellRate = {};
+  final userUID = FirebaseAuth.instance.currentUser!.uid;
 
   var sellRateComparator =
       (double a, double b) => b.compareTo(a); // เรียงลำดับจากมากไปหาน้อย
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      String uid = user.uid;
+      UserSingleton().setUID(uid);
+    }
+    String? uid = UserSingleton().uid;
+    print("Click UID: ${uid}");
+
     return Scaffold(
         appBar: AppBar(
           title: Text('Currency Converter'),
@@ -435,7 +445,14 @@ class _ReservationNav extends State<ReservationNav> {
                                 child: Row(
                                   children: [
                                     FloatingActionButton(
-                                      onPressed: () {
+                                      onPressed: () async {
+                                        final usersRefUpdate = FirebaseFirestore
+                                            .instance
+                                            .collection('keepUID');
+                                        await usersRefUpdate
+                                            .doc("pin")
+                                            .update({'uid': userUID});
+                                        print('UID Saved');
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(

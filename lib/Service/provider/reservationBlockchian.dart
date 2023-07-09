@@ -6,6 +6,9 @@ class Note {
   final String amountBC;
   final String totalBC;
   final String dateBC;
+  final String firstnameBC;
+  final String lastnameBC;
+  final String genderBC;
   Note(
       {required this.id,
       required this.agencyBC,
@@ -13,5 +16,8 @@ class Note {
       required this.rateBC,
       required this.amountBC,
       required this.totalBC,
-      required this.dateBC});
+      required this.dateBC,
+      required this.firstnameBC,
+      required this.lastnameBC,
+      required this.genderBC});
 }

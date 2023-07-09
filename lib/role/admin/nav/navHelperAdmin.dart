@@ -3,9 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
 import 'package:testprojectbc/page/Setting/havePin.dart';
-import 'package:testprojectbc/role/admin/nav/checkKYC.dart';
 import 'package:testprojectbc/role/admin/nav/homeAdmin.dart';
-import 'package:testprojectbc/role/agency/nav/checkReservation.dart';
+import 'package:testprojectbc/role/admin/nav/statusKYC.dart';
 import 'package:testprojectbc/role/agency/nav/homeAgency.dart';
 
 class NavHleperAdminPage extends StatefulWidget {
@@ -22,8 +21,8 @@ class _NavHleperAdminPage extends State<NavHleperAdminPage> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static final screens = [
-    const HomeAdminPage(),
-    CheckKYCPage(),
+    HomeAdminPage(),
+    KYCStatusPage(),
   ];
   void checkClickReservation() async {
     if (currentIndex == 2) {

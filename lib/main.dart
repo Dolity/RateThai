@@ -16,12 +16,14 @@ import 'package:testprojectbc/page/Reservation/debitCard.dart';
 import 'package:testprojectbc/page/Reservation/detailAgency.dart';
 import 'package:testprojectbc/page/Reservation/detailCur.dart';
 import 'package:testprojectbc/page/Reservation/genQR.dart';
+import 'package:testprojectbc/page/Reservation/getBalance.dart';
 import 'package:testprojectbc/page/Reservation/qrCode.dart';
 import 'package:testprojectbc/page/Reservation/reservaServices.dart';
 import 'package:testprojectbc/page/Setting/Theme.dart';
 import 'package:testprojectbc/page/Setting/detailNotify.dart';
 import 'package:testprojectbc/page/Setting/notify.dart';
 import 'package:testprojectbc/page/Setting/notifyAwesome.dart';
+import 'package:testprojectbc/page/Setting/verifyKYC.dart';
 import 'package:testprojectbc/page/addPost.dart';
 import 'package:testprojectbc/page/authenticator.dart';
 import 'package:testprojectbc/page/confirm.dart';
@@ -35,16 +37,17 @@ import 'package:testprojectbc/page/login.dart';
 import 'package:testprojectbc/page/otpsuccess.dart';
 import 'package:testprojectbc/page/register.dart';
 import 'package:testprojectbc/page/smsFA.dart';
-import 'package:testprojectbc/role/admin/nav/checkKYC.dart';
+
 import 'package:testprojectbc/role/admin/nav/homeAdmin.dart';
 import 'package:testprojectbc/role/admin/nav/navHelperAdmin.dart';
 import 'package:testprojectbc/role/agency/checkReservation/completedPage.dart';
 import 'package:testprojectbc/role/agency/checkReservation/qrCodeScanPage.dart';
 import 'package:testprojectbc/role/agency/checkReservation/upComingPage.dart';
-import 'package:testprojectbc/role/agency/nav/checkReservation.dart';
+
 import 'package:testprojectbc/role/agency/nav/homeAgency.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
 import 'package:testprojectbc/role/agency/nav/statusReservation.dart';
+import 'package:testprojectbc/screen/detailBlockchain.dart';
 import 'package:testprojectbc/screen/testBlockchain.dart';
 import 'page/selectCurency.dart';
 import 'page/Setting/makePin.dart';
@@ -211,10 +214,8 @@ class _MyAppState extends State<MyApp> {
               "testBC-Page": (context) => testBC(),
               "NavHelper-Page": (context) => NavHleperAgencyPage(),
               "HomeAgency-Page": (context) => HomeAgencyPage(),
-              "CheckReservation-Page": (context) => CheckReservationPage(),
               "NavHelperAdmin-Page": (context) => NavHleperAdminPage(),
               "HomeAdmin-Page": (context) => HomeAdminPage(),
-              "CheckKYC-Page": (context) => CheckKYCPage(),
               "PayDebitCard-Page": (context) => PayDebitCardPage(),
               "PayQrCode-Page": (context) => PayQRCodePage(),
               "PayCashCheer-Page": (context) => PayCashCheerPage(),
@@ -222,6 +223,18 @@ class _MyAppState extends State<MyApp> {
               "QRScan-Page": (context) => QRScanPage(),
               "UpComing-Page": (context) => UpComingPage(),
               "Completed-Page": (context) => CompletedPage(),
+              "GetBalance-Page": (context) => GetBalancePage(),
+              "DetailBC-Page": (context) => DetailBCPage(
+                    firstnameBC: '',
+                    lastnameBC: '',
+                    genderBC: '',
+                    agencyBC: '',
+                    rateBC: '',
+                    currencyBC: '',
+                    totalBC: '',
+                    dateBC: '',
+                  ),
+              "Verification-Page": (context) => VerificationPage()
             },
           );
         },
