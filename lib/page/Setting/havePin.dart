@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_pin_code_widget/flutter_pin_code_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:testprojectbc/page/Setting/getQR.dart';
 
 import '../Navbar/ReservationNav.dart';
 import 'makePin.dart';
@@ -26,6 +28,8 @@ class _HavePinPage extends State<HavePinPage> {
   Timer? _timer;
   late DateTime _loginTime; // สร้างตัวแปรเก็บเวลาที่ login สำเร็จ
   int _remainingSeconds = 0;
+  late SharedPreferences _preferences;
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -48,26 +52,35 @@ class _HavePinPage extends State<HavePinPage> {
     }
   }
 
-  void _onPinSuccess() {
-    Navigator.pop(context, true); // ส่งค่า true กลับไปยังหน้า ReservationNav
-  }
-
   Future<void> _checkPin(String pin) async {
     final querySnapshot = await usersRef.where('UID', isEqualTo: user).get();
     if (querySnapshot.docs.isNotEmpty) {
       final documentSnapshot = querySnapshot.docs.first;
       final existingPin = documentSnapshot.get('pin');
       if (existingPin == pin) {
+        _savePINSession(true);
         // กลับไปยังหน้าแรกของ BottomNavigationBar และ navigate ไปยังหน้าที่ต้องการ
         // ignore: use_build_context_synchronously
-        Navigator.pop(context, true);
+        // Navigator.pop(context, true);
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return GetQRCodePage(
+            qrCodeData: '',
+          );
+        }));
       } else {
         _onPinFail(); // เรียกใช้ฟังก์ชัน _onPinFail() ในกรณีที่ PINCODE ผิด
       }
     }
   }
 
+  void _onPinSuccess() {
+    _savePINSession(true);
+    // Navigator.pop(context, true); // ส่งค่า true กลับไปยังหน้า ReservationNav
+  }
+
   void _onPinFail() {
+    _savePINSession(false);
     setState(() {
       _failedAttempts++;
       if (_failedAttempts >= 3) {
@@ -89,6 +102,47 @@ class _HavePinPage extends State<HavePinPage> {
         clearPin();
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loginTime = DateTime.now(); // เก็บเวลาที่ผู้ใช้เข้าสู่ระบบสำเร็จ
+    init();
+  }
+
+  void init() async {
+    await _initializePreferences();
+    bool isPINSessionValid = await _checkPINSession();
+    if (isPINSessionValid) {
+      // PIN session ยังไม่หมดอายุ
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return GetQRCodePage(
+          qrCodeData: '',
+        );
+      }));
+      // Navigator.pop(context, true);
+    }
+  }
+
+  Future<void> _initializePreferences() async {
+    _preferences = await SharedPreferences.getInstance();
+  }
+
+  Future<void> _savePINSession(bool success) async {
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    await _preferences.setInt('pin_last_success_time', currentTime);
+    await _preferences.setBool('pin_verification_success', success);
+  }
+
+  Future<bool> _checkPINSession() async {
+    final lastSuccessTime = _preferences.getInt('pin_last_success_time') ?? 0;
+    final verificationSuccess =
+        _preferences.getBool('pin_verification_success') ?? false;
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
+    final difference = currentTime - lastSuccessTime;
+    return verificationSuccess &&
+        difference <= (5 * 60 * 1000); // 5 minutes in milliseconds
   }
 
   Widget _buildPinCodeWidget() {

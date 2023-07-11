@@ -95,8 +95,7 @@ class _HomeNavState extends State<HomeNav> {
                 final bool isDropOffStatus = userData['DropOffStatus'] == true;
                 final bool isCheckAgencyStatus =
                     userData['ConditionCheckAgency'] == true;
-                final bool isCheckAdminStatus =
-                    userData['ConditionCheckAdmin'] == true;
+                final bool isCheckAdminStatus = userData['isVerify'] == true;
 
                 return Column(
                   children: [

@@ -27,26 +27,12 @@ class _GooglefaPage extends State<GooglefaPage> {
   bool verifyResult = false;
 
   TextEditingController text2faController = TextEditingController();
-  String currentText = "";
 
   final userPIN = FirebaseAuth.instance.currentUser!.uid;
-  // String otpauthLink = '';
   String mySecret = secret!;
   late final String _authKeySecret;
   late SharedPreferences _preferences;
-
-  // String generateTOTP(String secret, int length, int interval) {
-  //   int currentTime = DateTime.now().millisecondsSinceEpoch;
-  //   String timedCode = OTP.generateTOTPCodeString(
-  //     secret,
-  //     currentTime,
-  //     length: length,
-  //     interval: interval,
-  //     algorithm: Algorithm.SHA1,
-  //     isGoogle: true,
-  //   );
-  //   return timedCode;
-  // }
+  bool? checkTOTPStatus = false;
 
   Future<String> fetchMySecret() async {
     final snapshot = await FirebaseFirestore.instance
@@ -54,12 +40,48 @@ class _GooglefaPage extends State<GooglefaPage> {
         .doc(userPIN)
         .get();
     if (snapshot.exists) {
+      checkTOTPStatus = snapshot.data()!['ConditionCheckTOTP'];
       return snapshot.data()!['displayName'];
     }
     return '';
   }
 
-  // "otpauth://totp/RateThai?secret=$mySecret&issuer=$mySecret",
+  Future<void> totpCheck() async {
+    final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+    final snapshot = await usersRef.doc(userPIN).get();
+
+    if (snapshot.exists) {
+      setState(() {
+        checkTOTPStatus = true;
+      });
+
+      if (snapshot.data()!['DateReserva'] != null ||
+          snapshot.data()!['DateReserva'] == null) {
+        usersRef.doc(userPIN).update({
+          'ConditionCheckTOTP': checkTOTPStatus,
+        }).then((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Save to Status on Firestore Success! (Update)',
+              ),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Failed to save Status on Firestore! (Update)',
+              ),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -116,18 +138,19 @@ class _GooglefaPage extends State<GooglefaPage> {
                 'TOTP Auth',
                 style: Theme.of(context).textTheme.headline4,
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0.0, 25, 0.0, 0.0),
-                child: Switch(
-                    value: light,
-                    activeColor: Colors.blueAccent,
-                    onChanged: (bool value) {
-                      setState(() {
-                        light = value;
-                        //qrGEN();
-                      });
-                    }),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.fromLTRB(0.0, 25, 0.0, 0.0),
+              //   child: Switch(
+              //       value: light,
+              //       activeColor: Colors.blueAccent,
+              //       onChanged: (bool value) {
+              //         setState(() {
+              //           light = value;
+              //           //qrGEN();
+              //         });
+              //       }
+              //       ),
+              // ),
               Padding(
                 padding: EdgeInsets.all(20.0),
                 child: PinCodeTextField(
@@ -178,6 +201,8 @@ class _GooglefaPage extends State<GooglefaPage> {
                           print('timeCode: $timedCode');
 
                           if (verify) {
+                            totpCheck();
+                            // totpCheck();
                             //value == timedCode
                             // TOTP ถูกต้อง
                             // นำผู้ใช้ไปยังหน้า LoginSuccessPage()
@@ -218,58 +243,60 @@ class _GooglefaPage extends State<GooglefaPage> {
                   appContext: context,
                 ),
               ),
-              (verifyResult) ? Text("Not pass! Phone") : Container(),
-              Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'Scan TOTP Auth',
-                        style: Theme.of(context).textTheme.headline4,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            print('onPressed: $mySecret');
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text(''),
-                                  content: Container(
-                                    padding: EdgeInsets.all(15.0),
-                                    child: BarcodeWidget(
-                                      width: 320,
-                                      height: 320,
-                                      data: "otpauth://totp/RateThai?secret=" +
-                                          base32.encodeString(mySecret) +
-                                          "&issuer=$mySecret",
-                                      barcode: Barcode.qrCode(),
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      child: Text('Close'),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                            print('GenQR: $mySecret');
-                            // print('otpauthLink: $otpauthLink');
-                          },
-                          child: Text('Scan QR Code'),
+              (verifyResult) ? Text("Not pass!") : Container(),
+              if (checkTOTPStatus == null || checkTOTPStatus == false)
+                Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Scan TOTP Auth',
+                          style: Theme.of(context).textTheme.headline4,
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: EdgeInsets.all(15.0),
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              print('onPressed: $mySecret');
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(''),
+                                    content: Container(
+                                      padding: EdgeInsets.all(15.0),
+                                      child: BarcodeWidget(
+                                        width: 320,
+                                        height: 320,
+                                        data:
+                                            "otpauth://totp/RateThai?secret=" +
+                                                base32.encodeString(mySecret) +
+                                                "&issuer=$mySecret",
+                                        barcode: Barcode.qrCode(),
+                                      ),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        child: Text('Close'),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                              print('GenQR: $mySecret');
+                              // print('otpauthLink: $otpauthLink');
+                            },
+                            child: Text('Scan QR Code'),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),

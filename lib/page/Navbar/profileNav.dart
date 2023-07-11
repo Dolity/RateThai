@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:testprojectbc/page/Reservation/genQR.dart';
 import 'package:testprojectbc/page/Reservation/getBalance.dart';
 import 'package:testprojectbc/page/Setting/getQR.dart';
+import 'package:testprojectbc/page/Setting/havePin.dart';
 import 'package:testprojectbc/page/Setting/verifyKYC.dart';
 import 'package:testprojectbc/screen/testBlockchain.dart';
 import '../Setting/makePin.dart';
@@ -87,11 +88,7 @@ class _ProfileNav extends State<ProfileNav> {
 
   void verifyQR() {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => GetQRCodePage(
-                  qrCodeData: '',
-                )));
+        context, MaterialPageRoute(builder: (context) => HavePinPage()));
   }
 
   void checkGetBalance() {

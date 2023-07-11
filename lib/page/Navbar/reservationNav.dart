@@ -13,6 +13,7 @@ import 'package:testprojectbc/Service/singleton/userUID.dart';
 import 'package:testprojectbc/models/notifyModel.dart';
 import 'package:testprojectbc/page/Reservation/detailAgency.dart';
 import 'package:testprojectbc/page/Reservation/detailCur.dart';
+import 'package:testprojectbc/page/Setting/verifyKYC.dart';
 
 import '../curinfo2.dart';
 import '../login.dart';
@@ -84,6 +85,58 @@ class _ReservationNav extends State<ReservationNav> {
 
   var sellRateComparator =
       (double a, double b) => b.compareTo(a); // เรียงลำดับจากมากไปหาน้อย
+  bool isVerified = false; // เพิ่มตัวแปร isVerified ใน State
+  int currentIndex = 2; // ตรงนี้คือการประกาศตัวแปร currentIndex
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   checkVerificationStatus(); // เรียกใช้ฟังก์ชัน checkVerificationStatus ใน initState
+  //   checkClickReservation();
+  // }
+
+  // void checkVerificationStatus() async {
+  //   print('checkVerificationStatus OK');
+  //   final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+  //   final querySnapshot = await usersRef.where('UID', isEqualTo: userUID).get();
+  //   if (querySnapshot.docs.isNotEmpty) {
+  //     print('querySnapshotdoc OK');
+  //     final documentSnapshot = querySnapshot.docs.first;
+  //     final isVerified = documentSnapshot.get('isVerify');
+  //     setState(() {
+  //       this.isVerified = isVerified ?? false;
+  //       print('isVerified: $isVerified');
+  //     });
+  //   }
+  // }
+
+  // void checkClickReservation() async {
+  //   if (currentIndex == 2) {
+  //     if (isVerified) {
+  //       // ถ้าผู้ใช้ยืนยันตัวตนแล้วให้ไปที่หน้า ReservationNav
+  //       setState(() {
+  //         currentIndex = 2;
+  //       });
+  //     } else {
+  //       // ถ้าผู้ใช้ยังไม่ได้ยืนยันตัวตนให้ไปที่หน้า VerificationPage
+  //       final result = await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(builder: (context) => VerificationPage()),
+  //       );
+  //       if (result == true) {
+  //         setState(() {
+  //           currentIndex = 2;
+  //           isVerified = true;
+  //         });
+  //       } else {
+  //         setState(() {
+  //           currentIndex = 0;
+  //         });
+  //       }
+  //     }
+  //   }
+  //   print('currIDX: $currentIndex');
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -4,10 +4,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/page/Navbar/ReservationNav.dart';
 import 'package:testprojectbc/page/Setting/havePin.dart';
 import 'package:testprojectbc/page/Setting/notifyAwesome.dart';
+import 'package:testprojectbc/page/Setting/verifyKYC.dart';
 
 import 'convertNav.dart';
 import 'HomeNav.dart';
@@ -27,6 +29,7 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
   String keepRate = "";
   String keepResevaProviRateUpdate = "";
   final user = FirebaseAuth.instance.currentUser!.uid;
+  late SharedPreferences _preferences;
 
   void checkPriceChange(BuildContext context) async {
     print("checkPriceChange is OK");
@@ -63,28 +66,6 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
     ReservationNav(),
     ProfileNav(),
   ];
-  void checkClickReservation() async {
-    if (currentIndex == 2) {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HavePinPage()),
-      );
-      if (result == true) {
-        setState(() {
-          currentIndex = 2;
-        });
-      } else {
-        setState(() {
-          currentIndex = 0;
-        });
-      }
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,11 +74,32 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.blueAccent,
         currentIndex: currentIndex,
-        onTap: (indexz) {
+        onTap: (indexz) async {
           setState(() {
             currentIndex = indexz;
-            checkClickReservation();
+
+            print('currentIDX $currentIndex');
           });
+
+          if (currentIndex == 2) {
+            // Check Firestore for isVerify data
+            final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+            final snapshot = await usersRef.doc(user).get();
+            final isVerify = snapshot.exists && snapshot.get('isVerify');
+
+            if (!isVerify) {
+              print('isVerify: $isVerify');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => VerificationPage()),
+              );
+            } else {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => ReservationNav()),
+              // );
+            }
+          }
         },
         unselectedItemColor: Colors.grey[500],
         selectedItemColor: Colors.black,

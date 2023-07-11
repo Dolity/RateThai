@@ -43,6 +43,21 @@ class _VerificationPageState extends State<VerificationPage> {
   bool checkStatusAdmin = false;
   bool? isVerify = false;
 
+  void verifyUser() {
+    // โค้ดเพื่อทำการยืนยันตัวตนของผู้ใช้
+    bool verificationSuccess =
+        true; // ตั้งค่าเป็น true เมื่อการยืนยันตัวตนสำเร็จ
+    Future.delayed(Duration.zero, () {
+      Navigator.of(context).pop(
+          verificationSuccess); // ส่งผลลัพธ์การยืนยันตัวตนกลับไปยังหน้า ReservationNav
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
