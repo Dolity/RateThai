@@ -258,22 +258,35 @@ class _GooglefaPage extends State<GooglefaPage> {
                           padding: EdgeInsets.all(15.0),
                           child: ElevatedButton(
                             onPressed: () async {
+                              final String otpauthLink =
+                                  'otpauth://totp/RateThai?secret=$mySecret&issuer=$mySecret';
                               print('onPressed: $mySecret');
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
                                   return AlertDialog(
-                                    title: Text(''),
+                                    title: Text('Genarate TOTP'),
                                     content: Container(
                                       padding: EdgeInsets.all(15.0),
-                                      child: BarcodeWidget(
-                                        width: 320,
-                                        height: 320,
-                                        data:
-                                            "otpauth://totp/RateThai?secret=" +
-                                                base32.encodeString(mySecret) +
-                                                "&issuer=$mySecret",
-                                        barcode: Barcode.qrCode(),
+                                      child: Column(
+                                        children: [
+                                          BarcodeWidget(
+                                            width: 320,
+                                            height: 320,
+                                            data:
+                                                "otpauth://totp/RateThai?secret=" +
+                                                    base32.encodeString(
+                                                        mySecret) +
+                                                    "&issuer=$mySecret",
+                                            barcode: Barcode.qrCode(),
+                                          ),
+                                          Text(
+                                              'Please add the following TOTP manually to your Google Authenticator app:'),
+                                          SelectableText(
+                                              'Acc Name: $mySecret \nKey: $_authKeySecret'),
+                                          // Text('Acc Name: $mySecret'),
+                                          // Text('Key: $_currentCode')
+                                        ],
                                       ),
                                     ),
                                     actions: [

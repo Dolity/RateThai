@@ -183,20 +183,23 @@ class _LoginPage extends State<LoginPage> {
                                     password: profile.password!,
                                   );
                                   final user = authResult.user;
+                                  String? keepName = profile.email;
+                                  print('DisplayName: $keepName');
                                   formKey.currentState!.reset();
                                   if (user != null) {
                                     print('user have data');
                                     final userDoc =
                                         await usersRef.doc(user.uid).get();
 
-                                    Map<String, dynamic> userData = {
-                                      'displayName': user.email,
-                                      // เพิ่มข้อมูลอื่นๆ ที่คุณต้องการเก็บได้ตามต้องการ
-                                    };
-                                    await FirebaseFirestore.instance
-                                        .collection('usersPIN')
-                                        .doc(user.uid)
-                                        .set(userData, SetOptions(merge: true));
+                                    // Map<String, dynamic> userData = {
+                                    //   'displayName': user.email,
+                                    //   // เพิ่มข้อมูลอื่นๆ ที่คุณต้องการเก็บได้ตามต้องการ
+                                    // };
+
+                                    // await FirebaseFirestore.instance
+                                    //     .collection('usersPIN')
+                                    //     .doc(user.uid)
+                                    //     .set({'displayName': user.email});
 
                                     if (userDoc.exists) {
                                       print('userDoc have exists');
@@ -245,7 +248,7 @@ class _LoginPage extends State<LoginPage> {
                                         await usersRef.doc(user.uid).update({
                                           'role': "user",
                                           'UID': user.uid,
-                                          'displayName': user.displayName,
+                                          'displayName': keepName,
                                         });
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
@@ -263,12 +266,11 @@ class _LoginPage extends State<LoginPage> {
                                         );
                                       }
                                     } else {
-                                      print(
-                                          'conditionCrateROLE userDoc.exists');
+                                      print('userDocNot.exists');
                                       await usersRef.doc(user.uid).set({
                                         'role': "user",
                                         'UID': user.uid,
-                                        'displayName': user.displayName,
+                                        'displayName': keepName,
                                       });
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(

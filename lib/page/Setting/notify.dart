@@ -172,8 +172,10 @@ class _notify extends State<notify> {
               // keepCur
               double previousRate =
                   double.parse(data1?['RateNoti']); //Rate from User set
-              double currentRate =
-                  double.parse(keepRate); //Rate from agency Scarping
+              double currentRate = double.parse(
+                  data1?['QRCode']['Rate']); //Rate from agency Scarping
+
+              print('currentRate: $currentRate');
 
               if (currentRate > previousRate) {
                 // แจ้งเตือนว่าราคาสกุลเงินขึ้น

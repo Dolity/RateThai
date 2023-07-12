@@ -30,30 +30,37 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
   String keepResevaProviRateUpdate = "";
   final user = FirebaseAuth.instance.currentUser!.uid;
   late SharedPreferences _preferences;
+  bool? isVerify;
 
   void checkPriceChange(BuildContext context) async {
     print("checkPriceChange is OK");
-    keepCur = context.watch<ReservationData>().notifyCur.toString();
-    keepRate = context.watch<ReservationData>().notifyRate.toString();
-    keepResevaProviRateUpdate =
-        context.watch<ReservationData>().resevaProviRateUpdate.toString();
+    // keepCur = context.watch<ReservationData>().notifyCur.toString();
+    // keepRate = context.watch<ReservationData>().notifyRate.toString();
+    // keepResevaProviRateUpdate =
+    //     context.watch<ReservationData>().resevaProviRateUpdate.toString();
     final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
     final snapshot = await usersRefD1.doc(user).get();
-    final Keepdata1 = snapshot.data() as Map<String, dynamic>?;
+    // final Keepdata1 = snapshot.data() as Map<String, dynamic>?;
 
-    if (Keepdata1?['RateNoti'] != null && Keepdata1?['CurrencyNoti'] != null) {
+    if (snapshot?['RateNoti'] != null) {
       // keepCur
       print("if checkPriceChange is OK");
       double previousRate =
-          double.parse(Keepdata1?['RateNoti']); //Rate from User set
-      double currentRate = double.parse(keepRate); //Rate from agency Scarping
+          double.parse(snapshot['RateNoti']); //Rate from User set
+      double currentRate =
+          double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
+      print('Notify: $previousRate,  $currentRate');
 
       if (currentRate > previousRate) {
         // แจ้งเตือนว่าราคาสกุลเงินขึ้น
-        createReservationPositiveNotification(context);
+        Future.delayed(Duration(seconds: 5), () {
+          createReservationPositiveNotification(context);
+        });
       } else if (currentRate < previousRate) {
         // แจ้งเตือนว่าราคาสกุลเงินลง
-        createReservationNegativeNotification(context);
+        Future.delayed(Duration(seconds: 5), () {
+          createReservationNegativeNotification(context);
+        });
       }
     }
   }
@@ -69,6 +76,7 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
 
   @override
   Widget build(BuildContext context) {
+    checkPriceChange(context);
     return Scaffold(
       body: screens[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -77,6 +85,7 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
         onTap: (indexz) async {
           setState(() {
             currentIndex = indexz;
+            // isVerify = false;
 
             print('currentIDX $currentIndex');
           });
@@ -85,9 +94,11 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
             // Check Firestore for isVerify data
             final usersRef = FirebaseFirestore.instance.collection('usersPIN');
             final snapshot = await usersRef.doc(user).get();
-            final isVerify = snapshot.exists && snapshot.get('isVerify');
 
-            if (!isVerify) {
+            final isVerifyNAV = snapshot.get('isVerify') ?? false;
+            print('isVerifyNAV: $isVerifyNAV');
+
+            if (!isVerifyNAV) {
               print('isVerify: $isVerify');
               Navigator.push(
                 context,
