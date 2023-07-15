@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/models/notifyModel.dart';
 import 'package:testprojectbc/page/Setting/notify.dart';
 
@@ -25,8 +27,6 @@ class _DetailNotifyPageState extends State<DetailNotifyPage> {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final user = FirebaseAuth.instance.currentUser!.uid;
   final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,6 @@ class _DetailNotifyPageState extends State<DetailNotifyPage> {
                                   ),
                                   SizedBox(height: 20),
                                   TextFormField(
-                                    
                                     controller: _textEditingController,
                                     validator: RequiredValidator(
                                       errorText: "กรุณาใส่ค่าตัวเลข",
@@ -91,7 +90,6 @@ class _DetailNotifyPageState extends State<DetailNotifyPage> {
                                   ),
                                   SizedBox(height: 20),
                                   ElevatedButton(
-                                   
                                     onPressed: () async {
                                       print("Click!!!!!!!!!!!!!");
                                       if (_formKey.currentState?.validate() ??
@@ -101,13 +99,19 @@ class _DetailNotifyPageState extends State<DetailNotifyPage> {
                                           amount: _textEditingController.text,
                                         );
                                         // print('Currency: $_fromCurrency' 'Rate: $_textEditingController.text');
-
+                                        context
+                                            .read<ReservationData>()
+                                            .notifyCur = _fromCurrency!;
+                                        context
+                                                .read<ReservationData>()
+                                                .notifyRate =
+                                            _textEditingController.text;
                                         usersRef.doc(user).update({
                                           // 'pin': pin,
                                           'UID': '$user',
                                           'CurrencyNoti': '$_fromCurrency',
-                                          'RateNoti': '${_textEditingController.text}'
-
+                                          'RateNoti':
+                                              '${_textEditingController.text}'
                                         }).then((_) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
@@ -118,9 +122,9 @@ class _DetailNotifyPageState extends State<DetailNotifyPage> {
                                             ),
                                           );
                                         }).catchError((error) {
-                                          setState(() {
-                                            // _isLoading = false;
-                                          });
+                                          // setState(() {
+                                          //   // _isLoading = false;
+                                          // });
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
@@ -132,12 +136,10 @@ class _DetailNotifyPageState extends State<DetailNotifyPage> {
                                         });
 
                                         await Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => notify(
-                                                notification: notifyModel),
-                                          ),
-                                        );
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => notify(),
+                                            ));
                                       }
                                     },
                                     child: Text(

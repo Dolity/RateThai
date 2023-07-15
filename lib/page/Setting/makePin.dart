@@ -119,13 +119,6 @@ class _CreatePinPageState extends State<CreatePinPage> {
                     });
                   }
                 },
-                centerBottomWidget: IconButton(
-                  icon: const Icon(
-                    Icons.fingerprint,
-                    size: 40,
-                  ),
-                  onPressed: () {},
-                ),
               ),
             ),
           ],

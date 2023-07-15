@@ -1,26 +1,26 @@
+import 'dart:async';
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_local_notifications_platform_interface/flutter_local_notifications_platform_interface.dart';
-import 'package:testprojectbc/models/notifyModel.dart';
-import 'package:testprojectbc/page/Setting/detailNotify.dart';
-
 // import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
-
-// import 'package:testprojectbc/main.dart';
-// import 'package:testprojectbc/page/Setting/notifyService.dart';
+// import 'package:flutter_local_notifications_platform_interface/flutter_local_notifications_platform_interface.dart';
+import 'package:provider/provider.dart';
+// import 'package:testprojectbc/models/notifyModel.dart';
+import 'package:testprojectbc/page/Setting/detailNotify.dart';
+import 'package:testprojectbc/page/Setting/notifyAwesome.dart';
 import 'package:testprojectbc/page/Setting/push_notification_service.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../Service/provider/reservationData.dart';
+import 'dart:io';
+import 'package:awesome_notifications/awesome_notifications.dart';
 
 class notify extends StatefulWidget {
-  final NotificationModel notification;
-  const notify({Key? key, required this.notification}) : super(key: key);
+  // final NotificationModel notification;
+  // const notify({Key? key, required this.notification}) : super(key: key);
+  notify({Key? key}) : super(key: key);
 
   _notify createState() => _notify();
 }
@@ -28,19 +28,112 @@ class notify extends StatefulWidget {
 class _notify extends State<notify> {
   String? mtoken = " ";
   bool _showIcon = false;
+  String keepCur = "";
+  String keepRate = "";
+  String keepResevaProviRateUpdate = "";
   final user = FirebaseAuth.instance.currentUser!.uid;
+  StreamSubscription<ReceivedAction>? _actionStreamSubscription;
+  bool ckIsReservation = false;
+  // void initState() {
+  //   super.initState();
+  //   NotificationService.initFirebaseMessaging(context);
+  // }
 
   void initState() {
     super.initState();
-    NotificationService.initFirebaseMessaging(context);
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Allow Notifications'),
+            content: Text('Our app would like to send you notifications'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Don\'t Allow',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              TextButton(
+                  onPressed: () => AwesomeNotifications()
+                      .requestPermissionToSendNotifications()
+                      .then((_) => Navigator.pop(context)),
+                  child: Text(
+                    'Allow',
+                    style: TextStyle(
+                      color: Colors.teal,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ))
+            ],
+          ),
+        );
+      }
+    });
+
+    AwesomeNotifications().createdStream.listen((notification) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'Notification Created on ${notification.channelKey}',
+        ),
+      ));
+    });
+
+    AwesomeNotifications().actionStream.listen((notification) {
+      if (notification.channelKey == 'basic_channel' && Platform.isIOS) {
+        AwesomeNotifications().getGlobalBadgeCounter().then(
+              (value) =>
+                  AwesomeNotifications().setGlobalBadgeCounter(value - 1),
+            );
+      }
+
+      // Navigator.pushAndRemoveUntil(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (_) => PlantStatsPage(),
+      //   ),
+      //   (route) => route.isFirst,
+      // );
+    });
   }
 
-  Future<DocumentSnapshot> fetchData() async {
-    final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-    return await usersRef.doc(user).get();
+  void dispose() {
+    AwesomeNotifications().actionSink.close();
+    AwesomeNotifications().createdSink.close();
+    super.dispose();
+  }
+
+  Future<List<DocumentSnapshot<Object?>>> fetchDatausersPIN() async {
+    final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
+    final data1 = await usersRefD1.doc(user).get();
+
+    final usersRefD2 = FirebaseFirestore.instance.collection('getCurrency');
+    final data2 = await usersRefD2.doc(user).get();
+
+    return [data1, data2];
+  }
+
+  Future<List<QuerySnapshot>> fetchDatagetCurrency() async {
+    final usersRefD2 = FirebaseFirestore.instance.collection('getCurrency');
+    final data2 = await usersRefD2.get();
+
+    return [data2];
   }
 
   Widget build(BuildContext context) {
+    keepCur = context.watch<ReservationData>().notifyCur.toString();
+    keepRate = context.watch<ReservationData>().notifyRate.toString();
+    keepResevaProviRateUpdate =
+        context.watch<ReservationData>().resevaProviRateUpdate.toString();
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Notify'),
@@ -58,30 +151,56 @@ class _notify extends State<notify> {
         shape: CircleBorder(),
       ),
       body: Center(
-        child: FutureBuilder<DocumentSnapshot>(
-          future: fetchData(),
-          builder:
-              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            final data = snapshot.data?.data() as Map<String, dynamic>?;
+        child: FutureBuilder<List<DocumentSnapshot<Object?>>>(
+          future: fetchDatausersPIN(),
+          builder: (BuildContext context,
+              AsyncSnapshot<List<DocumentSnapshot<Object?>>> snapshot) {
+            // final data = snapshot.data?.data() as Map<String, dynamic>?;
+            fetchDatagetCurrency();
+            final data1 = snapshot.data?[0];
+
+            // if (data1?['RateNoti'] == keepRate &&
+            //     data1?['CurrencyNoti'] == keepCur) {
+            //   // NotificationService.showNotification(
+            //   //   title: 'Rate alert',
+            //   //   body: '1 $keepCur = $keepResevaProviRateUpdate THB',
+            //   // );
+            //   createReservationPositiveNotification(context);
+            // }
+
+            if (data1?['RateNoti'] != null && data1?['CurrencyNoti'] != null) {
+              // keepCur
+              double previousRate =
+                  double.parse(data1?['RateNoti']); //Rate from User set
+              double currentRate = double.parse(
+                  data1?['QRCode']['Rate']); //Rate from agency Scarping
+
+              print('currentRate: $currentRate');
+
+              if (currentRate > previousRate) {
+                // แจ้งเตือนว่าราคาสกุลเงินขึ้น
+                createReservationPositiveNotification(context);
+              } else if (currentRate < previousRate) {
+                // แจ้งเตือนว่าราคาสกุลเงินลง
+                createReservationNegativeNotification(context);
+              }
+            }
+
+            print('Provider: $keepRate, $keepCur');
+
             if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             }
-            if (data?['RateNoti'] == null) {
+
+            if (data1?['RateNoti'] == null) {
               print('No data!');
               return Container();
             }
+
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             } else {
               print("Return: Widget!");
-
-              if (data?['RateNoti'] == '100' && data?['CurrencyNoti'] == 'USD') {
-                log("Show alert");
-                NotificationService.showNotification(
-                  title: 'Rate alert',
-                  body: '1 USD = 100 THB',
-                );
-              }
 
               return Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -179,7 +298,7 @@ class _notify extends State<notify> {
                                                           ),
                                                           TextSpan(
                                                             text:
-                                                                '1 ${data?['CurrencyNoti']} = ${data?['RateNoti']} THB',
+                                                                '1 ${data1?['CurrencyNoti']} = ${data1?['RateNoti']} THB',
                                                             style: TextStyle(
                                                               fontSize: 16,
                                                               fontWeight:
