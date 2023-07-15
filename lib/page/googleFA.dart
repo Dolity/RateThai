@@ -7,6 +7,7 @@ import 'package:otp/otp.dart';
 import 'package:base32/base32.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:testprojectbc/Service/Constants/constants.dart';
 import 'package:testprojectbc/Service/global/dataGlobal.dart';
 import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
 import 'dart:async';
@@ -88,8 +89,6 @@ class _GooglefaPage extends State<GooglefaPage> {
     fetchMySecret().then((secret) async {
       setState(() {
         mySecret = secret;
-        // String otpauthLink =
-        //     'otpauth://totp/RateThai?secret=$mySecret&issuer=$mySecret';
         _authKeySecret = base32.encodeString(mySecret);
         print('mySecret FS inti: $mySecret');
       });
@@ -97,11 +96,8 @@ class _GooglefaPage extends State<GooglefaPage> {
       // เรียกใช้งานเพื่อตรวจสอบสถานะ TOTP session
       bool isTOTPSessionValid = await _checkTOTPSession();
       if (isTOTPSessionValid) {
-        // TOTP session ยังไม่หมดอายุและผ่านการตรวจสอบ
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) {
-          return LoginSuccessPage();
-        }));
+        Navigator.pushReplacementNamed(context, "/loginsuccess-page",
+            arguments: []);
       }
     });
   }
@@ -128,29 +124,30 @@ class _GooglefaPage extends State<GooglefaPage> {
       appBar: AppBar(
         title: Text("2FA"),
       ),
-      body: Center(
+      body: Container(
         child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             // crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                'TOTP Auth',
-                style: Theme.of(context).textTheme.headline4,
+              SizedBox(
+                height: MediaQuery.of(context).size.height / 3,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Image.asset(Constants.otpGifImage),
+                ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.fromLTRB(0.0, 25, 0.0, 0.0),
-              //   child: Switch(
-              //       value: light,
-              //       activeColor: Colors.blueAccent,
-              //       onChanged: (bool value) {
-              //         setState(() {
-              //           light = value;
-              //           //qrGEN();
-              //         });
-              //       }
-              //       ),
-              // ),
+              const SizedBox(height: 10),
+              Text(
+                'Authenticator',
+                style: TextStyle(
+                  fontSize: 34,
+                  fontFamily: 'Lexend',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 10),
               Padding(
                 padding: EdgeInsets.all(20.0),
                 child: PinCodeTextField(
@@ -158,12 +155,13 @@ class _GooglefaPage extends State<GooglefaPage> {
                   obscureText: false,
                   animationType: AnimationType.fade,
                   pinTheme: PinTheme(
-                    shape: PinCodeFieldShape.box,
-                    borderRadius: BorderRadius.circular(5),
+                    shape: PinCodeFieldShape.circle,
+                    borderRadius: BorderRadius.circular(30),
                     fieldHeight: 50,
                     fieldWidth: 40,
                     activeFillColor: Colors.white,
                   ),
+                  cursorColor: Colors.black,
                   animationDuration: const Duration(milliseconds: 300),
                   backgroundColor: Colors.blue.shade50,
                   enableActiveFill: true,
@@ -206,10 +204,13 @@ class _GooglefaPage extends State<GooglefaPage> {
                             //value == timedCode
                             // TOTP ถูกต้อง
                             // นำผู้ใช้ไปยังหน้า LoginSuccessPage()
-                            Navigator.pushReplacement(context,
-                                MaterialPageRoute(builder: (context) {
-                              return LoginSuccessPage();
-                            }));
+                            // Navigator.pushReplacement(context,
+                            //     MaterialPageRoute(builder: (context) {
+                            //   return LoginSuccessPage();
+                            // }));
+                            Navigator.pushReplacementNamed(
+                                context, "/loginsuccess-page",
+                                arguments: []);
                             Fluttertoast.showToast(
                               msg: 'TOTP Pass ✅',
                               toastLength: Toast.LENGTH_LONG,

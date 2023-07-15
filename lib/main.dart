@@ -183,6 +183,7 @@ class _MyAppState extends State<MyApp> {
             theme: Styles.themeData(themeChangeProvider.darkTheme, context),
             home: LoginPage(),
             routes: {
+              "/login-page": (context) => LoginPage(),
               "/register-page": (context) => RegisterPage(),
               "/confirm-page": (context) => ConfirmPage(),
               "/authenticator-page": (context) => AuthenticatorPage(),

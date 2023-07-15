@@ -104,7 +104,7 @@ class _UpComingPageState extends State<UpComingPage> {
         usersRef.doc(uid).update({
           'ReservationStatus': checkStatus,
           'ConditionCheckAgency': keepStatus,
-          'DropOffStatus': dropOffStatus,
+          // 'DropOffStatus': dropOffStatus,
         }).then((_) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -131,9 +131,9 @@ class _UpComingPageState extends State<UpComingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Upcoming'),
-      ),
+      // appBar: AppBar(
+      //   title: Text('Upcoming'),
+      // ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('usersPIN').snapshots(),
         builder: (context, snapshot) {
@@ -152,6 +152,7 @@ class _UpComingPageState extends State<UpComingPage> {
               final bool isAdminStatusFalse =
                   userData['ConditionCheckAgency'] == false &&
                       userData['ReservationStatus'] == false;
+
               if (isAdminStatusFalse) {
                 return Card(
                   shape: RoundedRectangleBorder(
@@ -185,7 +186,8 @@ class _UpComingPageState extends State<UpComingPage> {
                     },
                     child: ListTile(
                       leading: Icon(Icons.notification_important),
-                      title: Text('${userData['Total']} THB'),
+                      title: Text(
+                          '${userData['FirstName'] ?? 'Null'} ${userData['LastName'] ?? 'Null'} ${userData['Total']} THB'),
                       subtitle: Text(
                           '${userData['DateReserva']}, ${userData['SubAgencyReserva']}, ${userData['PayReserva']}'),
                     ),

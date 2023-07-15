@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:testprojectbc/Service/singleton/userUID.dart';
+import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
 
 class VerificationPage extends StatefulWidget {
   @override
@@ -332,6 +333,10 @@ class _VerificationPageState extends State<VerificationPage> {
               ElevatedButton(
                 onPressed: () {
                   _submitForm();
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) {
+                    return LoginSuccessPage();
+                  }));
                 },
                 child: Text('Submit'),
               ),

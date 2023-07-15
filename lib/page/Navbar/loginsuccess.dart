@@ -41,27 +41,31 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
     final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
     final snapshot = await usersRefD1.doc(user).get();
     // final Keepdata1 = snapshot.data() as Map<String, dynamic>?;
+    final setNotifyRate = '0.0';
+    final isRateNoti;
+// isVerify = snapshot.data()!.containsKey('isVerify')
 
-    if (snapshot?['RateNoti'] != null) {
+    if (isRateNoti =
+        snapshot.data()!.containsKey('RateNoti') || setNotifyRate != null) {
       // keepCur
       print("if checkPriceChange is OK");
       double previousRate =
-          double.parse(snapshot['RateNoti']); //Rate from User set
-      double currentRate =
-          double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
+          double.parse(snapshot['RateNoti'] ?? '0.0'); //Rate from User set
+      double currentRate = double.parse(
+          snapshot['QRCode']['Rate'] ?? '0.0'); //Rate from agency Scarping
       print('Notify: $previousRate,  $currentRate');
 
-      if (currentRate > previousRate) {
-        // แจ้งเตือนว่าราคาสกุลเงินขึ้น
-        Future.delayed(Duration(seconds: 5), () {
-          createReservationPositiveNotification(context);
-        });
-      } else if (currentRate < previousRate) {
-        // แจ้งเตือนว่าราคาสกุลเงินลง
-        Future.delayed(Duration(seconds: 5), () {
-          createReservationNegativeNotification(context);
-        });
-      }
+      // if (currentRate > previousRate) {
+      //   // แจ้งเตือนว่าราคาสกุลเงินขึ้น
+      //   Future.delayed(Duration(seconds: 5), () {
+      //     createReservationPositiveNotification(context);
+      //   });
+      // } else if (currentRate < previousRate) {
+      //   // แจ้งเตือนว่าราคาสกุลเงินลง
+      //   Future.delayed(Duration(seconds: 5), () {
+      //     createReservationNegativeNotification(context);
+      //   });
+      // }
     }
   }
 
@@ -95,12 +99,21 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
             final usersRef = FirebaseFirestore.instance.collection('usersPIN');
             final snapshot = await usersRef.doc(user).get();
 
-            final isVerifyNAV = snapshot.get('isVerify') ?? false;
-            print('isVerifyNAV: $isVerifyNAV');
+            // isVerify = snapshot.get('isVerify') ?? false;
+            isVerify = snapshot.data()!.containsKey('isVerify')
+                ? snapshot.get('isVerify')
+                : false;
 
-            if (!isVerifyNAV) {
+            print('isVerify: $isVerify');
+
+            setState(() {
+              isVerify = isVerify;
+            });
+            print('Set State isVerify: $isVerify');
+
+            if (!isVerify!) {
               print('isVerify: $isVerify');
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => VerificationPage()),
               );

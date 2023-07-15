@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:testprojectbc/page/Setting/notify.dart';
 import 'package:testprojectbc/page/Setting/verifyKYC.dart';
 import '../Setting/Theme.dart';
 import '../login.dart';
@@ -43,33 +44,19 @@ class _HomeNavState extends State<HomeNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('สวัสดีคุณ $usernameData'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              authen.signOut().then((value) {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) {
-                  return LoginPage();
-                }));
-              });
-            },
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigator.push(
-          // context,
-          // MaterialPageRoute(builder: (context) => NotificationPage()),
-          // );
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => notify(),
+            ),
+          );
         },
-        child: const Icon(Icons.notifications),
-        backgroundColor: Colors.blue,
+        child: Icon(Icons.notifications),
+        backgroundColor: Colors.black,
         elevation: 4,
-        shape: const CircleBorder(),
+        shape: CircleBorder(),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       body: StreamBuilder<QuerySnapshot>(
@@ -83,10 +70,16 @@ class _HomeNavState extends State<HomeNav> {
               child: CircularProgressIndicator(),
             );
           }
-
           final users = snapshot.data!.docs;
 
           return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                    'assets/bgnavHome2.jpg'), // เพิ่มรูปภาพที่ต้องการ
+                fit: BoxFit.cover,
+              ),
+            ),
             child: ListView.builder(
               itemCount: users.length,
               itemBuilder: (context, index) {
@@ -99,11 +92,58 @@ class _HomeNavState extends State<HomeNav> {
 
                 return Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(30, 20, 20, 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  "Rate Thai",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontFamily: 'Lexend',
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Expanded(
+                          //   child: GestureDetector(
+                          //     // onTap: () {
+                          //     //   print('google');
+                          //     //   loginWithGoogle(context);
+                          //     // },
+                          //     child: Align(
+                          //       alignment: Alignment.topRight,
+                          //       child: IconButton(
+                          //         icon: const Icon(Icons.logout),
+                          //         onPressed: () {
+                          //           authen.signOut().then((value) {
+                          //             Navigator.pushReplacement(context,
+                          //                 MaterialPageRoute(builder: (context) {
+                          //               return LoginPage();
+                          //             }));
+                          //           });
+                          //         },
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
                     SizedBox(
                       width: 390,
                       height: 180,
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 15, 15, 0),
+                        padding: const EdgeInsets.fromLTRB(15, 0, 15, 0),
                         child: Stack(
                           children: [
                             GestureDetector(
@@ -194,11 +234,12 @@ class _HomeNavState extends State<HomeNav> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 0),
-                    const Divider(color: Colors.white),
+                    // const SizedBox(height: 0),
                     SizedBox(
                       height: 170,
                       child: Card(
+                        color:
+                            Color.fromARGB(0, 255, 255, 255).withOpacity(0.8),
                         margin: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 10,
@@ -362,9 +403,11 @@ class _HomeNavState extends State<HomeNav> {
                     ),
                     SizedBox(
                       //Box1
-                      height: MediaQuery.of(context).size.height * 1.0,
+                      height: MediaQuery.of(context).size.height - 490,
                       width: MediaQuery.of(context).size.width * 1.0,
                       child: Card(
+                        color:
+                            Color.fromARGB(0, 255, 255, 255).withOpacity(0.8),
                         margin:
                             EdgeInsets.symmetric(horizontal: 0, vertical: 0),
                         shape: RoundedRectangleBorder(
@@ -380,438 +423,474 @@ class _HomeNavState extends State<HomeNav> {
                             // Do something when the ListTile is tapped
                           },
                           child: Container(
-                            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
-                            child: ListTile(
-                              trailing: Icon(Icons.arrow_forward),
-                              onTap: () {
-                                // Navigator.push(context,
-                                //     MaterialPageRoute(builder: (context) => CurInfo2()));
-                              },
-                              contentPadding:
-                                  EdgeInsets.only(left: 20, right: 20),
-                              dense: true,
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        "Rate Thai - รายการล่าสุด",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      Row(children: [
-                                        SizedBox(width: 0),
-                                      ]),
-                                      if (isDropOffStatus)
+                              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  return ListTile(
+                                    trailing: Icon(Icons.arrow_forward),
+                                    onTap: () {
+                                      // Navigator.push(context,
+                                      //     MaterialPageRoute(builder: (context) => CurInfo2()));
+                                    },
+                                    contentPadding:
+                                        EdgeInsets.only(left: 20, right: 20),
+                                    dense: true,
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
                                         Row(
                                           children: [
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  0, 10, 0, 0),
-                                              child: ClipOval(
-                                                child: Image.network(
-                                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                  fit: BoxFit.cover,
-                                                  height: 40,
-                                                  width: 40,
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  10, 10, 0, 0),
-                                              child: Text(
-                                                "Receive Money 💵",
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: 10),
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  90, 10, 0, 0),
-                                              child: Text(
-                                                "Accept",
-                                                style: TextStyle(
-                                                  color: Colors.green,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                            Text(
+                                              "Rate Thai - รายการล่าสุด",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ],
                                         ),
-                                      if (isDropOffStatus)
                                         Column(
                                           children: [
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  240, 0, 0, 0),
-                                              child: Text(
-                                                "Status",
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade500,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                                            Row(children: [
+                                              SizedBox(width: 0),
+                                            ]),
+                                            if (isDropOffStatus)
+                                              Row(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            0, 10, 0, 0),
+                                                    child: ClipOval(
+                                                      child: Image.network(
+                                                        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                        fit: BoxFit.cover,
+                                                        height: 40,
+                                                        width: 40,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            10, 10, 0, 0),
+                                                    child: Text(
+                                                      "Receive Money 💵",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            90, 10, 0, 0),
+                                                    child: Text(
+                                                      "Accept",
+                                                      style: TextStyle(
+                                                        color: Colors.green,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
+                                            if (isDropOffStatus)
+                                              Column(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            240, 0, 0, 0),
+                                                    child: Text(
+                                                      "Status",
+                                                      style: TextStyle(
+                                                        color: Colors
+                                                            .grey.shade500,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            if (!isDropOffStatus)
+                                              Row(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            0, 10, 0, 0),
+                                                    child: ClipOval(
+                                                      child: Image.network(
+                                                        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                        fit: BoxFit.cover,
+                                                        height: 40,
+                                                        width: 40,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            10, 10, 0, 0),
+                                                    child: Text(
+                                                      "Receive Money 💵",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 10),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            50, 10, 0, 0),
+                                                    child: Text(
+                                                      "In Progress...",
+                                                      style: TextStyle(
+                                                        color: Colors.red,
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            if (!isDropOffStatus)
+                                              Column(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            240, 0, 0, 0),
+                                                    child: Text(
+                                                      "Status",
+                                                      style: TextStyle(
+                                                        color: Colors
+                                                            .grey.shade500,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            Divider(
+                                              color: Colors.black,
+                                              thickness: 0,
+                                            ),
+                                            Column(
+                                              children: [
+                                                Row(children: [
+                                                  SizedBox(width: 0),
+                                                ]),
+                                                if (isCheckAgencyStatus)
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 10, 0, 0),
+                                                        child: ClipOval(
+                                                          child: Image.network(
+                                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                            fit: BoxFit.cover,
+                                                            height: 40,
+                                                            width: 40,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                10, 10, 0, 0),
+                                                        child: Text(
+                                                          "Reserve Money 💰",
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                90, 10, 0, 0),
+                                                        child: Text(
+                                                          "Accept",
+                                                          style: TextStyle(
+                                                            color: Colors.green,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                if (isCheckAgencyStatus)
+                                                  Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                240, 0, 0, 0),
+                                                        child: Text(
+                                                          "Status",
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade500,
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                if (!isCheckAgencyStatus)
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 10, 0, 0),
+                                                        child: ClipOval(
+                                                          child: Image.network(
+                                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                            fit: BoxFit.cover,
+                                                            height: 40,
+                                                            width: 40,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                10, 10, 0, 0),
+                                                        child: Text(
+                                                          "Reserve Money 💰",
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                50, 10, 0, 0),
+                                                        child: Text(
+                                                          "In Progress...",
+                                                          style: TextStyle(
+                                                            color: Colors.red,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                if (!isCheckAgencyStatus)
+                                                  Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                240, 0, 0, 0),
+                                                        child: Text(
+                                                          "Status",
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade500,
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                              ],
+                                            ),
+                                            Divider(
+                                              color: Colors.black,
+                                              thickness: 0,
+                                            ),
+                                            Column(
+                                              children: [
+                                                Row(children: [
+                                                  SizedBox(width: 0),
+                                                ]),
+                                                if (isCheckAdminStatus)
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 10, 0, 0),
+                                                        child: ClipOval(
+                                                          child: Image.network(
+                                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                            fit: BoxFit.cover,
+                                                            height: 40,
+                                                            width: 40,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                10, 10, 0, 0),
+                                                        child: Text(
+                                                          "Verify Account(KYC) 📝",
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                58, 10, 0, 0),
+                                                        child: Text(
+                                                          "Accept",
+                                                          style: TextStyle(
+                                                            color: Colors.green,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                if (isCheckAdminStatus)
+                                                  Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                240, 0, 0, 0),
+                                                        child: Text(
+                                                          "Status",
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade500,
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                if (!isCheckAdminStatus)
+                                                  Row(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 10, 0, 0),
+                                                        child: ClipOval(
+                                                          child: Image.network(
+                                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                            fit: BoxFit.cover,
+                                                            height: 40,
+                                                            width: 40,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                10, 10, 0, 0),
+                                                        child: Text(
+                                                          "Verify Account(KYC) 📝",
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 10),
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                20, 10, 0, 0),
+                                                        child: Text(
+                                                          "In Progress...",
+                                                          style: TextStyle(
+                                                            color: Colors.red,
+                                                            fontSize: 14,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                if (!isCheckAdminStatus)
+                                                  Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                240, 0, 0, 0),
+                                                        child: Text(
+                                                          "Status",
+                                                          style: TextStyle(
+                                                            color: Colors
+                                                                .grey.shade500,
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                              ],
+                                            ),
+                                            Divider(
+                                              color: Colors.black,
+                                              thickness: 0,
                                             ),
                                           ],
                                         ),
-                                      if (!isDropOffStatus)
-                                        Row(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  0, 10, 0, 0),
-                                              child: ClipOval(
-                                                child: Image.network(
-                                                  'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                  fit: BoxFit.cover,
-                                                  height: 40,
-                                                  width: 40,
-                                                ),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  10, 10, 0, 0),
-                                              child: Text(
-                                                "Receive Money 💵",
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: 10),
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  50, 10, 0, 0),
-                                              child: Text(
-                                                "In Progress...",
-                                                style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      if (!isDropOffStatus)
-                                        Column(
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  240, 0, 0, 0),
-                                              child: Text(
-                                                "Status",
-                                                style: TextStyle(
-                                                  color: Colors.grey.shade500,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      Divider(
-                                        color: Colors.black,
-                                        thickness: 0,
-                                      ),
-                                      Column(
-                                        children: [
-                                          Row(children: [
-                                            SizedBox(width: 0),
-                                          ]),
-                                          if (isCheckAgencyStatus)
-                                            Row(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      0, 10, 0, 0),
-                                                  child: ClipOval(
-                                                    child: Image.network(
-                                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                      fit: BoxFit.cover,
-                                                      height: 40,
-                                                      width: 40,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      10, 10, 0, 0),
-                                                  child: Text(
-                                                    "Reserve Money 💰",
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(width: 10),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      90, 10, 0, 0),
-                                                  child: Text(
-                                                    "Accept",
-                                                    style: TextStyle(
-                                                      color: Colors.green,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          if (isCheckAgencyStatus)
-                                            Column(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      240, 0, 0, 0),
-                                                  child: Text(
-                                                    "Status",
-                                                    style: TextStyle(
-                                                      color:
-                                                          Colors.grey.shade500,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          if (!isCheckAgencyStatus)
-                                            Row(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      0, 10, 0, 0),
-                                                  child: ClipOval(
-                                                    child: Image.network(
-                                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                      fit: BoxFit.cover,
-                                                      height: 40,
-                                                      width: 40,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      10, 10, 0, 0),
-                                                  child: Text(
-                                                    "Reserve Money 💰",
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(width: 10),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      50, 10, 0, 0),
-                                                  child: Text(
-                                                    "In Progress...",
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          if (!isCheckAgencyStatus)
-                                            Column(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      240, 0, 0, 0),
-                                                  child: Text(
-                                                    "Status",
-                                                    style: TextStyle(
-                                                      color:
-                                                          Colors.grey.shade500,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                        ],
-                                      ),
-                                      Divider(
-                                        color: Colors.black,
-                                        thickness: 0,
-                                      ),
-                                      Column(
-                                        children: [
-                                          Row(children: [
-                                            SizedBox(width: 0),
-                                          ]),
-                                          if (isCheckAdminStatus)
-                                            Row(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      0, 10, 0, 0),
-                                                  child: ClipOval(
-                                                    child: Image.network(
-                                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                      fit: BoxFit.cover,
-                                                      height: 40,
-                                                      width: 40,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      10, 10, 0, 0),
-                                                  child: Text(
-                                                    "Verify Account(KYC) 📝",
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(width: 10),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      58, 10, 0, 0),
-                                                  child: Text(
-                                                    "Accept",
-                                                    style: TextStyle(
-                                                      color: Colors.green,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          if (isCheckAdminStatus)
-                                            Column(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      240, 0, 0, 0),
-                                                  child: Text(
-                                                    "Status",
-                                                    style: TextStyle(
-                                                      color:
-                                                          Colors.grey.shade500,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          if (!isCheckAdminStatus)
-                                            Row(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      0, 10, 0, 0),
-                                                  child: ClipOval(
-                                                    child: Image.network(
-                                                      'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                      fit: BoxFit.cover,
-                                                      height: 40,
-                                                      width: 40,
-                                                    ),
-                                                  ),
-                                                ),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      10, 10, 0, 0),
-                                                  child: Text(
-                                                    "Verify Account(KYC) 📝",
-                                                    style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                                SizedBox(width: 10),
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      20, 10, 0, 0),
-                                                  child: Text(
-                                                    "In Progress...",
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                      fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          if (!isCheckAdminStatus)
-                                            Column(
-                                              children: [
-                                                Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      240, 0, 0, 0),
-                                                  child: Text(
-                                                    "Status",
-                                                    style: TextStyle(
-                                                      color:
-                                                          Colors.grey.shade500,
-                                                      fontSize: 12,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                        ],
-                                      ),
-                                      Divider(
-                                        color: Colors.black,
-                                        thickness: 0,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              )),
                         ),
                       ),
                     ),

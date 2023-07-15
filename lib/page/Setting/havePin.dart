@@ -52,24 +52,45 @@ class _HavePinPage extends State<HavePinPage> {
     }
   }
 
+  Future<void> _checkMakePin() async {
+    final querySnapshot = await usersRef.where('UID', isEqualTo: user).get();
+    if (querySnapshot.docs.isNotEmpty) {
+      final documentSnapshot = querySnapshot.docs.first;
+      if (documentSnapshot.exists &&
+          documentSnapshot.data().containsKey('pin')) {
+        final existingPin = documentSnapshot.data()['pin'];
+      } else {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) {
+          return CreatePinPage();
+        }));
+      }
+    }
+  }
+
   Future<void> _checkPin(String pin) async {
     final querySnapshot = await usersRef.where('UID', isEqualTo: user).get();
     if (querySnapshot.docs.isNotEmpty) {
       final documentSnapshot = querySnapshot.docs.first;
-      final existingPin = documentSnapshot.get('pin');
-      if (existingPin == pin) {
-        _savePINSession(true);
-        // กลับไปยังหน้าแรกของ BottomNavigationBar และ navigate ไปยังหน้าที่ต้องการ
-        // ignore: use_build_context_synchronously
-        // Navigator.pop(context, true);
+      if (documentSnapshot.exists &&
+          documentSnapshot.data().containsKey('pin')) {
+        final existingPin = documentSnapshot.data()['pin'];
+        if (existingPin == pin) {
+          _savePINSession(true);
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
+            return GetQRCodePage(
+              qrCodeData: '',
+            );
+          }));
+        } else {
+          _onPinFail();
+        }
+      } else {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) {
-          return GetQRCodePage(
-            qrCodeData: '',
-          );
+          return CreatePinPage();
         }));
-      } else {
-        _onPinFail(); // เรียกใช้ฟังก์ชัน _onPinFail() ในกรณีที่ PINCODE ผิด
       }
     }
   }
@@ -106,6 +127,7 @@ class _HavePinPage extends State<HavePinPage> {
 
   @override
   void initState() {
+    _checkMakePin();
     super.initState();
     _loginTime = DateTime.now(); // เก็บเวลาที่ผู้ใช้เข้าสู่ระบบสำเร็จ
     init();

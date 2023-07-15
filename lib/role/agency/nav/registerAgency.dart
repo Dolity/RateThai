@@ -3,22 +3,23 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import 'package:testprojectbc/models/profile.dart';
 import 'package:testprojectbc/page/login.dart';
-import '../models/profile.dart';
+import 'package:testprojectbc/role/agency/nav/loginAgency.dart';
 
 // import '../flutter_flow/flutter_flow_theme.dart';
 // import '../flutter_flow/flutter_flow_util.dart';
 // import '../flutter_flow/flutter_flow_widgets.dart';
 // import 'lib.google_fonts.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterAgencyPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _RegisterPage();
+    return _RegisterAgencyPage();
   }
 }
 
-class _RegisterPage extends State<RegisterPage> {
+class _RegisterAgencyPage extends State<RegisterAgencyPage> {
   bool value = false;
   final formKey = GlobalKey<FormState>();
   Profile profile = Profile();
@@ -84,7 +85,7 @@ class _RegisterPage extends State<RegisterPage> {
                       child: Card(
                         margin: EdgeInsets.symmetric(
                           horizontal: 10,
-                          vertical: 100,
+                          vertical: 60,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
@@ -137,9 +138,28 @@ class _RegisterPage extends State<RegisterPage> {
                                   ),
                                 ],
                               ),
+                              Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(70, 20, 0, 0),
+                                    child: Text(
+                                      "For Agency.",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontFamily: 'Lexend',
+                                        fontWeight: FontWeight.normal,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                               Padding(
                                 padding:
-                                    EdgeInsetsDirectional.fromSTEB(0, 40, 0, 0),
+                                    EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
                                 child: ListView(
                                   padding: EdgeInsets.zero,
                                   shrinkWrap: true,
@@ -409,11 +429,10 @@ class _RegisterPage extends State<RegisterPage> {
                                                       // backgroundColor: Colors.blueGrey
                                                     );
                                                     if (!mounted) return;
-                                                    Navigator.pushReplacement(
-                                                        context,
+                                                    Navigator.push(context,
                                                         MaterialPageRoute(
                                                             builder: (context) {
-                                                      return LoginPage();
+                                                      return LoginAgencyPage();
                                                     }));
                                                   });
                                                 } on FirebaseAuthException catch (e) {
@@ -462,9 +481,11 @@ class _RegisterPage extends State<RegisterPage> {
                                               EdgeInsets.fromLTRB(24, 0, 4, 0),
                                           child: TextButton(
                                             onPressed: () {
-                                              Navigator.pushNamed(
-                                                  context, "/login-page",
-                                                  arguments: []);
+                                              Navigator.pushReplacement(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return LoginAgencyPage();
+                                              }));
                                             },
                                             child: Text(
                                               'Login',

@@ -102,6 +102,8 @@ class _CompletedPageState extends State<CompletedPage> {
                 final String _DateReservation = userData['DateReserva'];
                 final String _Type = userData['PayReserva'];
                 final String _SubAgency = userData['SubAgencyReserva'];
+                final String _UserFName = userData['FirstName'] ?? 'Null';
+                final String _UserName = userData['LastName'] ?? 'Null';
 
                 return Card(
                   shape: RoundedRectangleBorder(
@@ -109,7 +111,7 @@ class _CompletedPageState extends State<CompletedPage> {
                   ),
                   child: ListTile(
                     leading: Icon(Icons.check_circle),
-                    title: Text('$_Total THB'),
+                    title: Text('$_UserFName $_UserName $_Total THB'),
                     subtitle:
                         Text('${_DateReservation}, ${_SubAgency}, ${_Type}'),
                   ),

@@ -7,6 +7,7 @@ import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:testprojectbc/models/qrModel.dart';
+import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
 import 'package:testprojectbc/page/Reservation/reservaServices.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -148,6 +149,11 @@ class _QRCodePageState extends State<QRCodePage> {
                         backgroundColor: Colors.black54,
                         textColor: Colors.white,
                       );
+
+                      Navigator.pushReplacement(context,
+                          MaterialPageRoute(builder: (context) {
+                        return LoginSuccessPage();
+                      }));
 
                       print('object: $_qrCodeData');
                       print('Data on BC: ${notesServices.notes}');

@@ -4,6 +4,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 // import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:testprojectbc/models/profile.dart';
 import 'package:testprojectbc/page/Navbar/homeNav.dart';
 import 'package:testprojectbc/page/authenticator.dart';
 import 'package:testprojectbc/page/curTest.dart';
@@ -13,32 +14,29 @@ import 'package:testprojectbc/page/selectCurency.dart';
 import 'package:testprojectbc/page/smsFA.dart';
 import 'package:testprojectbc/role/admin/nav/navHelperAdmin.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
-import '../models/profile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'Setting/Theme.dart';
-import 'addPost.dart';
-import 'curinfo.dart';
-import 'Navbar/loginsuccess.dart';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:testprojectbc/role/agency/nav/registerAgency.dart';
 
 // import com.facebook.FacebookSdk;
 // import com.facebook.appevents.AppEventsLogger;
 
-class LoginPage extends StatefulWidget {
+class LoginAgencyPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _LoginPage();
+    return _LoginAgencyPage();
   }
 }
 
-class _LoginPage extends State<LoginPage> {
-  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
+class _LoginAgencyPage extends State<LoginAgencyPage> {
+  // DarkThemeProvider themeChangeProvider = DarkThemeProvider();
   bool isDarkTheme = false;
   bool value = false;
   var _usernameController = TextEditingController();
@@ -137,7 +135,7 @@ class _LoginPage extends State<LoginPage> {
                                               // height: 450,
                                               height: MediaQuery.sizeOf(context)
                                                       .height -
-                                                  200,
+                                                  320,
                                               child: Padding(
                                                 padding: EdgeInsets.all(10),
                                                 child: Column(
@@ -173,7 +171,7 @@ class _LoginPage extends State<LoginPage> {
                                                           EdgeInsets.fromLTRB(
                                                               24, 10, 0, 0),
                                                       child: Text(
-                                                        "Welcome",
+                                                        "Welcome Agency",
                                                         textAlign:
                                                             TextAlign.left,
                                                         style: TextStyle(
@@ -405,13 +403,13 @@ class _LoginPage extends State<LoginPage> {
                                                                   24, 0, 0, 0),
                                                           child: TextButton(
                                                             onPressed: () {
-                                                              Navigator.pushReplacement(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                      builder:
-                                                                          (context) {
-                                                                return AddpostPage();
-                                                              }));
+                                                              // Navigator.pushReplacement(
+                                                              //     context,
+                                                              //     MaterialPageRoute(
+                                                              //         builder:
+                                                              //             (context) {
+                                                              //   return AddpostPage();
+                                                              // }));
                                                             },
                                                             child: Text(
                                                               "Forgot your password?",
@@ -563,7 +561,7 @@ class _LoginPage extends State<LoginPage> {
                                                                             .doc(user.uid)
                                                                             .update({
                                                                           'role':
-                                                                              "user",
+                                                                              "agency",
                                                                           'UID':
                                                                               user.uid,
                                                                           'displayName':
@@ -582,7 +580,7 @@ class _LoginPage extends State<LoginPage> {
                                                                             .pushReplacement(
                                                                           context,
                                                                           MaterialPageRoute(
-                                                                              builder: (context) => GooglefaPage()),
+                                                                              builder: (context) => NavHleperAgencyPage()),
                                                                         );
                                                                       }
                                                                     } else {
@@ -593,7 +591,7 @@ class _LoginPage extends State<LoginPage> {
                                                                               .uid)
                                                                           .set({
                                                                         'role':
-                                                                            "user",
+                                                                            "agency",
                                                                         'UID': user
                                                                             .uid,
                                                                         'displayName':
@@ -614,7 +612,7 @@ class _LoginPage extends State<LoginPage> {
                                                                         context,
                                                                         MaterialPageRoute(
                                                                             builder: (context) =>
-                                                                                GooglefaPage()),
+                                                                                NavHleperAgencyPage()),
                                                                       );
                                                                     }
                                                                   }
@@ -647,101 +645,8 @@ class _LoginPage extends State<LoginPage> {
                                                         ),
                                                       ],
                                                     ),
-                                                    Padding(
-                                                      padding:
-                                                          EdgeInsets.fromLTRB(
-                                                              0, 30, 0, 20),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                              'or sign in using',
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                fontFamily:
-                                                                    'Lexend',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                color:
-                                                                    Colors.grey,
-                                                              ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .fromLTRB(
-                                                          0, 0, 0, 20),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                print(
-                                                                    'facebook');
-                                                                loginWithFacebook(
-                                                                    context);
-                                                              },
-                                                              child: Align(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                child:
-                                                                    Image.asset(
-                                                                  'assets/facebook.png',
-                                                                  fit: BoxFit
-                                                                      .none,
-                                                                  semanticLabel:
-                                                                      'image description',
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                print('google');
-                                                                loginWithGoogle(
-                                                                    context);
-                                                              },
-                                                              child: Align(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                child:
-                                                                    Image.asset(
-                                                                  'assets/google.png',
-                                                                  fit: BoxFit
-                                                                      .none,
-                                                                  semanticLabel:
-                                                                      'image description',
-                                                                  scale: 1.2,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                    SizedBox(
+                                                      height: 10,
                                                     ),
                                                     Row(
                                                       mainAxisAlignment:
@@ -768,10 +673,13 @@ class _LoginPage extends State<LoginPage> {
                                                                   24, 0, 4, 0),
                                                           child: TextButton(
                                                             onPressed: () {
-                                                              Navigator.pushReplacementNamed(
+                                                              Navigator.pushReplacement(
                                                                   context,
-                                                                  "/register-page",
-                                                                  arguments: []);
+                                                                  MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) {
+                                                                return RegisterAgencyPage();
+                                                              }));
                                                             },
                                                             child: Text(
                                                               'Create',
