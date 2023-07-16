@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:ionicons/ionicons.dart';
 import '../Setting/Theme.dart';
 import '../Setting/forgotPW.dart';
 
@@ -54,111 +56,143 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ThemeData themeData = Styles.themeData(true, context); // ใช้สไตล์จาก Styles
+    ThemeData themeData =
+        Styles.themeData(false, context); // ใช้สไตล์จาก Styles
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'เปลี่ยนรหัสผ่าน',
-          style: themeData.textTheme.titleLarge!.copyWith(
-            color: themeData.colorScheme.onPrimary,
-          ),
+          'Change Password',
         ),
         backgroundColor: themeData.appBarTheme.backgroundColor,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Align(
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              TextField(
-                controller: emailController,
-                style: themeData.textTheme.titleMedium!.copyWith(
-                  color: themeData.colorScheme.onBackground,
-                  fontWeight: FontWeight.bold,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'อีเมล',
-                  labelStyle: themeData.textTheme.titleMedium!.copyWith(
-                    color: themeData.colorScheme.onBackground,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: themeData.colorScheme.primary,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              TextField(
-                controller: oldPasswordController,
-                style: themeData.textTheme.titleMedium!.copyWith(
-                  color: themeData.colorScheme.onBackground,
-                  fontWeight: FontWeight.bold,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'รหัสผ่านเดิม',
-                  labelStyle: themeData.textTheme.titleMedium!.copyWith(
-                    color: themeData.colorScheme.onBackground,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: themeData.colorScheme.primary,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 16.0),
-              TextField(
-                controller: newPasswordController,
-                style: themeData.textTheme.titleMedium!.copyWith(
-                  color: themeData.colorScheme.onBackground,
-                  fontWeight: FontWeight.bold,
-                ),
-                decoration: InputDecoration(
-                  labelText: 'รหัสผ่านใหม่',
-                  labelStyle: themeData.textTheme.titleMedium!.copyWith(
-                    color: themeData.colorScheme.onBackground,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: themeData.colorScheme.primary,
-                      width: 2.0,
-                    ),
-                  ),
-                ),
-                obscureText: true,
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                    themeData.colorScheme.primary,
-                  ),
-                ),
-                onPressed: () => _resetPassword(context),
-                child: Text(
-                  'Save',
+      body: Container(
+        decoration: BoxDecoration(
+          color: themeData.cardColor,
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Align(
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Reset Password',
                   style: TextStyle(
-                    fontSize: 20,
+                    fontSize: 30,
+                    fontFamily: 'Lexend',
                     fontWeight: FontWeight.bold,
-                    color: themeData.colorScheme.onPrimary,
+                    color: Colors.black,
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: 20.0),
+                TextFormField(
+                  controller: emailController,
+                  style: themeData.textTheme.titleMedium!.copyWith(
+                    color: themeData.colorScheme.onBackground,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: InputDecoration(
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                    prefixIcon: Icon(
+                      Ionicons.mail_open_outline,
+                      color: Colors.grey,
+                    ),
+                    hintText: "Email",
+                    hintStyle: GoogleFonts.nunitoSans(
+                        fontWeight: FontWeight.w600, color: Colors.black38),
+                    fillColor: Colors.black12,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: oldPasswordController,
+                  style: themeData.textTheme.titleMedium!.copyWith(
+                    color: themeData.colorScheme.onBackground,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: InputDecoration(
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                    prefixIcon: Icon(
+                      Ionicons.lock_open_outline,
+                      color: Colors.grey,
+                    ),
+                    hintText: "Old Passwod",
+                    hintStyle: GoogleFonts.nunitoSans(
+                        fontWeight: FontWeight.w600, color: Colors.black38),
+                    fillColor: Colors.black12,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none),
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 16.0),
+                TextField(
+                  controller: newPasswordController,
+                  style: themeData.textTheme.titleMedium!.copyWith(
+                    color: themeData.colorScheme.onBackground,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: InputDecoration(
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                    prefixIcon: Icon(
+                      Ionicons.lock_closed_outline,
+                      color: Colors.grey,
+                    ),
+                    hintText: "New Passwod",
+                    hintStyle: GoogleFonts.nunitoSans(
+                        fontWeight: FontWeight.w600, color: Colors.black38),
+                    fillColor: Colors.black12,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none),
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 16.0),
+                ElevatedButtonTheme(
+                  data: ElevatedButtonThemeData(
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 13),
+                      primary: Colors.black54,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
+                  child: ElevatedButton(
+                    // style: ButtonStyle(
+                    //   backgroundColor: MaterialStateProperty.all<Color>(
+                    //     themeData.colorScheme.primary,
+                    //   ),
+                    // ),
+                    onPressed: () => _resetPassword(context),
+                    child: Text(
+                      'Save',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: 'Lexend',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

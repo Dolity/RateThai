@@ -61,6 +61,8 @@ dependencies:
   syncfusion_flutter_sliders: ^22.1.34
   google_fonts: ^4.0.4
   ionicons: ^0.2.2
+  flutter_secure_storage: ^8.0.0
+  flutter_windowmanager: ^0.2.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

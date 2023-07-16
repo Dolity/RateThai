@@ -49,10 +49,16 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
         snapshot.data()!.containsKey('RateNoti') || setNotifyRate != null) {
       // keepCur
       print("if checkPriceChange is OK");
-      double previousRate =
-          double.parse(snapshot['RateNoti'] ?? '0.0'); //Rate from User set
-      double currentRate = double.parse(
-          snapshot['QRCode']['Rate'] ?? '0.0'); //Rate from agency Scarping
+      // double previousRate = double.parse(snapshot['RateNoti'] ?? '0.0'); //Rate from User set
+      double previousRate = snapshot.data()!.containsKey('RateNoti')
+          ? double.parse(snapshot.data()!['RateNoti'])
+          : 0.0;
+
+      // double currentRate = double.parse(
+      //     snapshot['QRCode']['Rate'] ?? '0.0'); //Rate from agency Scarping
+      double currentRate = snapshot.data()!.containsKey('QRCode')
+          ? double.parse(snapshot.data()!['QRCode']['Rate'])
+          : 0.0;
       print('Notify: $previousRate,  $currentRate');
 
       // if (currentRate > previousRate) {

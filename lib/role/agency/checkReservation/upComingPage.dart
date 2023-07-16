@@ -152,6 +152,10 @@ class _UpComingPageState extends State<UpComingPage> {
               final bool isAdminStatusFalse =
                   userData['ConditionCheckAgency'] == false &&
                       userData['ReservationStatus'] == false;
+              // final String _Rate = userData['QRCode']['Rate'] ?? 'Null';
+              // final String _Amount = userData['QRCode']['Amount'] ?? 'Null';
+              // final String _Total = userData['QRCode']['Total'] ?? 'Null';
+              // final String _Currency = userData['QRCode']['Currency'] ?? 'Null';
 
               if (isAdminStatusFalse) {
                 return Card(
@@ -163,9 +167,124 @@ class _UpComingPageState extends State<UpComingPage> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Text('ยืนยันการจอง'),
-                          content: Text(
-                              'คุณต้องการยืนยันการจองสกุลเงินนี้ใช่หรือไม่?'),
+                          title: Text('Booking Confirmation'),
+                          content: Container(
+                            height: 180,
+                            child: Column(
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            'Do you want to confirm this currency booking?',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(text: ''),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Name: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text:
+                                              '${userData['FirstName'] ?? 'Null'} ${userData['LastName'] ?? 'Null'}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Receive: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text: '${userData['Total']} THB'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Date: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text: '${userData['DateReserva']}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'SubAgency: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text:
+                                              '${userData['SubAgencyReserva']}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 14,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Type: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text: '${userData['PayReserva']}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                              ],
+                            ),
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () async {

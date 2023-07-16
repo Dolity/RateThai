@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:ionicons/ionicons.dart';
 import '../Setting/changeEP.dart';
 
 class changeEmailNav extends StatefulWidget {
@@ -35,25 +37,33 @@ class _changeEmailNavState extends State<changeEmailNav> {
               children: <Widget>[
                 const SizedBox(height: 20),
                 Text(
-                  'สวัสดีคุณ',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Text(
-                  'หน้านี้มีไว้สำหรับเปลี่ยน Email',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  'Reset Email',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontFamily: 'Lexend',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 20.0),
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    hintText: 'Enter your new email address',
-                    filled: true,
-                    fillColor: themeData.colorScheme.background,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                    prefixIcon: Icon(
+                      Ionicons.mail_outline,
+                      color: Colors.grey,
                     ),
+                    hintText: "New Email",
+                    hintStyle: GoogleFonts.nunitoSans(
+                        fontWeight: FontWeight.w600, color: Colors.black38),
+                    fillColor: Colors.black12,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none),
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -67,13 +77,20 @@ class _changeEmailNavState extends State<changeEmailNav> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
-                    hintText: 'Enter your password to confirm',
-                    filled: true,
-                    fillColor: themeData.colorScheme.background,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                    prefixIcon: Icon(
+                      Ionicons.lock_closed_outline,
+                      color: Colors.grey,
                     ),
+                    hintText: "Password",
+                    hintStyle: GoogleFonts.nunitoSans(
+                        fontWeight: FontWeight.w600, color: Colors.black38),
+                    fillColor: Colors.black12,
+                    filled: true,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none),
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -86,54 +103,62 @@ class _changeEmailNavState extends State<changeEmailNav> {
                   },
                 ),
                 const SizedBox(height: 20.0),
-                Align(
-                  alignment: Alignment.center,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          await UserManagement.changeEmail(
-                            _emailController.text,
-                            _passwordController.text,
-                          );
-                          // ignore: use_build_context_synchronously
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('แจ้งเตือน'),
-                              content: const Text(
-                                  'ท่านได้ทำการเปลี่ยน Email สำเร็จแล้ว'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('ตกลง'),
-                                ),
-                              ],
-                            ),
-                          );
-                          _emailController.clear();
-                          _passwordController.clear();
-                        }
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                          themeData.colorScheme.primary,
-                        ),
+                ElevatedButtonTheme(
+                  data: ElevatedButtonThemeData(
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 13),
+                      primary: Colors.black54,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 15,
-                          horizontal: 20,
-                        ),
+                    ),
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            await UserManagement.changeEmail(
+                              _emailController.text,
+                              _passwordController.text,
+                            );
+                            // ignore: use_build_context_synchronously
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('แจ้งเตือน'),
+                                content: const Text(
+                                    'ท่านได้ทำการเปลี่ยน Email สำเร็จแล้ว'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('ตกลง'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            _emailController.clear();
+                            _passwordController.clear();
+                          }
+                        },
+                        // style: ButtonStyle(
+                        //   backgroundColor: MaterialStateProperty.all<Color>(
+                        //     themeData.colorScheme.primary,
+                        //   ),
+                        // ),
+
                         child: Text(
                           'Save',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
+                            fontFamily: 'Lexend',
                             fontWeight: FontWeight.bold,
-                            color: themeData.colorScheme.onPrimary,
+                            color: Colors.white,
                           ),
                         ),
                       ),

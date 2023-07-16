@@ -84,18 +84,18 @@ class _CheckURLPageState extends State<CheckURLPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('ผลการตรวจสอบ URL'),
+          title: Text('URL check result'),
           content: Text(
             _canAccessURLs[url]!
-                ? 'เข้าใช้งานเว็บไซต์ได้ปกติ'
-                : 'URL ผิดพลาด ไม่สามารถเข้าถึงได้',
+                ? 'Can access the website.'
+                : 'URL error, can\'t be accessed.',
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('ตกลง'),
+              child: Text('OK'),
             ),
           ],
         );
@@ -106,7 +106,7 @@ class _CheckURLPageState extends State<CheckURLPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('ตรวจสอบ URL')),
+      appBar: AppBar(title: Text('URL Check')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -124,7 +124,7 @@ class _CheckURLPageState extends State<CheckURLPage> {
                         showPopup(context, urls[i]);
                       },
                       child: Text(
-                        'ตรวจสอบ ${urls[i]}',
+                        'Verify ${urls[i]}',
                         style: TextStyle(fontSize: 12, color: Colors.white),
                       ),
                     ),

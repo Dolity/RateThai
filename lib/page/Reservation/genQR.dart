@@ -31,6 +31,7 @@ class _QRCodePageState extends State<QRCodePage> {
   String _fname = '';
   String _lname = '';
   String _gender = '';
+  String _uidQR = '';
   late final qrCodeDataProvider;
 
   @override
@@ -58,6 +59,7 @@ class _QRCodePageState extends State<QRCodePage> {
           _fname = data['FirstName'] ?? '';
           _lname = data['LastName'] ?? '';
           _gender = data['Gender'] ?? '';
+          _uidQR = data['UID'] ?? '';
         });
       }
 
@@ -122,6 +124,7 @@ class _QRCodePageState extends State<QRCodePage> {
                         'Date': _dateReserva,
                         'SubAgency': _subAgencyReserva,
                         'Pay': _payReserva,
+                        'Uid': _uidQR,
                       };
                       final jsonReservationData = jsonEncode(jsonMap);
                       setState(() {

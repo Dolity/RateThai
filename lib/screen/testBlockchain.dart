@@ -48,6 +48,7 @@ class _testBCState extends State<testBC> {
                         '${notesServices.notes[index].firstnameBC} ${notesServices.notes[index].lastnameBC} (${notesServices.notes[index].genderBC})'),
                     subtitle: Text(
                         '${notesServices.notes[index].agencyBC} ${notesServices.notes[index].rateBC} ${notesServices.notes[index].currencyBC}, ${notesServices.notes[index].totalBC} THB, ${notesServices.notes[index].dateBC} '),
+                    leading: Icon(Icons.remove_red_eye_outlined),
                     trailing: IconButton(
                       icon: const Icon(
                         Icons.delete,
@@ -78,49 +79,6 @@ class _testBCState extends State<testBC> {
                 },
               ),
             ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('New Note'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter title',
-                      ),
-                    ),
-                    TextField(
-                      controller: descriptionController,
-                      decoration: const InputDecoration(
-                        hintText: 'Enter description',
-                      ),
-                    ),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      // notesServices.addNote(
-                      //   titleController.text,
-                      //   descriptionController.text
-                      // );
-
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Add'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      ),
     );
   }
 }

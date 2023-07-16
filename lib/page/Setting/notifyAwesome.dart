@@ -12,20 +12,23 @@ String keepCur = "";
 String keepRate = "";
 String keepResevaProviRateUpdate = "";
 
-final user = FirebaseAuth.instance.currentUser!.uid;
+// final user = FirebaseAuth.instance.currentUser!.uid;
 
 int createUniqueId() {
   return DateTime.now().millisecondsSinceEpoch.remainder(100000);
 }
 
 Future<void> createReservationPositiveNotification(BuildContext context) async {
+  final user = FirebaseAuth.instance.currentUser!.uid;
   final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
   final snapshot = await usersRefD1.doc(user).get();
-
+  // keepCur = context.watch<ReservationData>().notifyCur.toString() ?? 'USD';
+  // keepRate = context.watch<ReservationData>().notifyRate.toString();
   double previousRate = double.parse(snapshot['RateNoti']); //Rate from User set
   double currentRate =
       double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
   String Curr = snapshot['QRCode']['Currency'];
+  String CurrFS = snapshot['CurrencyNoti'];
 
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
@@ -33,7 +36,7 @@ Future<void> createReservationPositiveNotification(BuildContext context) async {
       channelKey: 'basic_channel',
       title: '${Emojis.money_dollar_banknote}$Curr Price Alert!',
       body:
-          '1 $Curr  is now $keepRate THB ${Emojis.symbols_check_mark} better than' +
+          '1 ${CurrFS}  is now ${currentRate} THB ${Emojis.symbols_check_mark} better than' +
               ' ${previousRate} THB',
       notificationLayout: NotificationLayout.Default,
 
@@ -51,10 +54,11 @@ Future<void> createReservationPositiveNotification(BuildContext context) async {
 }
 
 Future<void> createReservationNegativeNotification(BuildContext context) async {
-  // keepCur = context.watch<ReservationData>().notifyCur.toString();
+  // keepCur = context.watch<ReservationData>().notifyCur.toString() ?? 'USD';
   // keepRate = context.watch<ReservationData>().notifyRate.toString();
   // keepResevaProviRateUpdate =
   //     context.watch<ReservationData>().resevaProviRateUpdate.toString();
+  final user = FirebaseAuth.instance.currentUser!.uid;
   final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
   final snapshot = await usersRefD1.doc(user).get();
   // final Keepdata1 = snapshot.data() as Map<String, dynamic>?;
@@ -63,6 +67,7 @@ Future<void> createReservationNegativeNotification(BuildContext context) async {
   double currentRate =
       double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
   String Curr = snapshot['QRCode']['Currency'];
+  String CurrFS = snapshot['CurrencyNoti'];
 
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
@@ -70,7 +75,7 @@ Future<void> createReservationNegativeNotification(BuildContext context) async {
       channelKey: 'basic_channel',
       title: '${Emojis.money_dollar_banknote}$Curr Price Alert!',
       body:
-          '1 $Curr is now $currentRate THB ${Emojis.icon_anger_symbol} worse than' +
+          '1 ${CurrFS} is now ${currentRate} THB ${Emojis.icon_anger_symbol} worse than' +
               ' ${previousRate} THB',
       notificationLayout: NotificationLayout.Default,
     ),

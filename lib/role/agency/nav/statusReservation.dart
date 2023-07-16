@@ -8,6 +8,7 @@ import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/role/agency/checkReservation/completedPage.dart';
+import 'package:testprojectbc/role/agency/checkReservation/listQRScan.dart';
 import 'package:testprojectbc/role/agency/checkReservation/qrCodeScanPage.dart';
 import 'package:testprojectbc/role/agency/checkReservation/upComingPage.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
@@ -35,117 +36,13 @@ class _BookingStatusPageState extends State<BookingStatusPage>
   @override
   void initState() {
     super.initState();
-    fetchUserData();
     _tabController = TabController(length: 4, vsync: this);
-  }
-
-  Future<void> fetchUserData() async {
-    try {
-      final user = globals.globalUID;
-
-      final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-      final snapshot = await usersRef.doc(user).get();
-      print('UID: $user');
-
-      if (snapshot.exists) {
-        final data = snapshot.data() as Map<String, dynamic>;
-        _Cur = data['CurrencyNoti'];
-        _Total = data['Total'];
-        if (snapshot.data()!['ReservationStatus'] == true) {
-          keepStatus = true;
-          print('true');
-        } else {
-          keepStatus = false;
-          print('false');
-        }
-      }
-
-      setState(() {
-        _Cur = _Cur;
-        _Total = _Total;
-        keepStatus = keepStatus;
-      });
-
-      print('Currency: $_Cur');
-      print('Total: $_Total');
-    } catch (error) {
-      print('Error fetching user data: $error');
-    }
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  void _onQRViewCreated(QRViewController controller) {
-    setState(() {
-      _qrViewController = controller;
-    });
-
-    controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        qrCodeData = scanData.code.toString();
-      });
-
-      handleQRCodeData(qrCodeData);
-    });
-  }
-
-  void handleQRCodeData(String qrData) async {
-    setState(() {
-      qrCodeData = qrData;
-    });
-    // แปลงข้อมูล QR Code จากสตริงเป็นแบบ JSON โดยใช้ตัวแปร qrData
-    final decodedData = jsonDecode(qrData);
-
-    // ดึงข้อมูลจาก Firestore ที่เกี่ยวข้องกับผู้ใช้
-    final user = globals.globalUID;
-    final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-    final snapshot = await usersRef.doc(user).get();
-
-    if (snapshot.exists) {
-      // แปลงข้อมูลใน Firestore เป็นแบบ JSON
-      final firestoreData = snapshot.data() as Map<String, dynamic>;
-
-      // เปรียบเทียบข้อมูลใน JSON กับ Firestore
-      if (decodedData == firestoreData) {
-        // ข้อมูลตรงกัน แสดงข้อความว่าข้อมูลการจองสกุลเงินถูกต้อง
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('ผลการตรวจสอบ'),
-            content: Text('ข้อมูลการจองสกุลเงินถูกต้อง'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
-      } else {
-        // ข้อมูลไม่ตรงกัน แสดงข้อความว่าข้อมูลการจองสกุลเงินไม่ถูกต้อง
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('ผลการตรวจสอบ'),
-            content: Text('ข้อมูลการจองสกุลเงินไม่ถูกต้อง'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        );
-      }
-    }
   }
 
   @override
@@ -171,7 +68,7 @@ class _BookingStatusPageState extends State<BookingStatusPage>
         children: [
           UpComingPage(),
           CompletedPage(),
-          QRScanPage(),
+          ListQRPage(),
           testBCNoDel(),
         ],
       ),

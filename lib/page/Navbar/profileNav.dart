@@ -9,6 +9,7 @@ import 'package:testprojectbc/page/Setting/havePin.dart';
 import 'package:testprojectbc/page/Setting/verifyKYC.dart';
 import 'package:testprojectbc/page/login.dart';
 import 'package:testprojectbc/screen/testBlockchain.dart';
+import 'package:testprojectbc/screen/testBlockchainUser.dart';
 import '../Setting/makePin.dart';
 import '../otpsuccess.dart';
 import '../Setting/Theme.dart';
@@ -73,10 +74,51 @@ class _ProfileNav extends State<ProfileNav> {
   }
 
   void _openHelp() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => testBC()));
-    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-    //   return testBC();
-    // }));
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Steps & Flow to use the application'),
+          content: Container(
+            height: 430,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('1. Verify KYC'),
+                const Text('2. Create PIN'),
+                const Text('3. Await Identity Verification'),
+                const Text('4. Select Currency for Reservation and Proceed'),
+                const Text('5. Await Reservation Confirmation'),
+                const Text(
+                    '6. Scan the QR CODE at the Company\'s Branch in the Selected Province'),
+                const Text(
+                    '7. Await Fund Release Confirmation, Process Completed'),
+                SizedBox(
+                  height: 20,
+                ),
+                const Text('1. ยืนยันตัวตน KYC'),
+                const Text('2. สร้างรหัส PIN'),
+                const Text('3. รอการยืนยันตัวตน'),
+                const Text('4. เลือกสกุลเงินที่ต้องการจองและทำไปตามลำดับ'),
+                const Text('5. รอการยืนยันการจองสกุลเงิน'),
+                const Text(
+                    '6. นำ QR CODE มาสแกนที่บริษัทตามสาขาประจำจังหวัดที่เลือก'),
+                const Text('7. รอการยืนยันปล่อยเงิน เสร็จสิ้นขั้นตอน'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('ปิด'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void changeEmail() {
@@ -102,6 +144,11 @@ class _ProfileNav extends State<ProfileNav> {
   void checkVerification() {
     Navigator.push(
         context, MaterialPageRoute(builder: (context) => VerificationPage()));
+  }
+
+  void historyReservation() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => testBCUser()));
   }
 
   final authen = FirebaseAuth.instance;
@@ -301,7 +348,7 @@ class _ProfileNav extends State<ProfileNav> {
                       ListTile(
                         leading: Icon(Icons.qr_code_2),
                         title: const Text(
-                          'Verify QR Code',
+                          'QR Code',
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'Lexend',
@@ -312,6 +359,23 @@ class _ProfileNav extends State<ProfileNav> {
                         trailing: Icon(Icons.arrow_forward),
                         onTap: () {
                           verifyQR();
+                        },
+                      ),
+                      Divider(color: Colors.black),
+                      ListTile(
+                        leading: Icon(Icons.history),
+                        title: const Text(
+                          'History Reservation',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Lexend',
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black,
+                          ),
+                        ),
+                        trailing: Icon(Icons.arrow_forward),
+                        onTap: () {
+                          historyReservation();
                         },
                       ),
                       Divider(color: Colors.black),
@@ -377,7 +441,7 @@ class _ProfileNav extends State<ProfileNav> {
                       ListTile(
                         leading: Icon(Icons.help),
                         title: const Text(
-                          'Help BC',
+                          'Help',
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'Lexend',

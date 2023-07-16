@@ -42,21 +42,6 @@ class _HomeAdminPage extends State<HomeAdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(
-      //         builder: (context) => notify(),
-      //       ),
-      //     );
-      //   },
-      //   child: Icon(Icons.notifications),
-      //   backgroundColor: Colors.black,
-      //   elevation: 4,
-      //   shape: CircleBorder(),
-      // ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('usersPIN')

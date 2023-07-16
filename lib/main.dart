@@ -221,7 +221,9 @@ class _MyAppState extends State<MyApp> {
               "PayQrCode-Page": (context) => PayQRCodePage(),
               "PayCashCheer-Page": (context) => PayCashCheerPage(),
               "BookingStatus-Page": (context) => BookingStatusPage(),
-              "QRScan-Page": (context) => QRScanPage(),
+              "QRScan-Page": (context) => QRScanPage(
+                    uidQR: '',
+                  ),
               "UpComing-Page": (context) => UpComingPage(),
               "Completed-Page": (context) => CompletedPage(),
               "GetBalance-Page": (context) => GetBalancePage(),

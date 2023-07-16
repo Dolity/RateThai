@@ -278,7 +278,7 @@ class _HomeNavState extends State<HomeNav> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            "สวัสดีคุณ",
+                                            "Hi 👋🏻",
                                             style: TextStyle(
                                               color: Colors.grey,
                                               fontSize: 16,
@@ -442,7 +442,7 @@ class _HomeNavState extends State<HomeNav> {
                                         Row(
                                           children: [
                                             Text(
-                                              "Rate Thai - รายการล่าสุด",
+                                              "Rate Thai - latest Status",
                                               style: TextStyle(
                                                 color: Colors.black,
                                                 fontSize: 16,
@@ -477,7 +477,7 @@ class _HomeNavState extends State<HomeNav> {
                                                         EdgeInsets.fromLTRB(
                                                             10, 10, 0, 0),
                                                     child: Text(
-                                                      "Receive Money 💵",
+                                                      "Receive Money ",
                                                       style: TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 14,
@@ -544,7 +544,7 @@ class _HomeNavState extends State<HomeNav> {
                                                         EdgeInsets.fromLTRB(
                                                             10, 10, 0, 0),
                                                     child: Text(
-                                                      "Receive Money 💵",
+                                                      "Receive Money ",
                                                       style: TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 14,
@@ -620,7 +620,7 @@ class _HomeNavState extends State<HomeNav> {
                                                             EdgeInsets.fromLTRB(
                                                                 10, 10, 0, 0),
                                                         child: Text(
-                                                          "Reserve Money 💰",
+                                                          "Reserve Money ",
                                                           style: TextStyle(
                                                             color: Colors.black,
                                                             fontSize: 14,
@@ -687,7 +687,7 @@ class _HomeNavState extends State<HomeNav> {
                                                             EdgeInsets.fromLTRB(
                                                                 10, 10, 0, 0),
                                                         child: Text(
-                                                          "Reserve Money 💰",
+                                                          "Reserve Money ",
                                                           style: TextStyle(
                                                             color: Colors.black,
                                                             fontSize: 14,
@@ -765,7 +765,7 @@ class _HomeNavState extends State<HomeNav> {
                                                             EdgeInsets.fromLTRB(
                                                                 10, 10, 0, 0),
                                                         child: Text(
-                                                          "Verify Account(KYC) 📝",
+                                                          "Verify Account(KYC) ",
                                                           style: TextStyle(
                                                             color: Colors.black,
                                                             fontSize: 14,
@@ -832,7 +832,7 @@ class _HomeNavState extends State<HomeNav> {
                                                             EdgeInsets.fromLTRB(
                                                                 10, 10, 0, 0),
                                                         child: Text(
-                                                          "Verify Account(KYC) 📝",
+                                                          "Verify Account(KYC) ",
                                                           style: TextStyle(
                                                             color: Colors.black,
                                                             fontSize: 14,

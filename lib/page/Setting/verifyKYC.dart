@@ -89,7 +89,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       Ionicons.lock_closed_outline,
                       color: Colors.grey,
                     ),
-                    hintText: "ชื่อจริง",
+                    hintText: "First Name",
                     hintStyle: GoogleFonts.nunitoSans(
                         fontWeight: FontWeight.w600, color: Colors.black38),
                     fillColor: Colors.black12,
@@ -110,7 +110,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       Ionicons.lock_closed_outline,
                       color: Colors.grey,
                     ),
-                    hintText: "นามสกุล",
+                    hintText: "Last Name",
                     hintStyle: GoogleFonts.nunitoSans(
                         fontWeight: FontWeight.w600, color: Colors.black38),
                     fillColor: Colors.black12,
@@ -121,7 +121,7 @@ class _VerificationPageState extends State<VerificationPage> {
               ),
               SizedBox(height: 16),
               Text(
-                'วันเกิด',
+                'Date Of Birth',
                 style: GoogleFonts.nunitoSans(),
               ),
               SizedBox(height: 15),
@@ -144,7 +144,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.black12, // สีพื้นหลังให้เป็นสีเทาอ่อน
-                        labelText: 'วัน',
+                        labelText: 'Day',
                         labelStyle:
                             GoogleFonts.nunitoSans(), // สีของข้อความ 'วัน'
                         floatingLabelBehavior:
@@ -180,7 +180,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.black12, // สีพื้นหลังให้เป็นสีเทาอ่อน
-                        labelText: 'เดือน',
+                        labelText: 'Month',
                         labelStyle:
                             GoogleFonts.nunitoSans(), // สีของข้อความ 'วัน'
                         floatingLabelBehavior:
@@ -213,7 +213,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.black12, // สีพื้นหลังให้เป็นสีเทาอ่อน
-                        labelText: 'ปี',
+                        labelText: 'Year',
                         labelStyle:
                             GoogleFonts.nunitoSans(), // สีของข้อความ 'วัน'
                         floatingLabelBehavior:
@@ -230,11 +230,11 @@ class _VerificationPageState extends State<VerificationPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
-              Text(
-                'เพศ',
-                style: GoogleFonts.nunitoSans(),
-              ),
+              // SizedBox(height: 16),
+              // Text(
+              //   'Gender',
+              //   style: GoogleFonts.nunitoSans(),
+              // ),
               SizedBox(height: 15),
               DropdownButtonFormField<String>(
                 value: _selectedGender,
@@ -252,7 +252,7 @@ class _VerificationPageState extends State<VerificationPage> {
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.black12, // สีพื้นหลังให้เป็นสีเทาอ่อน
-                  labelText: 'เพศ',
+                  labelText: 'Gender',
                   labelStyle:
                       TextStyle(color: Colors.black), // สีของข้อความ 'วัน'
                   floatingLabelBehavior:
@@ -278,7 +278,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       Ionicons.lock_closed_outline,
                       color: Colors.grey,
                     ),
-                    hintText: "เลขที่บัตรประชาชน",
+                    hintText: "ID Card Code",
                     hintStyle: GoogleFonts.nunitoSans(
                         fontWeight: FontWeight.w600, color: Colors.black38),
                     fillColor: Colors.black12,
@@ -293,20 +293,21 @@ class _VerificationPageState extends State<VerificationPage> {
                 style: GoogleFonts.nunitoSans(),
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                    prefixIcon: Icon(
-                      Ionicons.lock_closed_outline,
-                      color: Colors.grey,
-                    ),
-                    hintText: "เลขเลเซอร์หลังบัตรประชาชน",
-                    hintStyle: GoogleFonts.nunitoSans(
-                        fontWeight: FontWeight.w600, color: Colors.black38),
-                    fillColor: Colors.black12,
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none)),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                  prefixIcon: Icon(
+                    Ionicons.lock_closed_outline,
+                    color: Colors.grey,
+                  ),
+                  hintText: "ID Laser Card Code",
+                  hintStyle: GoogleFonts.nunitoSans(
+                      fontWeight: FontWeight.w600, color: Colors.black38),
+                  fillColor: Colors.black12,
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none),
+                ),
               ),
               SizedBox(height: 15),
               TextFormField(
@@ -320,7 +321,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       Ionicons.lock_closed_outline,
                       color: Colors.grey,
                     ),
-                    hintText: "เบอร์โทรศัพท์",
+                    hintText: "Phone Number",
                     hintStyle: GoogleFonts.nunitoSans(
                         fontWeight: FontWeight.w600, color: Colors.black38),
                     fillColor: Colors.black12,
@@ -330,16 +331,35 @@ class _VerificationPageState extends State<VerificationPage> {
                         borderSide: BorderSide.none)),
               ),
               SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  _submitForm();
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) {
-                    return LoginSuccessPage();
-                  }));
-                },
-                child: Text('Submit'),
-              ),
+              ElevatedButtonTheme(
+                data: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    primary: Colors.black54,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    _submitForm();
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                      return LoginSuccessPage();
+                    }));
+                  },
+                  child: Text(
+                    'Submit',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Lexend',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              )
             ],
           ),
         ),

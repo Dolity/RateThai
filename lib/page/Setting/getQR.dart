@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 
 class GetQRCodePage extends StatefulWidget {
   final String qrCodeData;
@@ -28,6 +30,13 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
         print('QR FS $keepQR');
       });
     });
+    FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+  }
+
+  @override
+  void dispose() {
+    FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+    super.dispose();
   }
 
   Future<Map<String, dynamic>?> fetchQRCodeFromFirestore() async {
@@ -43,13 +52,6 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
 
   @override
   Widget build(BuildContext context) {
-    // final qrCodeDataProvider = Provider.of<ReservationData>(context);
-    // final jsonMap = qrCodeDataProvider.qrCodeData?.toJson();
-
-    // print('QR MAP $jsonMap');
-    // print('Type ${jsonMap.runtimeType}');
-    // print('QR FS $keepQR');
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Get QR Code'),
@@ -66,6 +68,19 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
                 padding: EdgeInsets.all(10),
                 child: Column(
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+                      child: Text(
+                        'QR Code',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontFamily: 'Lexend',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     if (keepQR != null)
                       QrImageView(
                         data: jsonEncode(keepQR),

@@ -34,13 +34,20 @@ class _notify extends State<notify> {
   final user = FirebaseAuth.instance.currentUser!.uid;
   StreamSubscription<ReceivedAction>? _actionStreamSubscription;
   bool ckIsReservation = false;
-  // void initState() {
-  //   super.initState();
-  //   NotificationService.initFirebaseMessaging(context);
-  // }
+
+  final authen = FirebaseAuth.instance;
+  late User? currentUser;
+  String usernameData = "";
+  late String userUID; //getByUID
 
   void initState() {
     super.initState();
+    currentUser = authen.currentUser;
+    if (currentUser != null) {
+      usernameData = currentUser!.email ?? "";
+      userUID = currentUser!.uid;
+    }
+
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
         showDialog(
@@ -111,23 +118,6 @@ class _notify extends State<notify> {
     super.dispose();
   }
 
-  Future<List<DocumentSnapshot<Object?>>> fetchDatausersPIN() async {
-    final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
-    final data1 = await usersRefD1.doc(user).get();
-
-    final usersRefD2 = FirebaseFirestore.instance.collection('getCurrency');
-    final data2 = await usersRefD2.doc(user).get();
-
-    return [data1, data2];
-  }
-
-  Future<List<QuerySnapshot>> fetchDatagetCurrency() async {
-    final usersRefD2 = FirebaseFirestore.instance.collection('getCurrency');
-    final data2 = await usersRefD2.get();
-
-    return [data2];
-  }
-
   Widget build(BuildContext context) {
     keepCur = context.watch<ReservationData>().notifyCur.toString();
     keepRate = context.watch<ReservationData>().notifyRate.toString();
@@ -150,177 +140,164 @@ class _notify extends State<notify> {
         elevation: 4,
         shape: CircleBorder(),
       ),
-      body: Center(
-        child: FutureBuilder<List<DocumentSnapshot<Object?>>>(
-          future: fetchDatausersPIN(),
-          builder: (BuildContext context,
-              AsyncSnapshot<List<DocumentSnapshot<Object?>>> snapshot) {
-            // final data = snapshot.data?.data() as Map<String, dynamic>?;
-            fetchDatagetCurrency();
-            final data1 = snapshot.data?[0];
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('usersPIN')
+            .where('UID', isEqualTo: userUID) //getByUID
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          final users = snapshot.data!.docs;
 
-            // if (data1?['RateNoti'] == keepRate &&
-            //     data1?['CurrencyNoti'] == keepCur) {
-            //   // NotificationService.showNotification(
-            //   //   title: 'Rate alert',
-            //   //   body: '1 $keepCur = $keepResevaProviRateUpdate THB',
-            //   // );
-            //   createReservationPositiveNotification(context);
-            // }
+          return Center(
+            child: ListView.builder(
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                final userData = users[index].data() as Map<String, dynamic>;
+                final rateNotify = userData['RateNoti'];
+                final curNotify = userData['CurrencyNoti'];
+                final bestRate = userData['QRCode']['Rate'];
 
-            if (data1?['RateNoti'] != null && data1?['CurrencyNoti'] != null) {
-              // keepCur
-              double previousRate =
-                  double.parse(data1?['RateNoti']); //Rate from User set
-              double currentRate = double.parse(
-                  data1?['QRCode']['Rate']); //Rate from agency Scarping
+                if (rateNotify != null && curNotify != null) {
+                  // keepCur
+                  double previousRate =
+                      double.parse(rateNotify); //Rate from User set
+                  double currentRate =
+                      double.parse(bestRate); //Rate from agency Scarping
 
-              print('currentRate: $currentRate');
+                  print('currentRate:  $currentRate $previousRate');
 
-              if (currentRate > previousRate) {
-                // แจ้งเตือนว่าราคาสกุลเงินขึ้น
-                createReservationPositiveNotification(context);
-              } else if (currentRate < previousRate) {
-                // แจ้งเตือนว่าราคาสกุลเงินลง
-                createReservationNegativeNotification(context);
-              }
-            }
+                  if (currentRate > previousRate) {
+                    // แจ้งเตือนว่าราคาสกุลเงินขึ้น
+                    createReservationPositiveNotification(context);
+                  } else if (currentRate < previousRate) {
+                    // แจ้งเตือนว่าราคาสกุลเงินลง
+                    createReservationNegativeNotification(context);
+                  }
+                  print('FS: $previousRate, $bestRate');
+                }
 
-            print('Provider: $keepRate, $keepCur');
-
-            if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            }
-
-            if (data1?['RateNoti'] == null) {
-              print('No data!');
-              return Container();
-            }
-
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else {
-              print("Return: Widget!");
-
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
-                    child: SizedBox(
+                print('Provider: $keepRate, $keepCur');
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(10, 20, 10, 10),
+                      child: SizedBox(
                         //Box1
                         height: 80,
                         width: MediaQuery.of(context).size.width * 1.0,
                         child: Card(
-                            margin: EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                              side: BorderSide(
-                                color: Colors.grey.shade300,
-                                width: 1, // Add a border
-                              ),
+                          margin:
+                              EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                            side: BorderSide(
+                              color: Colors.grey.shade300,
+                              width: 1, // Add a border
                             ),
-                            elevation: 8, // Add a shadow
-                            child: InkWell(
-                                onTap: () {
-                                  // NotificationService.showNotification(
-                                  //   title: 'Rate alert',
-                                  //   body: ' 1 ${data?['CurrencyNoti']} = ${data?['RateNoti']} THB',
-                                  // );
-                                },
-                                child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 8),
-                                    child: Row(
+                          ),
+                          elevation: 8, // Add a shadow
+                          child: InkWell(
+                            onTap: () {
+                              // NotificationService.showNotification(
+                              //   title: 'Rate alert',
+                              //   body: ' 1 ${data?['CurrencyNoti']} = ${data?['RateNoti']} THB',
+                              // );
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(5, 15, 0, 15),
+                                      child: Icon(
+                                        FontAwesomeIcons.bell,
+                                        size: 30,
+                                      )),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(15, 15, 0, 15),
+                                    child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
                                       children: [
+                                        RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: 'You will get an alert ',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: '',
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                         Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                5, 15, 0, 15),
-                                            child: Icon(
-                                              FontAwesomeIcons.bell,
-                                              size: 30,
-                                            )),
-                                        Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                15, 15, 0, 15),
-                                            child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  RichText(
-                                                    text: TextSpan(
-                                                      children: [
-                                                        TextSpan(
-                                                          text:
-                                                              'You will get an alert ',
-                                                          style: TextStyle(
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            color: Colors.black,
-                                                          ),
-                                                        ),
-                                                        TextSpan(
-                                                          text: '',
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Colors.black,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                          child: RichText(
+                                            text: TextSpan(
+                                              children: [
+                                                TextSpan(
+                                                  text:
+                                                      '1 ${curNotify ?? 'null'} = ${rateNotify ?? 'null'} THB',
+                                                  style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
                                                   ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            0, 0, 0, 0),
-                                                    child: RichText(
-                                                      text: TextSpan(
-                                                        children: [
-                                                          TextSpan(
-                                                            text: ' ',
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              color:
-                                                                  Colors.black,
-                                                            ),
-                                                          ),
-                                                          TextSpan(
-                                                            text:
-                                                                '1 ${data1?['CurrencyNoti']} = ${data1?['RateNoti']} THB',
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color:
-                                                                  Colors.black,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ]))
+                                                ),
+                                                // TextSpan(
+                                                //   text:
+                                                //       '1 ${data1?['CurrencyNoti']} = ${data1?['RateNoti']} THB',
+                                                //   style: TextStyle(
+                                                //     fontSize: 16,
+                                                //     fontWeight:
+                                                //         FontWeight
+                                                //             .bold,
+                                                //     color:
+                                                //         Colors.black,
+                                                //   ),
+                                                // ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       ],
-                                    ))))),
-                  ),
-                ],
-              );
-            }
-          },
-        ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          );
+        },
       ),
     );
   }
@@ -444,4 +421,3 @@ class _notify extends State<notify> {
 //       ),
 //     );
 //   }
-// }

@@ -129,9 +129,126 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: Text('ยืนยันการจอง'),
-                          content:
-                              Text('คุณต้องการยืนยันตัวตนบุคคลนี้ใช่หรือไม่?'),
+                          title: Text('Authenticate'),
+                          content: Container(
+                            height: 220,
+                            child: Column(
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            'Do you want to verify this person\'s identity?',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(text: ''),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Name: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text:
+                                              '${userData['FirstName'] ?? 'Null'} ${userData['LastName'] ?? 'Null'}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Gender: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text:
+                                              '${userData['Gender'] ?? 'Null'}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Date: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text:
+                                              '${userData['DayofBirth'] ?? 'Null'}:${userData['MonthofBirth'] ?? 'Null'}:${userData['YearofBirth'] ?? 'Null'}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'ID Card Number: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text:
+                                              '${userData['IDCardNumber'] ?? 'Null'}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Phone Number: ',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      TextSpan(
+                                          text: '${userData['PhoneNumber']}'),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            ),
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () async {

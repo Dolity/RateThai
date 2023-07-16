@@ -240,7 +240,7 @@ class _HavePinPage extends State<HavePinPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('สวัสดีคุณ $user'),
+        title: Text('PIN CODE'),
       ),
       body: SafeArea(
         child: Column(

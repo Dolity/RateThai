@@ -422,6 +422,7 @@ class _DetailAgencyState extends State<DetailAgency> {
                               'PayReserva': '$_fromPay',
                               'ReservationStatus': checkStatus,
                               'ConditionCheckAgency': keepStatus,
+                              'ConditionQR': 'true'
                             }).then((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
