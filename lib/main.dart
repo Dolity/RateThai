@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:testprojectbc/Service/global/dataGlobal.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
@@ -58,6 +61,8 @@ String keepCur = "";
 String keepRate = "";
 String keepResevaProviRateUpdate = "";
 final user = FirebaseAuth.instance.currentUser!.uid;
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -83,6 +88,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  FirebaseMessaging.instance.setAutoInitEnabled(true);
   AwesomeNotifications().initialize(
     //'resource://drawable/res_notification_app_icon',
     null,
@@ -118,17 +124,24 @@ Future<void> main() async {
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  AwesomeNotifications().actionStream.listen((event) {
-    print(event.payload!);
-  });
+  AwesomeNotifications().actionStream.listen(
+    (event) {
+      print(event.payload!);
+    },
+  );
 
-  // Firebase Messaging Background Handler
-  // Firebase Messaging Initialisation
-  // await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-  //   alert: true,
-  //   badge: true,
-  //   sound: true,
-  // );
+  // try {
+  //   // if (Platform.isAndroid) {
+  //     final RemoteMessage? remoteMessage =
+  //         await FirebaseMessaging.instance.getInitialMessage();
+  //     if (remoteMessage != null) {
+
+  //       print('A new onMessageOpenedApp event was published!');
+  //     }
+  //     await HelperNotification.initialize(FlutterLocalNotificationsPlugin);
+  //     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  //   // }
+  // } catch (e) {}
 
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider<ReservationData>(
@@ -236,6 +249,7 @@ class _MyAppState extends State<MyApp> {
                     currencyBC: '',
                     totalBC: '',
                     dateBC: '',
+                    amountBC: '',
                   ),
               "Verification-Page": (context) => VerificationPage()
             },

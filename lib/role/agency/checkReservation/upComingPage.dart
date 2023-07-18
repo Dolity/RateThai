@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 import 'package:flutter/material.dart';
-import 'package:testprojectbc/Service/singleton/userUID.dart';
+import 'package:http/http.dart' as http;
 
 class UpComingPage extends StatefulWidget {
   @override
@@ -20,66 +21,7 @@ class _UpComingPageState extends State<UpComingPage> {
   String qrCodeData = '';
   String? _UID;
   bool? dropOffStatus;
-
-  // Future<void> fetchData() async {
-  //   String? user = UserSingleton().uid;
-  //   print('UserSingleton: $user');
-
-  //   // บันทึกข้อมูลใน Firestore หาก user ไม่เป็น null
-  //   //if (user != null) {
-  //   // final usersRefUpdate = FirebaseFirestore.instance.collection('keepUID');
-  //   // await usersRefUpdate.doc("pin").update({'uid': user});
-  //   // print('UID Saved');
-
-  //   // ดึงข้อมูลจาก Firestore ตามปกติ
-  //   // final usersRef2 = FirebaseFirestore.instance.collection('usersPIN');
-  //   // final snapshot = await usersRef2.doc(user).get();
-
-  //   // if (snapshot.exists) {
-  //   //   setState(() {
-  //   //     // _Fname = snapshot.get('FirstName');
-  //   //     // _Lname = snapshot.get('LastName');
-  //   //     // _Gender = snapshot.get('Gender');
-  //   //     _Total = snapshot.get('Total');
-  //   //     _DateReservation = snapshot.get('DateReserva');
-  //   //     _Type = snapshot.get('PayReserva');
-  //   //     _SubAgency = snapshot.get('SubAgencyReserva');
-  //   //     checkStatus = snapshot.get('ReservationStatus');
-  //   //     keepStatus = snapshot.get('ConditionCheckAgency');
-  //   //     // _UID = snapshot.get('UID');
-  //   //   });
-  //   // }
-  //   //} else {
-  //   print('User Null But Found UID ON FS');
-  //   final usersRefGet = FirebaseFirestore.instance.collection('keepUID');
-  //   final snapshotGet = await usersRefGet.doc("pin").get();
-  //   if (snapshotGet.exists) {
-  //     setState(() {
-  //       _UID = snapshotGet.get('uid');
-  //     });
-  //   }
-  //   print('Click UID: $_UID');
-
-  //   // ดึงข้อมูลจาก Firestore ด้วย _UID ที่ได้จาก Firestore ก่อนหน้า
-  //   final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-  //   final snapshot = await usersRef.doc(_UID).get();
-
-  //   print('snapshotUpdate: $usersRef');
-  //   if (snapshot.exists) {
-  //     setState(() {
-  //       // _Fname = snapshot.get('FirstName');
-  //       // _Lname = snapshot.get('LastName');
-  //       // _Gender = snapshot.get('Gender');
-  //       _Total = snapshot.get('Total');
-  //       _DateReservation = snapshot.get('DateReserva');
-  //       _Type = snapshot.get('PayReserva');
-  //       _SubAgency = snapshot.get('SubAgencyReserva');
-  //       checkStatus = snapshot.get('ReservationStatus');
-  //       keepStatus = snapshot.get('ConditionCheckAgency');
-  //     });
-  //   }
-  //   // }
-  // }
+  bool? isNotifyLocal = false;
 
   @override
   void initState() {
@@ -96,6 +38,7 @@ class _UpComingPageState extends State<UpComingPage> {
         checkStatus = true;
         keepStatus = true;
         dropOffStatus = true;
+        isNotifyLocal = true;
         // isVerify = true;
       });
 
@@ -104,6 +47,7 @@ class _UpComingPageState extends State<UpComingPage> {
         usersRef.doc(uid).update({
           'ReservationStatus': checkStatus,
           'ConditionCheckAgency': keepStatus,
+          'isNotifyLocal': isNotifyLocal,
           // 'DropOffStatus': dropOffStatus,
         }).then((_) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -125,6 +69,36 @@ class _UpComingPageState extends State<UpComingPage> {
           );
         });
       }
+    }
+  }
+
+  int createUniqueId() {
+    return DateTime.now().millisecondsSinceEpoch.remainder(100000);
+  }
+
+  void sendNotificationBackground(String fcmToken) async {
+    final url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization':
+          'key=AAAAcMo1rAc:APA91bFgjfXcc0SJt0aeBr6X8ki8Z0CTg8YUTFANeybem04RvuXwIq5uglywI-hi_MG-jr1_KzyjKEay49eJVxjsCHtqoPp0DULiWaAWu7D89-Uk3QREwx8eitE_iKuhcU_DpdPTmM5B',
+    };
+
+    final body = jsonEncode({
+      'to': fcmToken,
+      'notification': {
+        'title': 'Currency Reservation',
+        'body': 'You have been approved for Currency Reservation.',
+      },
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      print('Notification sent successfully');
+    } else {
+      print('Failed to send notification');
     }
   }
 
@@ -289,6 +263,8 @@ class _UpComingPageState extends State<UpComingPage> {
                             TextButton(
                               onPressed: () async {
                                 await updateUserData(userData['UID']);
+                                sendNotificationBackground(
+                                    userData['FCMToken']);
                                 Navigator.of(context).pop();
                               },
                               child: Text('Allow'),

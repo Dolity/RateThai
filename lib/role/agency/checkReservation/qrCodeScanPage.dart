@@ -138,7 +138,7 @@ class _QRScanPageState extends State<QRScanPage> {
                             child: Container(
                               padding: EdgeInsets.all(16),
                               // width: 150, // กำหนดความกว้างของ Card
-                              height: 150,
+                              height: 180,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.min,
@@ -163,13 +163,13 @@ class _QRScanPageState extends State<QRScanPage> {
                                       ),
                                       children: [
                                         TextSpan(
-                                          text: 'ข้อมูลคุณ ',
+                                          text: 'Your booking information ',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
                                         TextSpan(
                                             text:
-                                                '$_fName $_lName ถูกต้องกรุณารอรับเงิน'),
+                                                '$_fName $_lName That\'s match, please wait to receive the money.'),
                                       ],
                                     ),
                                   ),

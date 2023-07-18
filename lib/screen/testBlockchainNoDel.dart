@@ -47,17 +47,8 @@ class _testBCNoDelState extends State<testBCNoDel> {
                     title: Text(
                         '${notesServices.notes[index].firstnameBC} ${notesServices.notes[index].lastnameBC} (${notesServices.notes[index].genderBC})'),
                     subtitle: Text(
-                        '${notesServices.notes[index].agencyBC} ${notesServices.notes[index].rateBC} ${notesServices.notes[index].currencyBC}, ${notesServices.notes[index].totalBC} THB, ${notesServices.notes[index].dateBC} '),
+                        '${notesServices.notes[index].agencyBC} ${notesServices.notes[index].rateBC} ${notesServices.notes[index].amountBC} ${notesServices.notes[index].currencyBC}, ${notesServices.notes[index].totalBC} THB, ${notesServices.notes[index].dateBC} '),
                     trailing: Icon(Icons.arrow_forward),
-                    // trailing: IconButton(
-                    //   icon: const Icon(
-                    //     Icons.delete,
-                    //     color: Colors.red,
-                    //   ),
-                    //   onPressed: () {
-                    //     notesServices.deleteNote(notesServices.notes[index].id);
-                    //   },
-                    // ),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -71,6 +62,7 @@ class _testBCNoDelState extends State<testBCNoDel> {
                             currencyBC: notesServices.notes[index].currencyBC,
                             totalBC: notesServices.notes[index].totalBC,
                             dateBC: notesServices.notes[index].dateBC,
+                            amountBC: notesServices.notes[index].amountBC,
                           ),
                         ),
                       );
@@ -79,49 +71,6 @@ class _testBCNoDelState extends State<testBCNoDel> {
                 },
               ),
             ),
-      // floatingActionButton: FloatingActionButton(
-      //   child: const Icon(Icons.add),
-      //   onPressed: () {
-      //     showDialog(
-      //       context: context,
-      //       builder: (context) {
-      //         return AlertDialog(
-      //           title: const Text('New Note'),
-      //           content: Column(
-      //             mainAxisSize: MainAxisSize.min,
-      //             children: [
-      //               TextField(
-      //                 controller: titleController,
-      //                 decoration: const InputDecoration(
-      //                   hintText: 'Enter title',
-      //                 ),
-      //               ),
-      //               TextField(
-      //                 controller: descriptionController,
-      //                 decoration: const InputDecoration(
-      //                   hintText: 'Enter description',
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //           actions: [
-      //             TextButton(
-      //               onPressed: () {
-      //                 notesServices.addNote(
-      //                   titleController.text,
-      //                   descriptionController.text
-      //                 );
-
-      //                 Navigator.pop(context);
-      //               },
-      //               child: const Text('Add'),
-      //             ),
-      //           ],
-      //         );
-      //       },
-      //     );
-      //   },
-      // ),
     );
   }
 }

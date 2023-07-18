@@ -31,6 +31,21 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
   final user = FirebaseAuth.instance.currentUser!.uid;
   late SharedPreferences _preferences;
   bool? isVerify;
+  // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _registerFirebaseMessagingToken();
+  // }
+
+  // void _registerFirebaseMessagingToken() {
+  //   _firebaseMessaging.getToken().then((token) {
+  //     print('FCM Token: $token');
+  //   }).catchError((error) {
+  //     print('Failed to get FCM token: $error');
+  //   });
+  // }
 
   void checkPriceChange(BuildContext context) async {
     print("checkPriceChange is OK");

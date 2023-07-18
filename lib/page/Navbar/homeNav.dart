@@ -1,5 +1,7 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/page/Setting/notify.dart';
 import 'package:testprojectbc/page/Setting/verifyKYC.dart';
@@ -30,6 +32,7 @@ class _HomeNavState extends State<HomeNav> {
   String _UID = "";
   String Fname = "";
   String Lname = "";
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override
   void initState() {
@@ -39,6 +42,45 @@ class _HomeNavState extends State<HomeNav> {
       usernameData = currentUser!.email ?? "";
       userUID = currentUser!.uid;
     }
+    _registerFirebaseMessagingToken();
+  }
+
+  void _registerFirebaseMessagingToken() {
+    _firebaseMessaging.getToken().then((token) {
+      print('FCM Token: $token');
+
+      final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+      usersRef.doc(userUID).update(
+        {
+          'FCMToken': token,
+        },
+      );
+      print('FCM Token Update On FS: $token');
+    }).catchError((error) {
+      print('Failed to get FCM token: $error');
+    });
+  }
+
+  int createUniqueId() {
+    return DateTime.now().millisecondsSinceEpoch.remainder(100000);
+  }
+
+  void sendNotificationForegroundAwesome() {
+    AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: createUniqueId(),
+          channelKey: 'basic_channel',
+          title: 'Verification KYC',
+          body: 'You have been approved for verification.',
+        ),
+        // actionButtons: [
+        //   NotificationActionButton(
+        //     key: 'open_user_profile',
+        //     label: 'เปิดโปรไฟล์ของคุณ',
+        //     autoCancel: true,
+        //   ),
+        // ],
+        schedule: NotificationCalendar());
   }
 
   @override
@@ -89,6 +131,13 @@ class _HomeNavState extends State<HomeNav> {
                 final bool isCheckAgencyStatus =
                     userData['ConditionCheckAgency'] == true;
                 final bool isCheckAdminStatus = userData['isVerify'] == true;
+                final bool isNotifyStatus = userData['isNotifyLocal'] == true;
+
+                if (isNotifyStatus) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    sendNotificationForegroundAwesome();
+                  });
+                }
 
                 return Column(
                   children: [

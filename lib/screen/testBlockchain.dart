@@ -47,7 +47,7 @@ class _testBCState extends State<testBC> {
                     title: Text(
                         '${notesServices.notes[index].firstnameBC} ${notesServices.notes[index].lastnameBC} (${notesServices.notes[index].genderBC})'),
                     subtitle: Text(
-                        '${notesServices.notes[index].agencyBC} ${notesServices.notes[index].rateBC} ${notesServices.notes[index].currencyBC}, ${notesServices.notes[index].totalBC} THB, ${notesServices.notes[index].dateBC} '),
+                        '${notesServices.notes[index].agencyBC} ${notesServices.notes[index].rateBC} ${notesServices.notes[index].amountBC} ${notesServices.notes[index].currencyBC}, ${notesServices.notes[index].totalBC} THB, ${notesServices.notes[index].dateBC} '),
                     leading: Icon(Icons.remove_red_eye_outlined),
                     trailing: IconButton(
                       icon: const Icon(
@@ -71,6 +71,7 @@ class _testBCState extends State<testBC> {
                             currencyBC: notesServices.notes[index].currencyBC,
                             totalBC: notesServices.notes[index].totalBC,
                             dateBC: notesServices.notes[index].dateBC,
+                            amountBC: notesServices.notes[index].amountBC,
                           ),
                         ),
                       );

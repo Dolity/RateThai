@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/page/Setting/Theme.dart';
 import 'package:testprojectbc/page/login.dart';
@@ -28,6 +29,7 @@ class _HomeAdminPage extends State<HomeAdminPage> {
   late User? currentUser;
   String usernameData = "";
   late String userUID; //getByUID
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override
   void initState() {
@@ -37,6 +39,23 @@ class _HomeAdminPage extends State<HomeAdminPage> {
       usernameData = currentUser!.email ?? "";
       userUID = currentUser!.uid;
     }
+    _registerFirebaseMessagingToken();
+  }
+
+  void _registerFirebaseMessagingToken() {
+    _firebaseMessaging.getToken().then((token) {
+      print('FCM Token: $token');
+
+      final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+      usersRef.doc(userUID).update(
+        {
+          'FCMToken': token,
+        },
+      );
+      print('FCM Token Update On FS: $token');
+    }).catchError((error) {
+      print('Failed to get FCM token: $error');
+    });
   }
 
   @override

@@ -12,6 +12,7 @@ class DetailBCPage extends StatefulWidget {
   final String currencyBC;
   final String totalBC;
   final String dateBC;
+  final String amountBC;
 
   DetailBCPage(
       {required this.firstnameBC,
@@ -21,7 +22,8 @@ class DetailBCPage extends StatefulWidget {
       required this.rateBC,
       required this.currencyBC,
       required this.totalBC,
-      required this.dateBC});
+      required this.dateBC,
+      required this.amountBC});
 
   @override
   _DetailBCPage createState() => _DetailBCPage();
@@ -37,6 +39,7 @@ class _DetailBCPage extends State<DetailBCPage> {
   String? _Lname;
   String? _Gender;
   String? _UID;
+  String? amountBC;
 
   Future<void> fetchData() async {
     String? user = UserSingleton().uid;
@@ -228,6 +231,22 @@ class _DetailBCPage extends State<DetailBCPage> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           TextSpan(text: '${widget.rateBC}'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: 'Amount: ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          TextSpan(text: '${widget.amountBC}'),
                         ],
                       ),
                     ),

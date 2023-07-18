@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:testprojectbc/Service/singleton/userUID.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class UpComingAdminPage extends StatefulWidget {
   @override
@@ -20,6 +26,10 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
   bool? checkStatusAdmin;
   bool? keepStatusAdmin;
   bool? isVerify = false;
+  bool? isNotifyLocal = false;
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   // Future<void> fetchData() async {
   //   final usersRefGet = FirebaseFirestore.instance.collection('keepUID');
@@ -53,6 +63,7 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
   void initState() {
     //fetchData();
     super.initState();
+    initializeNotifications();
   }
 
   Future<void> updateUserData(String uid) async {
@@ -64,6 +75,7 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
         checkStatusAdmin = true;
         keepStatusAdmin = true;
         isVerify = true;
+        isNotifyLocal = true;
       });
 
       if (snapshot.data()!['DateReserva'] != null ||
@@ -72,6 +84,7 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
           'ReservationStatusAdmin': checkStatusAdmin,
           'ConditionCheckAdmin': keepStatusAdmin,
           'isVerify': isVerify,
+          'isNotifyLocal': isNotifyLocal,
         }).then((_) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -93,6 +106,86 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
         });
       }
     }
+  }
+
+  int createUniqueId() {
+    return DateTime.now().millisecondsSinceEpoch.remainder(100000);
+  }
+
+  void sendNotificationBackground(String fcmToken) async {
+    final url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization':
+          'key=AAAAcMo1rAc:APA91bFgjfXcc0SJt0aeBr6X8ki8Z0CTg8YUTFANeybem04RvuXwIq5uglywI-hi_MG-jr1_KzyjKEay49eJVxjsCHtqoPp0DULiWaAWu7D89-Uk3QREwx8eitE_iKuhcU_DpdPTmM5B',
+    };
+
+    final body = jsonEncode({
+      'to': fcmToken,
+      'notification': {
+        'title': 'Verification KYC',
+        'body': 'You have been approved for verification.',
+      },
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      print('Notification sent successfully');
+    } else {
+      print('Failed to send notification');
+    }
+  }
+
+  void sendNotificationForegroundAwesome() {
+    AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: createUniqueId(),
+          channelKey: 'basic_channel',
+          title: 'การยืนยันตัวตน',
+          body: 'คุณได้รับการอนุมัติในการยืนยันตัวตนแล้ว',
+        ),
+        actionButtons: [
+          NotificationActionButton(
+            key: 'open_user_profile',
+            label: 'เปิดโปรไฟล์ของคุณ',
+            autoCancel: true,
+          ),
+        ],
+        schedule: NotificationCalendar());
+  }
+
+  void sendNotification(String fcmToken) async {
+    if (Platform.isAndroid) {
+      // ถ้าแอปพลิเคชันอยู่ใน Foreground (iOS)
+      // sendNotificationForeground(fcmToken);
+      sendNotificationForegroundAwesome();
+    } else {
+      // ถ้าแอปพลิเคชันอยู่ใน Background (Android)
+      sendNotificationBackground(fcmToken);
+    }
+  }
+
+  void initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
+    // const IOSInitializationSettings initializationSettingsIOS =
+    //     IOSInitializationSettings();
+    const InitializationSettings initializationSettings =
+        InitializationSettings(
+      android: initializationSettingsAndroid,
+      // iOS: initializationSettingsIOS
+    );
+    // await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+    //     onSelectNotification: selectNotification);
+  }
+
+  Future selectNotification(String? payload) async {
+    if (payload != null) {
+      debugPrint('Notification payload: $payload');
+    }
+    // Handle notification tap action here
   }
 
   @override
@@ -253,6 +346,14 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
                             TextButton(
                               onPressed: () async {
                                 await updateUserData(userData['UID']);
+                                sendNotificationBackground(
+                                    userData['FCMToken']);
+                                // sendNotificationForeground(
+                                //     userData['FCMToken']);
+
+                                // sendNotification(userData['FCMToken']);
+                                print('token ${userData['FCMToken']}');
+
                                 Navigator.of(context).pop();
                               },
                               child: Text('Allow'),

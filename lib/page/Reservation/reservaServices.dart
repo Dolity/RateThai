@@ -18,7 +18,6 @@ class NotesServices extends ChangeNotifier {
       'https://sepolia.infura.io/v3/868de39ad9c640cc987dd0b7a0174b49';
   final String _wsUrl =
       'wss://sepolia.infura.io/ws/v3/868de39ad9c640cc987dd0b7a0174b49';
-  //'http://10.0.2.2:7545'
   bool isLoading = true;
   final myAddress = '0x8936539b50667A6Be0ee5bCA2a0F1E9093FD30cf';
   final String _privatekey =
@@ -47,9 +46,8 @@ class NotesServices extends ChangeNotifier {
     String abiFile =
         await rootBundle.loadString('build/contracts/NotesContract.json');
     String contractAddress =
-        "0x1e2D7e1706fC7630bD5E583FFF6DA78E023Fc235"; //Smart Contract Address (Deployed) 0x778F9c5d9191e02f7E83C05140dF8449cD1d3C12
-    // 0x1C846b0F77EB9829E82C95837e2e99839044e935 /0x00ae7cf4B689d673BA6de4122941C51A699857E4 /0x149a448eE173b2edea94DF578d9bd1759800254c
-    // 0x1e2D7e1706fC7630bD5E583FFF6DA78E023Fc235
+        "0x1e2D7e1706fC7630bD5E583FFF6DA78E023Fc235"; //Smart Contract Address (Deployed) 0x778F9c5d9191e02f7E83C05140dF8449cD1d3C12 / 0x1e2D7e1706fC7630bD5E583FFF6DA78E023Fc235
+
     _abiCode = ContractAbi.fromJson(abiFile, "NotesContract");
     _contractAddress = EthereumAddress.fromHex(contractAddress);
 
@@ -110,13 +108,6 @@ class NotesServices extends ChangeNotifier {
               lastnameBC: temp[8],
               genderBC: temp[9],
             ),
-
-            // agencyBC: temp[1],
-            // currencyBC: temp[2],
-            // rateBC: temp[3],
-            // amountBC: temp[4],
-            // totalBC: temp[5],
-            // dateBC: temp[6]),
           );
         }
         print("temp: $temp");
@@ -162,7 +153,6 @@ class NotesServices extends ChangeNotifier {
   }
 
   Future<void> deleteNote(int id) async {
-    // BigInt cId = await _web3cient.getChainId();
     await _web3cient.sendTransaction(
       _creds,
       Transaction.callContract(

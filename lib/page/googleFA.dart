@@ -268,6 +268,7 @@ class _GooglefaPage extends State<GooglefaPage> {
                                   return AlertDialog(
                                     title: Text('Genarate TOTP'),
                                     content: Container(
+                                      height: 480,
                                       padding: EdgeInsets.all(15.0),
                                       child: Column(
                                         children: [
@@ -282,7 +283,12 @@ class _GooglefaPage extends State<GooglefaPage> {
                                             barcode: Barcode.qrCode(),
                                           ),
                                           Text(
-                                              'Please add the following TOTP manually to your Google Authenticator app:'),
+                                            'Please add the following TOTP manually to your Google Authenticator app:',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                            ),
+                                          ),
                                           SelectableText(
                                               'Acc Name: $mySecret \nKey: $_authKeySecret'),
                                           // Text('Acc Name: $mySecret'),
