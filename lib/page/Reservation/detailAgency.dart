@@ -32,8 +32,8 @@ class _DetailAgencyState extends State<DetailAgency> {
   bool isExpanded = false;
   bool checkStatus = false;
   bool keepStatus = false;
-
-  //String calRate = ((resevaRateMoney ?? 0.0) * (double.tryParse(_textEditingController?.text?.toString() ?? '0.0') ?? 0.0)).toStringAsFixed(2);
+  bool? isVerify;
+  bool? isReservation;
 
   @override
   Widget build(BuildContext context) {
@@ -245,6 +245,62 @@ class _DetailAgencyState extends State<DetailAgency> {
     final data1 = usersRef.doc(user).get();
     // context.read<ReservationData>().getUID = user;
 
+    void checkReservation() async {
+      // Check Firestore for isVerify data
+      final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+      final snapshot = await usersRef.doc(user).get();
+
+      // isVerify = snapshot.get('isVerify') ?? false;
+      isVerify = snapshot.data()!.containsKey('isVerify')
+          ? snapshot.get('isVerify')
+          : false;
+
+      isReservation = snapshot.data()!.containsKey('ConditionCheckAgency')
+          ? snapshot.get('ConditionCheckAgency')
+          : false;
+
+      print('isVerify: $isVerify');
+
+      setState(() {
+        isVerify = isVerify;
+        isReservation = isReservation;
+      });
+      print('Set State isVerify: $isVerify');
+
+      if (!isReservation!) {
+        print('isReservation: $isVerify');
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(38),
+              ),
+              title: Text(
+                  'You have not been authorized by the company to reserve currency'),
+              content: Text(
+                  'Please wait for the company to confirm the currency reservation.'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Close'),
+                  onPressed: () {
+                    Navigator.pop(context); // ปิด AlertDialog
+                    Navigator.pop(context);
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => LoginSuccessPage()),
+                    // );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+
     // Function to show the AlertDialog
     void showCustomDialog(BuildContext context) {
       showDialog(
@@ -285,25 +341,6 @@ class _DetailAgencyState extends State<DetailAgency> {
                           SizedBox(height: 10),
                           InkWell(
                             onTap: () async {
-                              // final DateTime? pickedDate = await showDatePicker(
-                              //   context: context,
-                              //   initialDate: DateTime.now(),
-                              //   firstDate: DateTime.now(),
-                              //   lastDate:
-                              //       DateTime.now().add(Duration(days: 365)),
-                              // );
-
-                              // if (pickedDate != null) {
-                              //   // Update the selected date
-
-                              //   final DateFormat formatter =
-                              //       DateFormat('yyyy-MM-dd HH:mm');
-                              //   selectedDate = formatter.format(pickedDate);
-                              //   setState(() {
-                              //     dateController.text = selectedDate;
-                              //   });
-                              // }
-
                               final DateTime? pickedDate = await showDatePicker(
                                 context: context,
                                 initialDate: DateTime.now(),
@@ -441,11 +478,6 @@ class _DetailAgencyState extends State<DetailAgency> {
                               );
                             });
                           }
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => QRCodePage()),
-                          // );
                           if (_fromPay == 'Visa') {
                             Navigator.push(
                               context,
@@ -482,42 +514,45 @@ class _DetailAgencyState extends State<DetailAgency> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Currency Converter'),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.logout),
-              onPressed: () {},
-            ),
-          ],
-          bottom: PreferredSize(
-            preferredSize: Size.fromHeight(4.0),
-            child: LinearProgressIndicator(
-              value: 0.50, // ค่าความคืบหน้า 25%
-              backgroundColor: Colors.black,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.lightGreen),
-            ),
+      appBar: AppBar(
+        title: Text('Currency Converter'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {},
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(4.0),
+          child: LinearProgressIndicator(
+            value: 0.50, // ค่าความคืบหน้า 25%
+            backgroundColor: Colors.black,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.lightGreen),
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => notify(),
-              ),
-            );
-          },
-          child: Icon(Icons.notifications),
-          backgroundColor: Colors.blue,
-          elevation: 4,
-          shape: CircleBorder(),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
-        body: ListView(children: [
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => notify(),
+            ),
+          );
+        },
+        child: Icon(Icons.notifications),
+        backgroundColor: Colors.blue,
+        elevation: 4,
+        shape: CircleBorder(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+      body: ListView(
+        children: [
           Container(
-              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              child: Column(mainAxisSize: MainAxisSize.max, children: [
+            padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
                 // if (showPadding)
                 //////////////////////////////////// Agency 1 ////////////////////////////////////
                 if (currentRate1.isNotEmpty)
@@ -627,14 +662,6 @@ class _DetailAgencyState extends State<DetailAgency> {
                                         ),
                                       ),
                                     ),
-                                    // if (isExpanded)
-                                    //   Center(
-                                    //     child: TextField(
-                                    //       decoration: InputDecoration(
-                                    //         hintText: 'Enter text',
-                                    //       ),
-                                    //     ),
-                                    //   ),
                                   ],
                                 ),
                               ],
@@ -1237,409 +1264,11 @@ class _DetailAgencyState extends State<DetailAgency> {
                           )),
                     ),
                   ),
-
-// //////////////////////////////////// Agency 7 ////////////////////////////////////
-//                 if (currentRate7.isNotEmpty)
-//                 Padding(
-//                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-//                   child: SizedBox(
-//                       //Box1
-//                       height: 80,
-//                       width: MediaQuery.of(context).size.width * 1.0,
-//                       child: Card(
-//                         margin:
-//                             EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(25),
-//                           side: BorderSide(
-//                             color: Colors.grey.shade300,
-//                             width: 1, // Add a border
-//                           ),
-//                         ),
-//                         elevation: 8, // Add a shadow
-//                         // Shows the largest companies and currencies.
-//                         child: Row(
-//                           children: [
-//                             Padding(
-//                               padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-//                             ),
-//                             if (context
-//                                         .watch<ReservationData>()
-//                                         .resevaAgency
-//                                         .toString() !=
-//                                     null &&
-//                                 context
-//                                         .watch<ReservationData>()
-//                                         .resevaRateMoney
-//                                         .toString() !=
-//                                     null)
-//                               if (context
-//                                       .watch<ReservationData>()
-//                                       .resevaAgency
-//                                       .toString() ==
-//                                   'SRO')
-//                                 Image.network(
-//                                   'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SPRO.png?alt=media&token=bb3a5e94-dcbd-457e-8134-4ce0bc59e65a',
-//                                   width: 130,
-//                                   height: 130,
-//                                 ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'SRG')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SRG.png?alt=media&token=db8f7a00-76fd-4f6b-a49b-56b9393f09ac',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'VPC')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_VP.png?alt=media&token=f288196a-5abb-422b-b487-85919a4b25f9',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'K79')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_K79.png?alt=media&token=1c7787bc-dc5b-4e83-8653-830ddcfe5700',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'SME')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_siam.png?alt=media&token=b26dda49-ed85-4140-822c-40e933dd4f22',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'VSU')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_vasu.png?alt=media&token=e6da328d-3b95-4f32-bc00-6346e21e1009',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'XNE')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_xne.png?alt=media&token=15fc6416-5d2f-4e63-9b62-086bd641d006',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             Expanded(
-//                               child: Column(
-//                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                 children: [
-//                                   Padding(
-//                                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-//                                     child: Text(
-//                                       'This agency best exchange rates!',
-//                                       style: TextStyle(fontSize: 14),
-//                                     ),
-//                                   ),
-//                                   Padding(
-//                                     padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-//                                     child: Text(
-//                                       '1 ${context.watch<ReservationData>().resevaFromCur.toString()} = ${currentRate7} THB',
-//                                       style: TextStyle(fontSize: 14),
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       )),
-//                 ),
-
-// /////////////////////////// Agen8 /////////////////////////////////
-//                 if (currentRate8.isNotEmpty)
-//                 Padding(
-//                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-//                   child: SizedBox(
-//                       //Box1
-//                       height: 80,
-//                       width: MediaQuery.of(context).size.width * 1.0,
-//                       child: Card(
-//                         margin:
-//                             EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(25),
-//                           side: BorderSide(
-//                             color: Colors.grey.shade300,
-//                             width: 1, // Add a border
-//                           ),
-//                         ),
-//                         elevation: 8, // Add a shadow
-//                         // Shows the largest companies and currencies.
-//                         child: Row(
-//                           children: [
-//                             Padding(
-//                               padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-//                             ),
-//                             if (context
-//                                         .watch<ReservationData>()
-//                                         .resevaAgency
-//                                         .toString() !=
-//                                     null &&
-//                                 context
-//                                         .watch<ReservationData>()
-//                                         .resevaRateMoney
-//                                         .toString() !=
-//                                     null)
-//                               if (context
-//                                       .watch<ReservationData>()
-//                                       .resevaAgency
-//                                       .toString() ==
-//                                   'SRO')
-//                                 Image.network(
-//                                   'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SPRO.png?alt=media&token=bb3a5e94-dcbd-457e-8134-4ce0bc59e65a',
-//                                   width: 130,
-//                                   height: 130,
-//                                 ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'SRG')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SRG.png?alt=media&token=db8f7a00-76fd-4f6b-a49b-56b9393f09ac',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'VPC')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_VP.png?alt=media&token=f288196a-5abb-422b-b487-85919a4b25f9',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'K79')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_K79.png?alt=media&token=1c7787bc-dc5b-4e83-8653-830ddcfe5700',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'SME')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_siam.png?alt=media&token=b26dda49-ed85-4140-822c-40e933dd4f22',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'VSU')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_vasu.png?alt=media&token=e6da328d-3b95-4f32-bc00-6346e21e1009',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'XNE')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_xne.png?alt=media&token=15fc6416-5d2f-4e63-9b62-086bd641d006',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             Expanded(
-//                               child: Column(
-//                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                 children: [
-//                                   Padding(
-//                                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-//                                     child: Text(
-//                                       'This agency best exchange rates!',
-//                                       style: TextStyle(fontSize: 14),
-//                                     ),
-//                                   ),
-//                                   Padding(
-//                                     padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-//                                     child: Text(
-//                                       '1 ${context.watch<ReservationData>().resevaFromCur.toString()} = ${currentRate8} THB',
-//                                       style: TextStyle(fontSize: 14),
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       )),
-//                 ),
-
-// /////////////////////////// Agen9 /////////////////////////////////
-//                 if (currentRate9.isNotEmpty)
-//                 Padding(
-//                   padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-//                   child: SizedBox(
-//                       //Box1
-//                       height: 80,
-//                       width: MediaQuery.of(context).size.width * 1.0,
-//                       child: Card(
-//                         margin:
-//                             EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-//                         shape: RoundedRectangleBorder(
-//                           borderRadius: BorderRadius.circular(25),
-//                           side: BorderSide(
-//                             color: Colors.grey.shade300,
-//                             width: 1, // Add a border
-//                           ),
-//                         ),
-//                         elevation: 8, // Add a shadow
-//                         // Shows the largest companies and currencies.
-//                         child: Row(
-//                           children: [
-//                             Padding(
-//                               padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-//                             ),
-//                             if (context
-//                                         .watch<ReservationData>()
-//                                         .resevaAgency
-//                                         .toString() !=
-//                                     null &&
-//                                 context
-//                                         .watch<ReservationData>()
-//                                         .resevaRateMoney
-//                                         .toString() !=
-//                                     null)
-//                               if (context
-//                                       .watch<ReservationData>()
-//                                       .resevaAgency
-//                                       .toString() ==
-//                                   'SRO')
-//                                 Image.network(
-//                                   'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SPRO.png?alt=media&token=bb3a5e94-dcbd-457e-8134-4ce0bc59e65a',
-//                                   width: 130,
-//                                   height: 130,
-//                                 ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'SRG')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_SRG.png?alt=media&token=db8f7a00-76fd-4f6b-a49b-56b9393f09ac',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'VPC')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_VP.png?alt=media&token=f288196a-5abb-422b-b487-85919a4b25f9',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'K79')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_K79.png?alt=media&token=1c7787bc-dc5b-4e83-8653-830ddcfe5700',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'SME')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_siam.png?alt=media&token=b26dda49-ed85-4140-822c-40e933dd4f22',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'VSU')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_vasu.png?alt=media&token=e6da328d-3b95-4f32-bc00-6346e21e1009',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             if (context
-//                                     .watch<ReservationData>()
-//                                     .resevaAgency
-//                                     .toString() ==
-//                                 'XNE')
-//                               Image.network(
-//                                 'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/IMG_Agency%2Ficon_xne.png?alt=media&token=15fc6416-5d2f-4e63-9b62-086bd641d006',
-//                                 width: 130,
-//                                 height: 130,
-//                               ),
-//                             Expanded(
-//                               child: Column(
-//                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                 children: [
-//                                   Padding(
-//                                     padding: EdgeInsets.fromLTRB(10, 20, 0, 0),
-//                                     child: Text(
-//                                       'This agency best exchange rates!',
-//                                       style: TextStyle(fontSize: 14),
-//                                     ),
-//                                   ),
-//                                   Padding(
-//                                     padding: EdgeInsets.fromLTRB(10, 5, 0, 0),
-//                                     child: Text(
-//                                       '1 ${context.watch<ReservationData>().resevaFromCur.toString()} = ${currentRate9} THB',
-//                                       style: TextStyle(fontSize: 14),
-//                                     ),
-//                                   ),
-//                                 ],
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       )),
-//                 ),
-
-                Text(context.watch<ReservationData>().resevaFromCur.toString()),
-                Text(context.watch<ReservationData>().resevaToCur.toString()),
-                Text(context.watch<ReservationData>().resevaAgency.toString()),
-                Text(context.watch<ReservationData>().resevaAmount.toString()),
-                Text(context
-                    .watch<ReservationData>()
-                    .resevaRateMoney
-                    .toString()),
-              ])),
-        ]));
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

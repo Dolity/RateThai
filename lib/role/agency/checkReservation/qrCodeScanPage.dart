@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/Service/singleton/userUID.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class QRScanPage extends StatefulWidget {
   final String uidQR;
@@ -104,6 +106,7 @@ class _QRScanPageState extends State<QRScanPage> {
                     final String _totalQR = userData['QRCode']['Total'];
                     final String _fName = userData['FirstName'];
                     final String _lName = userData['LastName'];
+                    final String _Token = userData['FCMToken'];
 
                     // if (snapshot.connectionState == ConnectionState.done) {
                     // if (snapshot.hasData) {
@@ -179,6 +182,9 @@ class _QRScanPageState extends State<QRScanPage> {
                                     children: [
                                       TextButton(
                                         onPressed: () {
+                                          sendNotificationBackground(_Token);
+                                          print(
+                                              'Token ${userData['fcmToken']}');
                                           dropOffStatus = true;
                                           // บันทึกข้อมูลลง Firestore หรือทำอย่างอื่นตามที่คุณต้องการ
                                           final usersRef = FirebaseFirestore
@@ -196,7 +202,7 @@ class _QRScanPageState extends State<QRScanPage> {
                                           Navigator.pop(context);
                                           Navigator.pop(context);
                                         },
-                                        child: Text('ยอมรับ'),
+                                        child: Text('Allow'),
                                       ),
                                       TextButton(
                                         onPressed: () {
@@ -218,7 +224,7 @@ class _QRScanPageState extends State<QRScanPage> {
                                           Navigator.pop(context);
                                           Navigator.pop(context);
                                         },
-                                        child: Text('ปฏิเสธ'),
+                                        child: Text('Not Allow'),
                                       ),
                                     ],
                                   ),
@@ -283,6 +289,36 @@ class _QRScanPageState extends State<QRScanPage> {
 
     final firestoreData = snapshot.data() as Map<String, dynamic>;
     return firestoreData;
+  }
+
+  int createUniqueId() {
+    return DateTime.now().millisecondsSinceEpoch.remainder(100000);
+  }
+
+  void sendNotificationBackground(String fcmToken) async {
+    final url = Uri.parse('https://fcm.googleapis.com/fcm/send');
+
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization':
+          'key=AAAAcMo1rAc:APA91bFgjfXcc0SJt0aeBr6X8ki8Z0CTg8YUTFANeybem04RvuXwIq5uglywI-hi_MG-jr1_KzyjKEay49eJVxjsCHtqoPp0DULiWaAWu7D89-Uk3QREwx8eitE_iKuhcU_DpdPTmM5B',
+    };
+
+    final body = jsonEncode({
+      'to': fcmToken,
+      'notification': {
+        'title': 'Currency Received',
+        'body': 'You have received money from the agency.',
+      },
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      print('Notification sent successfully');
+    } else {
+      print('Failed to send notification');
+    }
   }
 
   @override

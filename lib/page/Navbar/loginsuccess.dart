@@ -31,6 +31,7 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
   final user = FirebaseAuth.instance.currentUser!.uid;
   late SharedPreferences _preferences;
   bool? isVerify;
+  bool? isReservation;
   // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   // @override
@@ -115,36 +116,43 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
             print('currentIDX $currentIndex');
           });
 
-          if (currentIndex == 2) {
-            // Check Firestore for isVerify data
-            final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-            final snapshot = await usersRef.doc(user).get();
+          // if (currentIndex == 2) {
+          //   // Check Firestore for isVerify data
+          //   final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+          //   final snapshot = await usersRef.doc(user).get();
 
-            // isVerify = snapshot.get('isVerify') ?? false;
-            isVerify = snapshot.data()!.containsKey('isVerify')
-                ? snapshot.get('isVerify')
-                : false;
+          //   // isVerify = snapshot.get('isVerify') ?? false;
+          //   isVerify = snapshot.data()!.containsKey('isVerify')
+          //       ? snapshot.get('isVerify')
+          //       : false;
 
-            print('isVerify: $isVerify');
+          //   isReservation = snapshot.data()!.containsKey('ConditionCheckAgency')
+          //       ? snapshot.get('ConditionCheckAgency')
+          //       : false;
 
-            setState(() {
-              isVerify = isVerify;
-            });
-            print('Set State isVerify: $isVerify');
+          //   print('isVerify: $isVerify');
 
-            if (!isVerify!) {
-              print('isVerify: $isVerify');
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => VerificationPage()),
-              );
-            } else {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => ReservationNav()),
-              // );
-            }
-          }
+          //   setState(() {
+          //     isVerify = isVerify;
+          //     isReservation = isReservation;
+          //   });
+          //   print('Set State isVerify: $isVerify');
+
+          //   if (!isVerify!) {
+          //     print('isVerify: $isVerify');
+          //     Navigator.pushReplacement(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => VerificationPage()),
+          //     );
+          //   }
+          //   // else if (isVerify! && !isReservation!) {
+          //   //   print('isReservation: $isVerify');
+          //   //   Navigator.pushReplacement(
+          //   //     context,
+          //   //     MaterialPageRoute(builder: (context) => VerificationPage()),
+          //   //   );
+          //   // }
+          // }
         },
         unselectedItemColor: Colors.grey[500],
         selectedItemColor: Colors.black,

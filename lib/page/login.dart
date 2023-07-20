@@ -4,6 +4,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 // import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:testprojectbc/page/Navbar/ForgotPasswordScreen.dart';
 import 'package:testprojectbc/page/Navbar/homeNav.dart';
 import 'package:testprojectbc/page/Setting/notifyFCM.dart';
 import 'package:testprojectbc/page/authenticator.dart';
@@ -60,6 +61,11 @@ class _LoginPage extends State<LoginPage> {
   final usersRef = FirebaseFirestore.instance.collection('usersPIN');
 
   bool valueObscureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -406,12 +412,12 @@ class _LoginPage extends State<LoginPage> {
                                                                   24, 0, 0, 0),
                                                           child: TextButton(
                                                             onPressed: () {
-                                                              Navigator.pushReplacement(
+                                                              Navigator.push(
                                                                   context,
                                                                   MaterialPageRoute(
                                                                       builder:
                                                                           (context) {
-                                                                return FCMNotificationTestPage();
+                                                                return ForgotPasswordScreen();
                                                               }));
                                                             },
                                                             child: Text(
@@ -830,10 +836,10 @@ class _LoginPage extends State<LoginPage> {
 
   Future loginWithGoogle(BuildContext context) async {
     GoogleSignIn _googleSignIn = GoogleSignIn(
-      scopes: [
-        'https://www.googleapis.com/auth/contacts.readonly',
-      ],
-    );
+        // scopes: [
+        //   'https://www.googleapis.com/auth/contacts.readonly',
+        // ],
+        );
     GoogleSignInAccount? user = await _googleSignIn.signIn();
     GoogleSignInAuthentication userAuth = await user!.authentication;
 
@@ -850,25 +856,26 @@ class _LoginPage extends State<LoginPage> {
       'displayName': user.displayName,
       // เพิ่มข้อมูลอื่นๆ ที่คุณต้องการเก็บได้ตามต้องการ
     };
+    // await FirebaseFirestore.instance
+    //     .collection('usersPIN')
+    //     .doc(userDoc!.uid)
+    //     .set(userData, SetOptions(merge: true));
+
     await FirebaseFirestore.instance
         .collection('usersPIN')
         .doc(userDoc!.uid)
-        .set(userData, SetOptions(merge: true));
+        .update({
+      'displayName': user.displayName,
+      'UID': userDoc.uid,
+    });
 
-    if (!mounted) return;
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return (GooglefaPage());
     })); // after success route to home.
+    print('google OK');
+    // if (mounted) await _googleSignIn.disconnect();
+    // print('google Fail');
   }
-
-  // Future<void> saveUser(GoogleSignInAccount account) async {
-  //   FirebaseFirestore.instance.collection("Users").doc(account.email).set({
-  //     "email": account.email,
-  //     "name": account.displayName,
-  //     "profilepic": account.photoUrl
-  //   });
-  //   print("Saved User data");
-  // }
 
   Future loginWithFacebook(BuildContext context) async {
     try {

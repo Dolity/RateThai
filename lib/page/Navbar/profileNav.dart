@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:testprojectbc/page/Reservation/genQR.dart';
 import 'package:testprojectbc/page/Reservation/getBalance.dart';
@@ -154,6 +155,11 @@ class _ProfileNav extends State<ProfileNav> {
   final authen = FirebaseAuth.instance;
   late User? currentUser;
   late String userUID;
+  bool? isEmail;
+  bool? isGoogle;
+  bool? isFacebook;
+  final providerData = FirebaseAuth.instance.currentUser?.providerData;
+
   @override
   void initState() {
     super.initState();
@@ -161,6 +167,32 @@ class _ProfileNav extends State<ProfileNav> {
     if (currentUser != null) {
       userUID = currentUser!.uid;
     }
+    // final providerData = FirebaseAuth.instance.currentUser?.providerData;
+
+    if (providerData != null && providerData!.isNotEmpty) {
+      for (final provider in providerData!) {
+        if (provider.providerId == 'password') {
+          // ล็อกอินด้วยอีเมล์และรหัสผ่าน
+          // ทำสิ่งที่คุณต้องการในกรณีนี้
+          isEmail = true;
+
+          print('login Email ${provider.providerId}');
+        } else if (provider.providerId == 'google.com') {
+          // ล็อกอินด้วย Google
+          // ทำสิ่งที่คุณต้องการในกรณีนี้
+          isGoogle = true;
+          print('login Google ${provider.providerId}');
+        } else if (provider.providerId == 'facebook.com') {
+          // ล็อกอินด้วย Facebook
+          // ทำสิ่งที่คุณต้องการในกรณีนี้
+          isFacebook = true;
+          print('login Facebook ${provider.providerId}');
+        }
+      }
+    }
+    isEmail = false;
+    isGoogle = false;
+    isFacebook = false;
   }
 
   final IconData _iconLight = Icons.wb_sunny;
@@ -170,22 +202,6 @@ class _ProfileNav extends State<ProfileNav> {
     return Consumer<DarkThemeProvider>(
         builder: (BuildContext context, themeChangeProvider, Widget? child) {
       return Scaffold(
-        // appBar: AppBar(
-        //   title: const Text('Settings'),
-        //   actions: <Widget>[
-        //     // IconButton(
-        //     //   onPressed: () {
-        //     //     setState(() {
-        //     //       themeChangeProvider.darkTheme =
-        //     //           !themeChangeProvider.darkTheme;
-        //     //     });
-        //     //   },
-        //     //   icon: Icon(themeChangeProvider.darkTheme
-        //     //       ? Icons.nightlight_round
-        //     //       : Icons.wb_sunny),
-        //     // ),
-        //   ],
-        // ),
         body: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
               .collection('usersPIN')
@@ -251,8 +267,42 @@ class _ProfileNav extends State<ProfileNav> {
                                   alignment: Alignment.topRight,
                                   child: IconButton(
                                     icon: const Icon(Icons.logout),
-                                    onPressed: () {
-                                      authen.signOut().then((value) {
+                                    onPressed: () async {
+                                      authen.signOut().then((value) async {
+                                        // final providerData = FirebaseAuth
+                                        //     .instance.currentUser?.providerData;
+                                        for (final provider in providerData!) {
+                                          if (provider.providerId ==
+                                                  'password' ||
+                                              isEmail == true) {
+                                            // ล็อกอินด้วยอีเมล์และรหัสผ่าน
+                                            // ทำสิ่งที่คุณต้องการในกรณีนี้
+                                            // providerData!.clear();
+                                            print(
+                                                'login Out ${provider.providerId}');
+                                          } else if (provider.providerId ==
+                                                  'google.com' ||
+                                              isGoogle == true) {
+                                            // ล็อกอินด้วย Google
+                                            // ทำสิ่งที่คุณต้องการในกรณีนี้
+                                            // providerData!.clear();
+                                            await GoogleSignIn().disconnect();
+                                            print(
+                                                'login Out ${provider.providerId}');
+                                          } else if (provider.providerId ==
+                                                  'facebook.com' ||
+                                              isFacebook == true) {
+                                            // ล็อกอินด้วย Facebook
+                                            // ทำสิ่งที่คุณต้องการในกรณีนี้
+                                            // await authen.signOut();
+                                            // await authen.signInWithCredential(credential);
+                                            // providerData!.clear();
+                                            print(
+                                                'login Out ${provider.providerId}');
+                                          }
+                                        }
+                                        providerData!.clear();
+
                                         Navigator.pushReplacement(context,
                                             MaterialPageRoute(
                                                 builder: (context) {

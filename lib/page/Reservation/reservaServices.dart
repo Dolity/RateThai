@@ -44,7 +44,7 @@ class NotesServices extends ChangeNotifier {
 
   Future<void> getABI() async {
     String abiFile =
-        await rootBundle.loadString('build/contracts/NotesContract.json');
+        await rootBundle.loadString('contractsBC/NotesContract.json');
     String contractAddress =
         "0x1e2D7e1706fC7630bD5E583FFF6DA78E023Fc235"; //Smart Contract Address (Deployed) 0x778F9c5d9191e02f7E83C05140dF8449cD1d3C12 / 0x1e2D7e1706fC7630bD5E583FFF6DA78E023Fc235
 

@@ -86,7 +86,7 @@ class _VerificationPageState extends State<VerificationPage> {
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                     prefixIcon: Icon(
-                      Ionicons.lock_closed_outline,
+                      Ionicons.document_text_outline,
                       color: Colors.grey,
                     ),
                     hintText: "First Name",
@@ -107,7 +107,7 @@ class _VerificationPageState extends State<VerificationPage> {
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                     prefixIcon: Icon(
-                      Ionicons.lock_closed_outline,
+                      Ionicons.document_text_outline,
                       color: Colors.grey,
                     ),
                     hintText: "Last Name",
@@ -275,7 +275,7 @@ class _VerificationPageState extends State<VerificationPage> {
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                     prefixIcon: Icon(
-                      Ionicons.lock_closed_outline,
+                      Ionicons.card_outline,
                       color: Colors.grey,
                     ),
                     hintText: "ID Card Code",
@@ -296,7 +296,7 @@ class _VerificationPageState extends State<VerificationPage> {
                   contentPadding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                   prefixIcon: Icon(
-                    Ionicons.lock_closed_outline,
+                    Ionicons.card_outline,
                     color: Colors.grey,
                   ),
                   hintText: "ID Laser Card Code",
@@ -318,7 +318,7 @@ class _VerificationPageState extends State<VerificationPage> {
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                     prefixIcon: Icon(
-                      Ionicons.lock_closed_outline,
+                      Ionicons.phone_portrait_outline,
                       color: Colors.grey,
                     ),
                     hintText: "Phone Number",

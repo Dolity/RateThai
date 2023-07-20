@@ -15,6 +15,8 @@ class HomeNav extends StatefulWidget {
   State<HomeNav> createState() => _HomeNavState();
 }
 
+bool _isNotifyStatusProcessed = false;
+
 class _HomeNavState extends State<HomeNav> {
   DarkThemeProvider themeChangeProvider = DarkThemeProvider();
 
@@ -65,22 +67,40 @@ class _HomeNavState extends State<HomeNav> {
     return DateTime.now().millisecondsSinceEpoch.remainder(100000);
   }
 
-  void sendNotificationForegroundAwesome() {
+  void sendNotificationForegroundAwesomeKYC() {
     AwesomeNotifications().createNotification(
-        content: NotificationContent(
-          id: createUniqueId(),
-          channelKey: 'basic_channel',
-          title: 'Verification KYC',
-          body: 'You have been approved for verification.',
-        ),
-        // actionButtons: [
-        //   NotificationActionButton(
-        //     key: 'open_user_profile',
-        //     label: 'เปิดโปรไฟล์ของคุณ',
-        //     autoCancel: true,
-        //   ),
-        // ],
-        schedule: NotificationCalendar());
+      content: NotificationContent(
+        id: createUniqueId(),
+        channelKey: 'basic_channel',
+        title: 'Verification KYC',
+        body: 'You have been approved for verification.',
+      ),
+      schedule: NotificationCalendar(),
+    );
+  }
+
+  void sendNotificationForegroundAwesomeReserve() {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: createUniqueId(),
+        channelKey: 'basic_channel',
+        title: 'Currency Reservation',
+        body: 'You have been approved for Currency Reservation.',
+      ),
+      schedule: NotificationCalendar(),
+    );
+  }
+
+  void sendNotificationForegroundAwesomeReceive() {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: createUniqueId(),
+        channelKey: 'basic_channel',
+        title: 'Currency Received',
+        body: 'You have received money from the Agency.',
+      ),
+      schedule: NotificationCalendar(),
+    );
   }
 
   @override
@@ -133,10 +153,23 @@ class _HomeNavState extends State<HomeNav> {
                 final bool isCheckAdminStatus = userData['isVerify'] == true;
                 final bool isNotifyStatus = userData['isNotifyLocal'] == true;
 
-                if (isNotifyStatus) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    sendNotificationForegroundAwesome();
-                  });
+                if (userData.isNotEmpty) {
+                  if (isNotifyStatus && !_isNotifyStatusProcessed) {
+                    sendNotificationForegroundAwesomeKYC();
+                  }
+
+                  if (isCheckAgencyStatus && !_isNotifyStatusProcessed) {
+                    Future.delayed(Duration(seconds: 5), () {
+                      sendNotificationForegroundAwesomeReserve();
+                    });
+                  }
+
+                  if (isDropOffStatus && !_isNotifyStatusProcessed) {
+                    Future.delayed(Duration(seconds: 10), () {
+                      sendNotificationForegroundAwesomeReceive();
+                    });
+                  }
+                  _isNotifyStatusProcessed = true;
                 }
 
                 return Column(

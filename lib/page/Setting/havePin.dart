@@ -136,15 +136,15 @@ class _HavePinPage extends State<HavePinPage> {
   void init() async {
     await _initializePreferences();
     bool isPINSessionValid = await _checkPINSession();
-    if (isPINSessionValid) {
-      // PIN session ยังไม่หมดอายุ
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-        return GetQRCodePage(
-          qrCodeData: '',
-        );
-      }));
-      // Navigator.pop(context, true);
-    }
+    // if (isPINSessionValid) {
+    //   // PIN session ยังไม่หมดอายุ
+    //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+    //     return GetQRCodePage(
+    //       qrCodeData: '',
+    //     );
+    //   }));
+    //   // Navigator.pop(context, true);
+    // }
   }
 
   Future<void> _initializePreferences() async {

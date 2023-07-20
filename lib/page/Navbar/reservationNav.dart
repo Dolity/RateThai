@@ -82,18 +82,77 @@ class _ReservationNav extends State<ReservationNav> {
   List<String> agenNamesList = [];
   Set<double> allSellRate = {};
   final userUID = FirebaseAuth.instance.currentUser!.uid;
+  bool? isVerify;
+  bool? isReservation;
 
   var sellRateComparator =
       (double a, double b) => b.compareTo(a); // เรียงลำดับจากมากไปหาน้อย
   bool isVerified = false; // เพิ่มตัวแปร isVerified ใน State
   int currentIndex = 2; // ตรงนี้คือการประกาศตัวแปร currentIndex
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   checkVerificationStatus(); // เรียกใช้ฟังก์ชัน checkVerificationStatus ใน initState
-  //   checkClickReservation();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    // checkVerificationStatus(); // เรียกใช้ฟังก์ชัน checkVerificationStatus ใน initState
+    // checkClickReservation();
+    checkKYC();
+  }
+
+  void checkKYC() async {
+    // Check Firestore for isVerify data
+    final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+    final snapshot = await usersRef.doc(userUID).get();
+
+    // isVerify = snapshot.get('isVerify') ?? false;
+    isVerify = snapshot.data()!.containsKey('isVerify')
+        ? snapshot.get('isVerify')
+        : false;
+
+    isReservation = snapshot.data()!.containsKey('ConditionCheckAgency')
+        ? snapshot.get('ConditionCheckAgency')
+        : false;
+
+    print('isVerify: $isVerify');
+
+    setState(() {
+      isVerify = isVerify;
+      isReservation = isReservation;
+    });
+    print('Set State isVerify: $isVerify');
+
+    if (!isVerify!) {
+      print('isVerify: $isVerify');
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => VerificationPage()),
+      // );
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(38),
+            ),
+            title: Text('You haven\'t verified your identity yet'),
+            content: Text('Please verify your identity to use.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.pop(context); // ปิด AlertDialog
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginSuccessPage()),
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   // void checkVerificationStatus() async {
   //   print('checkVerificationStatus OK');
@@ -149,15 +208,6 @@ class _ReservationNav extends State<ReservationNav> {
     print("Click UID: ${uid}");
 
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Currency Converter'),
-      //   actions: [
-      //     IconButton(
-      //       icon: Icon(Icons.logout),
-      //       onPressed: () {},
-      //     ),
-      //   ],
-      // ),
       body: Container(
         child: SingleChildScrollView(
           child: Container(
@@ -434,18 +484,8 @@ class _ReservationNav extends State<ReservationNav> {
                                                           print(
                                                               "Sort String! : $allResavaDataString");
 
-                                                          // conversionList.add(conversionData);
-                                                          // conversionList.sort((a, b) => b['sellRate'].compareTo(a['sellRate']));
-                                                          // print("List Sort : $conversionList");
-                                                          // List<Map<String, dynamic>> uniqueConversionList = conversionList.toSet().toList();
-                                                          // String allResavaDataString = uniqueConversionList.join(', ');
-                                                          // print("not same Sort : $uniqueConversionList");
-                                                          // print("Sort String! : ${allResavaDataString}");
-
                                                           for (var entry
                                                               in conversionList) {
-                                                            // var currency = entry.key;
-                                                            // var value = entry.value;
                                                             var agenName =
                                                                 entry[
                                                                     'agenName'];

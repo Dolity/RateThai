@@ -101,9 +101,8 @@ flutter:
   
   assets:
     - assets/
-    - build/contracts/Migrations.json
-    - build/contracts/NotesContract.json
-    - build/contracts/abi.json
+    - contractsBC/NotesContract.json
+    - contractsBC/abi.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

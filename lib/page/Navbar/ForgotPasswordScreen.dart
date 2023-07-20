@@ -29,13 +29,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       emailController.clear();
       oldPasswordController.clear();
       newPasswordController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เปลี่ยนรหัสผ่านสำเร็จ')),
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Alert'),
+            content: Text('Your password has been successfully changed.'),
+            actions: [
+              TextButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
       );
     } catch (e) {
-      print("เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน: $e')),
+      print("Error changing password: $e");
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('Error changing password: $e'),
+            actions: [
+              TextButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
       );
     }
   }
@@ -70,130 +99,134 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         decoration: BoxDecoration(
           color: themeData.cardColor,
         ),
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Align(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Reset Password',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontFamily: 'Lexend',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 20.0),
-                TextFormField(
-                  controller: emailController,
-                  style: themeData.textTheme.titleMedium!.copyWith(
-                    color: themeData.colorScheme.onBackground,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: InputDecoration(
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                    prefixIcon: Icon(
-                      Ionicons.mail_open_outline,
-                      color: Colors.grey,
-                    ),
-                    hintText: "Email",
-                    hintStyle: GoogleFonts.nunitoSans(
-                        fontWeight: FontWeight.w600, color: Colors.black38),
-                    fillColor: Colors.black12,
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none),
-                  ),
-                ),
-                SizedBox(height: 16.0),
-                TextField(
-                  controller: oldPasswordController,
-                  style: themeData.textTheme.titleMedium!.copyWith(
-                    color: themeData.colorScheme.onBackground,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: InputDecoration(
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                    prefixIcon: Icon(
-                      Ionicons.lock_open_outline,
-                      color: Colors.grey,
-                    ),
-                    hintText: "Old Passwod",
-                    hintStyle: GoogleFonts.nunitoSans(
-                        fontWeight: FontWeight.w600, color: Colors.black38),
-                    fillColor: Colors.black12,
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none),
-                  ),
-                  obscureText: true,
-                ),
-                SizedBox(height: 16.0),
-                TextField(
-                  controller: newPasswordController,
-                  style: themeData.textTheme.titleMedium!.copyWith(
-                    color: themeData.colorScheme.onBackground,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  decoration: InputDecoration(
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 15, horizontal: 5),
-                    prefixIcon: Icon(
-                      Ionicons.lock_closed_outline,
-                      color: Colors.grey,
-                    ),
-                    hintText: "New Passwod",
-                    hintStyle: GoogleFonts.nunitoSans(
-                        fontWeight: FontWeight.w600, color: Colors.black38),
-                    fillColor: Colors.black12,
-                    filled: true,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none),
-                  ),
-                  obscureText: true,
-                ),
-                SizedBox(height: 16.0),
-                ElevatedButtonTheme(
-                  data: ElevatedButtonThemeData(
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 50, vertical: 13),
-                      primary: Colors.black54,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                  child: ElevatedButton(
-                    // style: ButtonStyle(
-                    //   backgroundColor: MaterialStateProperty.all<Color>(
-                    //     themeData.colorScheme.primary,
-                    //   ),
-                    // ),
-                    onPressed: () => _resetPassword(context),
-                    child: Text(
-                      'Save',
+        child: ListView(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Reset Password',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 30,
                         fontFamily: 'Lexend',
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color: Colors.black,
                       ),
                     ),
-                  ),
+                    SizedBox(height: 20.0),
+                    TextFormField(
+                      controller: emailController,
+                      style: themeData.textTheme.titleMedium!.copyWith(
+                        color: themeData.colorScheme.onBackground,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 5),
+                        prefixIcon: Icon(
+                          Ionicons.mail_open_outline,
+                          color: Colors.grey,
+                        ),
+                        hintText: "Email",
+                        hintStyle: GoogleFonts.nunitoSans(
+                            fontWeight: FontWeight.w600, color: Colors.black38),
+                        fillColor: Colors.black12,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none),
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    TextField(
+                      controller: oldPasswordController,
+                      style: themeData.textTheme.titleMedium!.copyWith(
+                        color: themeData.colorScheme.onBackground,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 5),
+                        prefixIcon: Icon(
+                          Ionicons.lock_open_outline,
+                          color: Colors.grey,
+                        ),
+                        hintText: "Old Passwod",
+                        hintStyle: GoogleFonts.nunitoSans(
+                            fontWeight: FontWeight.w600, color: Colors.black38),
+                        fillColor: Colors.black12,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none),
+                      ),
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 16.0),
+                    TextField(
+                      controller: newPasswordController,
+                      style: themeData.textTheme.titleMedium!.copyWith(
+                        color: themeData.colorScheme.onBackground,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 15, horizontal: 5),
+                        prefixIcon: Icon(
+                          Ionicons.lock_closed_outline,
+                          color: Colors.grey,
+                        ),
+                        hintText: "New Passwod",
+                        hintStyle: GoogleFonts.nunitoSans(
+                            fontWeight: FontWeight.w600, color: Colors.black38),
+                        fillColor: Colors.black12,
+                        filled: true,
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                            borderSide: BorderSide.none),
+                      ),
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 16.0),
+                    ElevatedButtonTheme(
+                      data: ElevatedButtonThemeData(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 13),
+                          primary: Colors.black54,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        // style: ButtonStyle(
+                        //   backgroundColor: MaterialStateProperty.all<Color>(
+                        //     themeData.colorScheme.primary,
+                        //   ),
+                        // ),
+                        onPressed: () => _resetPassword(context),
+                        child: Text(
+                          'Save',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontFamily: 'Lexend',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

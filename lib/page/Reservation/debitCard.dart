@@ -1,7 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/page/Reservation/genQR.dart';
 
-class PayDebitCardPage extends StatelessWidget {
+class PayDebitCardPage extends StatefulWidget {
+  @override
+  _PayDebitCardPage createState() => _PayDebitCardPage();
+}
+
+class _PayDebitCardPage extends State<PayDebitCardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

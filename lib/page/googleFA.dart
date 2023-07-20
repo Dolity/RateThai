@@ -13,6 +13,9 @@ import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
 import 'dart:async';
 
 class GooglefaPage extends StatefulWidget {
+  // final String userPIN;
+  // GooglefaPage({required this.userPIN});
+
   @override
   State<StatefulWidget> createState() {
     return _GooglefaPage();
@@ -83,29 +86,14 @@ class _GooglefaPage extends State<GooglefaPage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchMySecret().then((secret) async {
-      setState(() {
-        mySecret = secret;
-        _authKeySecret = base32.encodeString(mySecret);
-        print('mySecret FS inti: $mySecret');
-      });
-      _preferences = await SharedPreferences.getInstance();
-      // เรียกใช้งานเพื่อตรวจสอบสถานะ TOTP session
-      bool isTOTPSessionValid = await _checkTOTPSession();
-      if (isTOTPSessionValid) {
-        Navigator.pushReplacementNamed(context, "/loginsuccess-page",
-            arguments: []);
-      }
-    });
-  }
-
   Future<void> _saveTOTPSession(bool success) async {
     final currentTime = DateTime.now().millisecondsSinceEpoch;
     await _preferences.setInt('totp_last_success_time', currentTime);
     await _preferences.setBool('totp_verification_success', success);
+  }
+
+  void _resetTOTPSession() async {
+    await _saveTOTPSession(false);
   }
 
   Future<bool> _checkTOTPSession() async {
@@ -116,6 +104,35 @@ class _GooglefaPage extends State<GooglefaPage> {
     final difference = currentTime - lastSuccessTime;
     return verificationSuccess &&
         difference <= (5 * 60 * 1000); // 5 minutes in milliseconds
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMySecret().then(
+      (secret) async {
+        setState(() {
+          mySecret = secret;
+          _authKeySecret = base32.encodeString(mySecret);
+          print('mySecret FS inti: $mySecret');
+        });
+        // _preferences = await SharedPreferences.getInstance();
+        // bool isTOTPSessionValid = await _checkTOTPSession();
+        // // เรียกใช้งานเพื่อตรวจสอบสถานะ TOTP session
+        // if (_preferences == null) {
+        //   // ผู้ใช้ใหม่
+        //   print('New User');
+        // } else {
+        //   // ผู้ใช้เก่า
+        //   print('Existing User');
+        //   if (isTOTPSessionValid) {
+        //     print('Old User');
+        //     Navigator.pushReplacementNamed(context, "/loginsuccess-page",
+        //         arguments: []);
+        //   }
+        // }
+      },
+    );
   }
 
   @override
@@ -167,7 +184,7 @@ class _GooglefaPage extends State<GooglefaPage> {
                   enableActiveFill: true,
                   controller: text2faController,
                   onCompleted: (v) {
-                    debugPrint("Completed");
+                    debugPrint("Completed All Fill");
                   },
                   onChanged: (value) async {
                     int currentTime = DateTime.now().millisecondsSinceEpoch;
@@ -193,21 +210,16 @@ class _GooglefaPage extends State<GooglefaPage> {
                           .doc(userPIN)
                           .get()
                           .then((snapshot) async {
+                        print('verify: $verify');
                         if (snapshot.exists) {
                           // String timedCode = generateTOTP(mySecret, 6, 30);
                           print('value press: $mySecret');
                           print('timeCode: $timedCode');
 
                           if (verify) {
+                            print('verify TRUE');
+
                             totpCheck();
-                            // totpCheck();
-                            //value == timedCode
-                            // TOTP ถูกต้อง
-                            // นำผู้ใช้ไปยังหน้า LoginSuccessPage()
-                            // Navigator.pushReplacement(context,
-                            //     MaterialPageRoute(builder: (context) {
-                            //   return LoginSuccessPage();
-                            // }));
                             Navigator.pushReplacementNamed(
                                 context, "/loginsuccess-page",
                                 arguments: []);
@@ -220,6 +232,7 @@ class _GooglefaPage extends State<GooglefaPage> {
                             );
                             await _saveTOTPSession(true);
                           } else {
+                            print('verify False');
                             // TOTP ไม่ถูกต้อง
                             setState(() {
                               text2faController.clear();
@@ -232,7 +245,7 @@ class _GooglefaPage extends State<GooglefaPage> {
                               backgroundColor: Colors.black54,
                               textColor: Colors.white,
                             );
-                            await _saveTOTPSession(true);
+                            await _saveTOTPSession(false);
                           }
                         }
                       });

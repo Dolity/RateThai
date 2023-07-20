@@ -33,11 +33,71 @@ class _QRCodePageState extends State<QRCodePage> {
   String _gender = '';
   String _uidQR = '';
   late final qrCodeDataProvider;
+  bool? isVerify;
+  bool? isReservation;
+  final user = FirebaseAuth.instance.currentUser!.uid;
+
+  void checkReservation() async {
+    // Check Firestore for isVerify data
+    final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+    final snapshot = await usersRef.doc(user).get();
+
+    // isVerify = snapshot.get('isVerify') ?? false;
+    isVerify = snapshot.data()!.containsKey('isVerify')
+        ? snapshot.get('isVerify')
+        : false;
+
+    isReservation = snapshot.data()!.containsKey('ConditionCheckAgency')
+        ? snapshot.get('ConditionCheckAgency')
+        : false;
+
+    print('isVerify: $isVerify');
+
+    setState(() {
+      isVerify = isVerify;
+      isReservation = isReservation;
+    });
+    print('Set State isVerify: $isVerify');
+
+    if (!isReservation!) {
+      print('isReservation: $isVerify');
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(38),
+            ),
+            title: Text(
+                'You have not been authorized by the company to reserve currency'),
+            content: Text(
+                'Please wait for the company to confirm the currency reservation.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.pop(context); // ปิด AlertDialog
+                  Navigator.pop(context);
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => LoginSuccessPage()),
+                  // );
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     fetchReservationData();
+    checkReservation();
   }
 
   Future<void> fetchReservationData() async {
@@ -101,67 +161,91 @@ class _QRCodePageState extends State<QRCodePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TextField(
-                    controller: _textEditingControllerQR,
-                    decoration: InputDecoration(
-                      hintText: 'Enter data',
+                  // TextField(
+                  //   controller: _textEditingControllerQR,
+                  //   decoration: InputDecoration(
+                  //     hintText: 'Enter data',
+                  //   ),
+                  // ),
+                  // SizedBox(height: 16),
+
+                  ElevatedButtonTheme(
+                    data: ElevatedButtonThemeData(
+                      style: ElevatedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        primary: Colors.black54,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () async {
-                      print("DataProvider: $agency, $currency, $rate, $amount");
-                      print(
-                          "getFireStore: $_dateReserva, $_subAgencyReserva, $_payReserva");
-                      print('total Money: $_total');
-                      print('Fname: $_fname, Lname: $_lname, Gender: $_gender');
-                      final jsonMap = {
-                        'Agency': agency,
-                        'Currency': currency,
-                        'Rate': rate,
-                        'Amount': amount,
-                        'Total': _total,
-                        'Date': _dateReserva,
-                        'SubAgency': _subAgencyReserva,
-                        'Pay': _payReserva,
-                        'Uid': _uidQR,
-                      };
-                      final jsonReservationData = jsonEncode(jsonMap);
-                      setState(() {
-                        _qrCodeData = jsonReservationData;
-                      });
-                      final qrCodeData = QRCodeData.fromJson(jsonMap);
-                      qrCodeDataProvider.setQRCodeData(qrCodeData);
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        print(
+                            "DataProvider: $agency, $currency, $rate, $amount");
+                        print(
+                            "getFireStore: $_dateReserva, $_subAgencyReserva, $_payReserva");
+                        print('total Money: $_total');
+                        print(
+                            'Fname: $_fname, Lname: $_lname, Gender: $_gender');
+                        final jsonMap = {
+                          'Agency': agency,
+                          'Currency': currency,
+                          'Rate': rate,
+                          'Amount': amount,
+                          'Total': _total,
+                          'Date': _dateReserva,
+                          'SubAgency': _subAgencyReserva,
+                          'Pay': _payReserva,
+                          'Uid': _uidQR,
+                        };
+                        final jsonReservationData = jsonEncode(jsonMap);
+                        setState(() {
+                          _qrCodeData = jsonReservationData;
+                        });
+                        final qrCodeData = QRCodeData.fromJson(jsonMap);
+                        qrCodeDataProvider.setQRCodeData(qrCodeData);
 
-                      // เริ่มต้นเก็บค่า QR Code ลงใน Firestore ในฟังก์ชัน build ไม่ใช้ initState
-                      if (jsonMap != null) {
-                        final userPIN = FirebaseAuth.instance.currentUser!.uid;
-                        final usersRef =
-                            FirebaseFirestore.instance.collection('usersPIN');
-                        usersRef.doc(userPIN).update({'QRCode': jsonMap});
-                        print('QR Crate to FS');
-                      }
+                        // เริ่มต้นเก็บค่า QR Code ลงใน Firestore ในฟังก์ชัน build ไม่ใช้ initState
+                        if (jsonMap != null) {
+                          final userPIN =
+                              FirebaseAuth.instance.currentUser!.uid;
+                          final usersRef =
+                              FirebaseFirestore.instance.collection('usersPIN');
+                          usersRef.doc(userPIN).update({'QRCode': jsonMap});
+                          print('QR Crate to FS');
+                        }
 
-                      notesServices.addNote(agency, currency, rate, amount,
-                          _total, _dateReserva, _fname, _lname, _gender);
+                        notesServices.addNote(agency, currency, rate, amount,
+                            _total, _dateReserva, _fname, _lname, _gender);
 
-                      Fluttertoast.showToast(
-                        msg: 'Reservation Save On Blockchian Success \u2714',
-                        toastLength: Toast.LENGTH_LONG,
-                        gravity: ToastGravity.BOTTOM,
-                        backgroundColor: Colors.black54,
-                        textColor: Colors.white,
-                      );
+                        Fluttertoast.showToast(
+                          msg: 'Reservation Save On Blockchian Success \u2714',
+                          toastLength: Toast.LENGTH_LONG,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.black54,
+                          textColor: Colors.white,
+                        );
 
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) {
-                        return LoginSuccessPage();
-                      }));
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) {
+                          return LoginSuccessPage();
+                        }));
 
-                      print('object: $_qrCodeData');
-                      print('Data on BC: ${notesServices.notes}');
-                    },
-                    child: Text('Generate QR Code'),
+                        print('object: $_qrCodeData');
+                        print('Data on BC: ${notesServices.notes}');
+                      },
+                      child: Text(
+                        'Generate QR Code',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: 'Lexend',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 16),
                   _qrCodeData.isNotEmpty
@@ -171,23 +255,6 @@ class _QRCodePageState extends State<QRCodePage> {
                           size: 200.0,
                         )
                       : Container(),
-                  Text(context
-                      .watch<ReservationData>()
-                      .resevaProviAgencyUpdate
-                      .toString()),
-                  Text(context
-                      .watch<ReservationData>()
-                      .resevaFromCur
-                      .toString()),
-                  Text(context
-                      .watch<ReservationData>()
-                      .resevaProviRateUpdate
-                      .toString()),
-                  Text(
-                      context.watch<ReservationData>().resevaAmount.toString()),
-                  Text('DateReserva: $_dateReserva'),
-                  Text('PayReserva: $_payReserva'),
-                  Text('SubAgencyReserva: $_subAgencyReserva'),
                 ],
               ),
             ),
