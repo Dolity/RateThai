@@ -123,7 +123,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       controller: emailController,
                       style: themeData.textTheme.titleMedium!.copyWith(
                         color: themeData.colorScheme.onBackground,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.normal,
                       ),
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
@@ -134,7 +134,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         hintText: "Email",
                         hintStyle: GoogleFonts.nunitoSans(
-                            fontWeight: FontWeight.w600, color: Colors.black38),
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black38),
                         fillColor: Colors.black12,
                         filled: true,
                         border: OutlineInputBorder(
@@ -147,7 +148,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       controller: oldPasswordController,
                       style: themeData.textTheme.titleMedium!.copyWith(
                         color: themeData.colorScheme.onBackground,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.normal,
                       ),
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
@@ -158,7 +159,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         hintText: "Old Passwod",
                         hintStyle: GoogleFonts.nunitoSans(
-                            fontWeight: FontWeight.w600, color: Colors.black38),
+                            fontWeight: FontWeight.normal,
+                            color: Colors.black38),
                         fillColor: Colors.black12,
                         filled: true,
                         border: OutlineInputBorder(
@@ -172,7 +174,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       controller: newPasswordController,
                       style: themeData.textTheme.titleMedium!.copyWith(
                         color: themeData.colorScheme.onBackground,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.normal,
                       ),
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(

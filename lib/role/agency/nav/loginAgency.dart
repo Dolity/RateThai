@@ -57,6 +57,18 @@ class _LoginAgencyPage extends State<LoginAgencyPage> {
   final usersRef = FirebaseFirestore.instance.collection('usersPIN');
 
   bool valueObscureText = true;
+  // Add a list of company names
+  List<String> companyNames = [
+    "K79",
+    "VPC",
+    "SME",
+    "XNE",
+    "SRG",
+    "VSU",
+    "SRO",
+  ];
+
+  String selectedCompanyName = "K79"; // Default selected company
 
   @override
   Widget build(BuildContext context) {
@@ -400,33 +412,47 @@ class _LoginAgencyPage extends State<LoginAgencyPage> {
                                                           padding:
                                                               const EdgeInsets
                                                                       .fromLTRB(
-                                                                  24, 0, 0, 0),
-                                                          child: TextButton(
-                                                            onPressed: () {
-                                                              // Navigator.pushReplacement(
-                                                              //     context,
-                                                              //     MaterialPageRoute(
-                                                              //         builder:
-                                                              //             (context) {
-                                                              //   return AddpostPage();
-                                                              // }));
+                                                                  100, 0, 0, 0),
+                                                          child: DropdownButton<
+                                                              String>(
+                                                            value:
+                                                                selectedCompanyName,
+                                                            onChanged: (String?
+                                                                newValue) {
+                                                              setState(() {
+                                                                selectedCompanyName =
+                                                                    newValue!;
+                                                              });
+
+                                                              print(
+                                                                  'click $selectedCompanyName');
                                                             },
-                                                            child: Text(
-                                                              "Forgot your password?",
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                fontFamily:
-                                                                    'Lexend',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                color:
-                                                                    Colors.blue,
-                                                              ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .left,
-                                                            ),
+                                                            items: companyNames
+                                                                .map((String
+                                                                    value) {
+                                                              return DropdownMenuItem<
+                                                                  String>(
+                                                                value: value,
+                                                                child: Text(
+                                                                  value,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontFamily:
+                                                                        'Lexend',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .normal,
+                                                                    color: Colors
+                                                                        .black,
+                                                                  ),
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .left,
+                                                                ),
+                                                              );
+                                                            }).toList(),
                                                           ),
                                                         ),
                                                         Padding(
@@ -566,6 +592,8 @@ class _LoginAgencyPage extends State<LoginAgencyPage> {
                                                                               user.uid,
                                                                           'displayName':
                                                                               keepName,
+                                                                          'agency':
+                                                                              selectedCompanyName
                                                                         });
                                                                         ScaffoldMessenger.of(context)
                                                                             .showSnackBar(
@@ -596,6 +624,8 @@ class _LoginAgencyPage extends State<LoginAgencyPage> {
                                                                             .uid,
                                                                         'displayName':
                                                                             keepName,
+                                                                        'agency':
+                                                                            selectedCompanyName
                                                                       });
                                                                       ScaffoldMessenger.of(
                                                                               context)

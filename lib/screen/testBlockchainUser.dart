@@ -50,54 +50,106 @@ class _testBCUser extends State<testBCUser> {
       appBar: AppBar(
         title: const Text('History Reservation'),
       ),
-      body: notesServices.isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
-          : RefreshIndicator(
-              onRefresh: () async {
-                await notesServices.fetchNotes();
-              },
-              child: ListView.builder(
-                itemCount: notesServices.notes.length,
-                itemBuilder: (context, index) {
-                  final note = notesServices.notes[index];
+      body: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('usersPIN')
+              // .where('QRCode.Agency', isEqualTo: agencyValue)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            final users = snapshot.data!.docs;
 
-                  if (note.firstnameBC == snapshotData['FirstName']) {
-                    print(
-                        'conditionCheck : ${note.firstnameBC}, ${snapshotData['FirstName']}');
-                    return ListTile(
-                      title: Text(
-                          '${notesServices.notes[index].firstnameBC} ${notesServices.notes[index].lastnameBC} (${notesServices.notes[index].genderBC})'),
-                      subtitle: Text(
-                          '${notesServices.notes[index].agencyBC} ${notesServices.notes[index].rateBC} ${notesServices.notes[index].amountBC} ${notesServices.notes[index].currencyBC}, ${notesServices.notes[index].totalBC} THB, ${notesServices.notes[index].dateBC} '),
-                      trailing: Icon(Icons.arrow_forward),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailBCPage(
-                              firstnameBC:
-                                  notesServices.notes[index].firstnameBC,
-                              lastnameBC: notesServices.notes[index].lastnameBC,
-                              genderBC: notesServices.notes[index].genderBC,
-                              agencyBC: notesServices.notes[index].agencyBC,
-                              rateBC: notesServices.notes[index].rateBC,
-                              currencyBC: notesServices.notes[index].currencyBC,
-                              totalBC: notesServices.notes[index].totalBC,
-                              dateBC: notesServices.notes[index].dateBC,
-                              amountBC: notesServices.notes[index].amountBC,
-                            ),
-                          ),
-                        );
+            return notesServices.isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : RefreshIndicator(
+                    onRefresh: () async {
+                      await notesServices.fetchNotes();
+                    },
+                    child: ListView.builder(
+                      itemCount: notesServices.notes.length,
+                      itemBuilder: (context, index) {
+                        final note = notesServices.notes[index];
+                        final userData =
+                            users[index].data() as Map<String, dynamic>;
+                        final dropOff = snapshotData[
+                            'DropOffStatus']; //snapshotData['DropOffStatus'];
+
+                        if (note.firstnameBC == snapshotData['FirstName']) {
+                          // if (dropOff == true) {
+                          // print(
+                          //     'conditionCheck True : ${snapshotData['DropOffStatus']}');
+                          return Column(
+                            children: [
+                              ListTile(
+                                title: RichText(
+                                  text: TextSpan(
+                                    text:
+                                        '${notesServices.notes[index].firstnameBC} ${notesServices.notes[index].lastnameBC} (${notesServices.notes[index].genderBC}) ',
+                                    style: DefaultTextStyle.of(context).style,
+                                    children: <TextSpan>[
+                                      // TextSpan(
+                                      //   text: dropOff
+                                      //       ? 'Complete \u2714'
+                                      //       : 'Fail ',
+                                      //   style: TextStyle(
+                                      //     color: dropOff
+                                      //         ? Colors.green
+                                      //         : Colors
+                                      //             .red, // เปลี่ยนสีตามเงื่อนไข
+                                      //   ),
+                                      // ),
+                                    ],
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  '${notesServices.notes[index].agencyBC} ${notesServices.notes[index].rateBC} ${notesServices.notes[index].amountBC} ${notesServices.notes[index].currencyBC}, ${notesServices.notes[index].totalBC} THB, ${notesServices.notes[index].dateBC}',
+                                ),
+                                trailing: Icon(Icons.arrow_forward),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetailBCPage(
+                                        firstnameBC: notesServices
+                                            .notes[index].firstnameBC,
+                                        lastnameBC: notesServices
+                                            .notes[index].lastnameBC,
+                                        genderBC:
+                                            notesServices.notes[index].genderBC,
+                                        agencyBC:
+                                            notesServices.notes[index].agencyBC,
+                                        rateBC:
+                                            notesServices.notes[index].rateBC,
+                                        currencyBC: notesServices
+                                            .notes[index].currencyBC,
+                                        totalBC:
+                                            notesServices.notes[index].totalBC,
+                                        dateBC:
+                                            notesServices.notes[index].dateBC,
+                                        amountBC:
+                                            notesServices.notes[index].amountBC,
+                                      ),
+                                    ),
+                                  );
+                                  Divider(color: Colors.black);
+                                },
+                              ),
+                              Divider(color: Colors.black),
+                            ],
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
                       },
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              ),
-            ),
+                    ),
+                  );
+          }),
     );
   }
 }

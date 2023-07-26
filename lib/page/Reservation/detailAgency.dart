@@ -459,7 +459,8 @@ class _DetailAgencyState extends State<DetailAgency> {
                               'PayReserva': '$_fromPay',
                               'ReservationStatus': checkStatus,
                               'ConditionCheckAgency': keepStatus,
-                              'ConditionQR': 'true'
+                              'ConditionQR': 'true',
+                              'AgencyReserva': agentcyUpdate,
                             }).then((_) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -516,12 +517,7 @@ class _DetailAgencyState extends State<DetailAgency> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Currency Converter'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {},
-          ),
-        ],
+        actions: [],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(4.0),
           child: LinearProgressIndicator(
@@ -531,21 +527,6 @@ class _DetailAgencyState extends State<DetailAgency> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => notify(),
-            ),
-          );
-        },
-        child: Icon(Icons.notifications),
-        backgroundColor: Colors.blue,
-        elevation: 4,
-        shape: CircleBorder(),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       body: ListView(
         children: [
           Container(

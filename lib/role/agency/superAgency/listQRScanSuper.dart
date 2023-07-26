@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/Service/singleton/userUID.dart';
 import 'package:testprojectbc/role/agency/checkReservation/qrCodeScanPage.dart';
 
-class ListQRPage extends StatefulWidget {
+class ListQRPageSuper extends StatefulWidget {
   @override
-  _ListQRPage createState() => _ListQRPage();
+  _ListQRSuperPage createState() => _ListQRSuperPage();
 }
 
-class _ListQRPage extends State<ListQRPage> {
+class _ListQRSuperPage extends State<ListQRPageSuper> {
   String? _Cur;
   String? _Total;
   String? _Type;
@@ -22,53 +21,48 @@ class _ListQRPage extends State<ListQRPage> {
   bool keepStatus = false;
   String qrCodeData = '';
 
-  final authen = FirebaseAuth.instance;
-  late User? currentUser;
-  String usernameData = "";
-  late String userUID; //getByUID
-  late String agencyValue = '';
-
   @override
   void initState() {
+    // fetchData();
     super.initState();
-    currentUser = authen.currentUser;
-    if (currentUser != null) {
-      usernameData = currentUser!.email ?? "";
-      userUID = currentUser!.uid;
-    }
-    getAgencyValue().then((value) {
-      setState(() {
-        agencyValue = value!;
-      });
-    });
-  }
-
-  Future<String?> getAgencyValue() async {
-    final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-    final snapshot = await usersRef.doc(userUID).get();
-
-    if (snapshot != null && snapshot.exists) {
-      // The document exists, now you can access its fields.
-      final data = snapshot.data() as Map<String, dynamic>?;
-
-      if (data != null && data.containsKey('agency')) {
-        // Access the value of the "agency" field.
-        final agencyValue = data['agency'];
-        print('Agency Value: $agencyValue');
-        return agencyValue;
-      } else {
-        print('Agency field not found or value is null.');
-        return null;
-      }
-    } else {
-      print('Document does not exist.');
-      return null;
-    }
   }
 
   Future<void> QRUserData(String uid) async {
     final usersRef = FirebaseFirestore.instance.collection('usersPIN');
     final snapshot = await usersRef.doc(uid).get();
+
+    // if (snapshot.exists) {
+    //   setState(() {
+    //     // isVerify = true;
+    //   });
+
+    //   if (snapshot.data()!['DateReserva'] != null ||
+    //       snapshot.data()!['DateReserva'] == null) {
+    //     usersRef.doc(uid).update({
+    //       'ReservationStatus': checkStatus,
+    //       'ConditionCheckAgency': keepStatus,
+    //       // 'DropOffStatus': dropOffStatus,
+    //     }).then((_) {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         const SnackBar(
+    //           content: Text(
+    //             'Save to Status on Firestore Success! (Update)',
+    //           ),
+    //           duration: Duration(seconds: 2),
+    //         ),
+    //       );
+    //     }).catchError((error) {
+    //       ScaffoldMessenger.of(context).showSnackBar(
+    //         const SnackBar(
+    //           content: Text(
+    //             'Failed to save Status on Firestore! (Update)',
+    //           ),
+    //           duration: Duration(seconds: 2),
+    //         ),
+    //       );
+    //     });
+    //   }
+    // }
   }
 
   @override
@@ -78,10 +72,7 @@ class _ListQRPage extends State<ListQRPage> {
         title: Text('Scan QR Code'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('usersPIN')
-            .where('QRCode.Agency', isEqualTo: agencyValue)
-            .snapshots(),
+        stream: FirebaseFirestore.instance.collection('usersPIN').snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
@@ -106,10 +97,6 @@ class _ListQRPage extends State<ListQRPage> {
                 final String _UserFName = userData['FirstName'] ?? 'Null';
                 final String _UserName = userData['LastName'] ?? 'Null';
                 final String _Gender = userData['Gender'] ?? 'Null';
-                final String _agency =
-                    userData != null && userData['QRCode'] != null
-                        ? userData['QRCode']['Agency'] ?? 'Null'
-                        : 'Null';
 
                 return Card(
                     shape: RoundedRectangleBorder(
@@ -206,7 +193,7 @@ class _ListQRPage extends State<ListQRPage> {
                         leading: Icon(Icons.notifications_active_outlined),
                         title: Text('$_UserFName $_UserName $_Total THB'),
                         subtitle: Text(
-                            '${_DateReservation}, ${_SubAgency}, ${_Type}, ${_agency}'),
+                            '${_DateReservation}, ${_SubAgency}, ${_Type}'),
                       ),
                     ));
               } else {

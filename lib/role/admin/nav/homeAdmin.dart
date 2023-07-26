@@ -175,10 +175,10 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                   itemCount: 2,
                                   itemBuilder: (context, index) => ClipRRect(
                                     borderRadius: BorderRadius.circular(25),
-                                    child: Image.network(
+                                    child: Image.asset(
                                       index == 0
-                                          ? 'https://www.superrichthailand.com/uploads/images/cd8811cfdce0375be9a599e6c19922f11669868861014.jpeg'
-                                          : 'https://superrichrate2.ztidev.com/superRich/download?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBlclJpY2giLCJleHAiOjQ4MzczNDM4MzUsImlhdCI6MTY4MTY0ODYzNSwia2V5IjoiajFTOHNkR3hyeHpKcnNad3NIU2NHd1BjIn0.biWX-uWdD01OXTnZBFL_GZJwqvwmRt0cs5-GB0kLRQY&file=4d46819f-b327-4db8-9740-da53feb28aeb1676947947227.jpg',
+                                          ? 'assets/srg.png'
+                                          : 'assets/sro.png',
                                       fit: BoxFit.cover,
                                     ),
                                   ),

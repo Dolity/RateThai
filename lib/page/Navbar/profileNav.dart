@@ -81,7 +81,7 @@ class _ProfileNav extends State<ProfileNav> {
         return AlertDialog(
           title: const Text('Steps & Flow to use the application'),
           content: Container(
-            height: 430,
+            height: 450,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,

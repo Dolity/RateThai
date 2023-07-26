@@ -9,24 +9,22 @@ class CheckURLPage extends StatefulWidget {
 }
 
 class _CheckURLPageState extends State<CheckURLPage> {
-  // URL ที่ต้องการตรวจสอบ
   List<String> urls = [];
   Map<String, bool> _canAccessURLs = {};
-  String? urlK79;
-  String? urlSME;
-  String? urlSRG;
-  String? urlSRO;
-  String? urlVPC;
-  String? urlVSU;
-  String? urlXNE;
 
   @override
   void initState() {
     super.initState();
     fetchUrlsFromFirestore();
   }
+  //k79exchange
+  //siamexchange
+  //superrichthailand
+  //superrich1965
+  //valueplusexchange
+  //vasuexchange
+  //x-one
 
-  // ดึง URLs จาก Firestore
   void fetchUrlsFromFirestore() async {
     try {
       await Firebase.initializeApp();
@@ -34,13 +32,13 @@ class _CheckURLPageState extends State<CheckURLPage> {
       final snapshotURL = await firestoreURL.doc('pin').get();
       if (snapshotURL.exists) {
         setState(() {
-          urlK79 = snapshotURL.get('urlK79');
-          urlSME = snapshotURL.get('urlSME');
-          urlSRG = snapshotURL.get('urlSRG');
-          urlSRO = snapshotURL.get('urlSRO');
-          urlVPC = snapshotURL.get('urlVPC');
-          urlVSU = snapshotURL.get('urlVSU');
-          urlXNE = snapshotURL.get('urlXNE');
+          String urlK79 = snapshotURL.get('urlK79');
+          String urlSME = snapshotURL.get('urlSME');
+          String urlSRG = snapshotURL.get('urlSRG');
+          String urlSRO = snapshotURL.get('urlSRO');
+          String urlVPC = snapshotURL.get('urlVPC');
+          String urlVSU = snapshotURL.get('urlVSU');
+          String urlXNE = snapshotURL.get('urlXNE');
 
           urls = [
             urlK79 ?? '',
@@ -51,13 +49,11 @@ class _CheckURLPageState extends State<CheckURLPage> {
             urlVSU ?? '',
             urlXNE ?? '',
           ];
-          // เริ่มต้นให้ค่าทุก URL เป็น false
+
           urls.forEach((url) {
             _canAccessURLs[url] = false;
           });
-          print('urlK79 F init: $urlK79');
         });
-        print('urlK79: $urlK79');
       }
     } catch (e) {
       print('Error fetching URLs from Firestore: $e');
@@ -66,13 +62,11 @@ class _CheckURLPageState extends State<CheckURLPage> {
 
   Future<void> checkURL(String url) async {
     try {
-      // ตรวจสอบว่าสามารถเข้าถึง URL ได้หรือไม่
       final response = await http.get(Uri.parse(url));
       setState(() {
         _canAccessURLs[url] = response.statusCode == 200;
       });
     } catch (e) {
-      // เกิดข้อผิดพลาดในการเข้าถึง URL
       setState(() {
         _canAccessURLs[url] = false;
       });
@@ -108,31 +102,53 @@ class _CheckURLPageState extends State<CheckURLPage> {
     return Scaffold(
       appBar: AppBar(title: Text('URL Check')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for (var i = 0; i < urls.length; i++)
-              Column(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        // ทำการตรวจสอบ URL
-                        await checkURL(urls[i]);
-                        // แสดง Popup ผลการตรวจสอบ
-                        showPopup(context, urls[i]);
-                      },
-                      child: Text(
-                        'Verify ${urls[i]}',
-                        style: TextStyle(fontSize: 12, color: Colors.white),
-                      ),
-                    ),
+        child: ListView.builder(
+          itemCount: urls.length,
+          itemBuilder: (context, index) {
+            final url = urls[index];
+            final urlNames = [
+              'Check Url K79exchange',
+              'Check Url SiamExchange',
+              'Check Url Superrichthailand',
+              'Check Url Superrich1965',
+              'Check Url Valueplusexchange',
+              'Check Url Vasuexchange',
+              'Check Url X-one',
+            ];
+            final urlName = urlNames[index];
+
+            return Padding(
+              padding: EdgeInsets.all(5.0),
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ListTile(
+                  onTap: () async {
+                    await checkURL(url);
+                    showPopup(context, url);
+                  },
+                  title: Text(
+                    urlName,
+                    style: TextStyle(fontSize: 16),
                   ),
-                  if (i < urls.length - 1) Divider(),
-                ],
+                  leading: ElevatedButton(
+                    onPressed: () async {
+                      await checkURL(url);
+                      showPopup(context, url);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blue,
+                      onPrimary: Colors.white,
+                      shape: CircleBorder(),
+                    ),
+                    child: Icon(Icons.link),
+                  ),
+                ),
               ),
-          ],
+            );
+          },
         ),
       ),
     );

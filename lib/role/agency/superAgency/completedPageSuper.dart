@@ -4,12 +4,12 @@ import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 import 'package:flutter/material.dart';
 import 'package:testprojectbc/Service/singleton/userUID.dart';
 
-class CompletedPage extends StatefulWidget {
+class CompletedPageSuper extends StatefulWidget {
   @override
-  _CompletedPageState createState() => _CompletedPageState();
+  _CompletedPageSuperState createState() => _CompletedPageSuperState();
 }
 
-class _CompletedPageState extends State<CompletedPage> {
+class _CompletedPageSuperState extends State<CompletedPageSuper> {
   String? _Cur;
   String? _Total;
   String? _Type;
@@ -74,7 +74,7 @@ class _CompletedPageState extends State<CompletedPage> {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('usersPIN')
-            .where('QRCode.Agency', isEqualTo: agencyValue)
+            // .where('QRCode.Agency', isEqualTo: agencyValue)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {

@@ -5,12 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class UpComingPage extends StatefulWidget {
+class UpComingPageSuper extends StatefulWidget {
   @override
-  _UpComingPageState createState() => _UpComingPageState();
+  _UpComingPageSuperState createState() => _UpComingPageSuperState();
 }
 
-class _UpComingPageState extends State<UpComingPage> {
+class _UpComingPageSuperState extends State<UpComingPageSuper> {
   String? _Cur;
   String? _Total;
   String? _Type;
@@ -151,7 +151,7 @@ class _UpComingPageState extends State<UpComingPage> {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('usersPIN')
-            .where('AgencyReserva', isEqualTo: agencyValue)
+            // .where('QRCode.Agency', isEqualTo: agencyValue)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
