@@ -5,21 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:testprojectbc/page/Setting/Theme.dart';
 import 'package:testprojectbc/page/login.dart';
 import 'package:testprojectbc/page/register.dart';
+import 'package:testprojectbc/role/SuperAdmin/nav/AdminListPage.dart';
+import 'package:testprojectbc/role/SuperAdmin/nav/registerSuperAdmin.dart';
 import 'package:testprojectbc/role/admin/nav/loginAdmin.dart';
 import 'package:testprojectbc/role/admin/nav/registerAdmin.dart';
 import 'package:testprojectbc/role/agency/nav/loginAgency.dart';
 import 'package:testprojectbc/role/agency/nav/registerAgency.dart';
 
-import '../../SuperAdmin/nav/registerSuperAdmin.dart';
+import 'loginSuperAdmin.dart';
 
-class HomeAdminPage extends StatefulWidget {
-  const HomeAdminPage({super.key});
+class HomeSuperAdminPage extends StatefulWidget {
+  const HomeSuperAdminPage({super.key});
 
   @override
-  State<HomeAdminPage> createState() => _HomeAdminPage();
+  State<HomeSuperAdminPage> createState() => _HomeSuperAdminPage();
 }
 
-class _HomeAdminPage extends State<HomeAdminPage> {
+class _HomeSuperAdminPage extends State<HomeSuperAdminPage> {
   DarkThemeProvider themeChangeProvider = DarkThemeProvider();
   final authen = FirebaseAuth.instance;
   // String usernameData = FirebaseAuth.instance.currentUser!.email!;
@@ -70,14 +72,14 @@ class _HomeAdminPage extends State<HomeAdminPage> {
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
           final users = snapshot.data!.docs;
 
           return Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
                     'assets/bgnavHome2.jpg'), // เพิ่มรูปภาพที่ต้องการ
@@ -104,10 +106,10 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                         children: [
                           Expanded(
                             child: GestureDetector(
-                              child: Align(
+                              child: const Align(
                                 alignment: Alignment.topLeft,
                                 child: Text(
-                                  "Agency",
+                                  "Super Admin",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontFamily: 'Lexend',
@@ -242,8 +244,8 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                     SizedBox(
                       height: 170,
                       child: Card(
-                        color:
-                            Color.fromARGB(0, 255, 255, 255).withOpacity(0.8),
+                        color: const Color.fromARGB(0, 255, 255, 255)
+                            .withOpacity(0.8),
                         margin: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 10,
@@ -261,14 +263,14 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                           child: Container(
                             padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                             child: ListTile(
-                              // trailing: const Icon(Icons.arrow_forward),
-                              // onTap: () {
-                              //   Navigator.push(
-                              //       context,
-                              //       MaterialPageRoute(
-                              //           builder: (context) =>
-                              //               RegisterSuperAdminPage()));
-                              // },
+                              trailing: const Icon(Icons.arrow_forward),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            RegisterSuperAdminPage()));
+                              },
                               contentPadding:
                                   const EdgeInsets.only(left: 20, right: 20),
                               dense: true,
@@ -281,20 +283,20 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            "สวัสดีคุณ",
+                                          const Text(
+                                            "สวัสดีคุณ Super Admin",
                                             style: TextStyle(
                                               color: Colors.grey,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          SizedBox(height: 5),
+                                          const SizedBox(height: 5),
                                           Row(
                                             children: [
                                               Text(
                                                 "${userData['displayName']}",
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
@@ -306,78 +308,92 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                       ),
                                     ],
                                   ),
-                                  Divider(
+                                  const Divider(
                                     color: Colors.black,
                                   ),
-                                  // Row(
-                                  //   mainAxisAlignment: MainAxisAlignment.center,
-                                  //   children: [
-                                  //     Tooltip(
-                                  //       message: 'Register Admin',
-                                  //       child: IconButton(
-                                  //         onPressed: () {
-                                  //           Navigator.push(
-                                  //               context,
-                                  //               MaterialPageRoute(
-                                  //                   builder: (context) =>
-                                  //                       RegisterSuperAdminPage()));
-                                  //         },
-                                  //         icon: Icon(
-                                  //             Icons.app_registration_rounded),
-                                  //       ),
-                                  //       preferBelow: false,
-                                  //       decoration: BoxDecoration(
-                                  //         color: Colors.blue,
-                                  //         borderRadius:
-                                  //             BorderRadius.circular(10),
-                                  //       ),
-                                  //       textStyle: TextStyle(
-                                  //         color: Colors.white,
-                                  //         fontSize: 16,
-                                  //       ),
-                                  //     ),
-                                  //     SizedBox(width: 30),
-                                  //     Tooltip(
-                                  //       message: 'Login Admin',
-                                  //       child: IconButton(
-                                  //         onPressed: () {
-                                  //           Navigator.push(
-                                  //               context,
-                                  //               MaterialPageRoute(
-                                  //                   builder: (context) =>
-                                  //                       LoginAdminPage()));
-                                  //         },
-                                  //         icon: Icon(Icons.login_rounded),
-                                  //       ),
-                                  //       preferBelow: false,
-                                  //       decoration: BoxDecoration(
-                                  //         color: Colors.blue,
-                                  //         borderRadius:
-                                  //             BorderRadius.circular(10),
-                                  //       ),
-                                  //       textStyle: TextStyle(
-                                  //         color: Colors.white,
-                                  //         fontSize: 16,
-                                  //       ),
-                                  //     ),
-                                  //     SizedBox(width: 30),
-                                  //     // Tooltip(
-                                  //     //   message: 'แจ้งเตือนสกุลเงิน',
-                                  //     //   child: IconButton(
-                                  //     //     onPressed: () {
-                                  //     //       // ทำอะไรเมื่อคลิก
-                                  //     //     },
-                                  //     //     icon: Icon(Icons.notifications),
-                                  //     //   ),
-                                  //     //   preferBelow: false,
-                                  //     //   decoration: BoxDecoration(
-                                  //     //     color: Colors.blue,
-                                  //     //     borderRadius:
-                                  //     //         BorderRadius.circular(10),
-                                  //     //   ),
-                                  //     // ),
-                                  //   ],
-                                  // ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Tooltip(
+                                        message: 'Register Admin',
+                                        child: IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    RegisterAdminPage(),
+                                              ),
+                                            );
+                                          },
+                                          icon: const Icon(
+                                              Icons.app_registration_rounded),
+                                        ),
+                                        preferBelow: false,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 30),
+                                      Tooltip(
+                                        message: 'Login SuperAdmin',
+                                        child: IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LoginSuperAdminPage(),
+                                              ),
+                                            );
+                                          },
+                                          icon: const Icon(Icons.login_rounded),
+                                        ),
+                                        preferBelow: false,
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 30),
+                                      Tooltip(
+                                        message: 'Delete Admin',
+                                        child: IconButton(
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    AdminListPage(),
+                                              ),
+                                            );
+                                          },
+                                          icon: const Icon(Icons.delete),
+                                        ),
+                                        preferBelow: false,
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        textStyle: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -385,15 +401,16 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                         ),
                       ),
                     ),
+
                     SizedBox(
                       //Box1
                       height: MediaQuery.of(context).size.height - 490,
                       width: MediaQuery.of(context).size.width * 1.0,
                       child: Card(
-                        color:
-                            Color.fromARGB(0, 255, 255, 255).withOpacity(0.8),
-                        margin:
-                            EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                        color: const Color.fromARGB(0, 255, 255, 255)
+                            .withOpacity(0.8),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
                           side: BorderSide(
@@ -407,17 +424,17 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                             // Do something when the ListTile is tapped
                           },
                           child: Container(
-                            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                            padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                             child: LayoutBuilder(
                               builder: (context, constraints) {
                                 return StreamBuilder<QuerySnapshot>(
                                   stream: FirebaseFirestore.instance
                                       .collection('usersPIN')
-                                      .where('role', isEqualTo: 'admin')
+                                      .where('role', isEqualTo: 'superadmin')
                                       .snapshots(),
                                   builder: (context, snapshot) {
                                     if (!snapshot.hasData) {
-                                      return Center(
+                                      return const Center(
                                         child: CircularProgressIndicator(),
                                       );
                                     }
@@ -436,12 +453,7 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                             userDataAgency['role'];
 
                                         return ListTile(
-                                          // trailing: Icon(Icons.arrow_forward),
-                                          // onTap: () {
-                                          //   // Navigator.push(context,
-                                          //   //     MaterialPageRoute(builder: (context) => CurInfo2()));
-                                          // },
-                                          contentPadding: EdgeInsets.only(
+                                          contentPadding: const EdgeInsets.only(
                                               left: 20, right: 20),
                                           dense: true,
                                           subtitle: Column(
@@ -457,8 +469,9 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                                               .spaceBetween,
                                                       children: [
                                                         Padding(
-                                                          padding: EdgeInsets
-                                                              .fromLTRB(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
                                                                   0, 10, 0, 0),
                                                           child: ClipOval(
                                                             child:
@@ -472,12 +485,17 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                                         ),
                                                         Expanded(
                                                           child: Padding(
-                                                            padding: EdgeInsets
-                                                                .fromLTRB(10,
-                                                                    10, 0, 0),
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    10,
+                                                                    10,
+                                                                    0,
+                                                                    0),
                                                             child: Text(
                                                               "${displayNameAgency}",
-                                                              style: TextStyle(
+                                                              style:
+                                                                  const TextStyle(
                                                                 color: Colors
                                                                     .black,
                                                                 fontSize: 14,
@@ -492,12 +510,17 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                                           alignment: Alignment
                                                               .topRight,
                                                           child: Padding(
-                                                            padding: EdgeInsets
-                                                                .fromLTRB(0, 10,
-                                                                    45, 0),
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    0,
+                                                                    10,
+                                                                    45,
+                                                                    0),
                                                             child: Text(
                                                               "${roleAgency}",
-                                                              style: TextStyle(
+                                                              style:
+                                                                  const TextStyle(
                                                                 color: Colors
                                                                     .green,
                                                                 fontSize: 14,
@@ -515,8 +538,9 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                                     Column(
                                                       children: [
                                                         Padding(
-                                                          padding: EdgeInsets
-                                                              .fromLTRB(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
                                                                   240, 0, 0, 0),
                                                           child: Text(
                                                             "Status",
@@ -532,7 +556,183 @@ class _HomeAdminPage extends State<HomeAdminPage> {
                                                         ),
                                                       ],
                                                     ),
-                                                    Divider(
+                                                    const Divider(
+                                                      color: Colors.black,
+                                                      thickness: 0,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(
+                      //Box1
+                      height: MediaQuery.of(context).size.height - 490,
+                      width: MediaQuery.of(context).size.width * 1.0,
+                      child: Card(
+                        color: const Color.fromARGB(0, 255, 255, 255)
+                            .withOpacity(0.8),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 0, vertical: 0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
+                          side: BorderSide(
+                            color: Colors.grey.shade300,
+                            width: 1,
+                          ),
+                        ),
+                        elevation: 8,
+                        child: InkWell(
+                          onTap: () {
+                            // Do something when the ListTile is tapped
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return StreamBuilder<QuerySnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('usersPIN')
+                                      .where('role', isEqualTo: 'admin')
+                                      .snapshots(),
+                                  builder: (context, snapshot) {
+                                    if (!snapshot.hasData) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+
+                                    final adminDocs = snapshot.data!.docs;
+                                    final adminsList = adminDocs
+                                        .map((admin) => admin.data()
+                                            as Map<String, dynamic>)
+                                        .toList();
+
+                                    return ListView.builder(
+                                      itemCount: adminsList.length,
+                                      itemBuilder: (context, index) {
+                                        final adminData = adminsList[index];
+                                        final displayName =
+                                            adminData['displayName'] as String;
+                                        final adminId = adminDocs[index].id;
+                                        final role =
+                                            adminData['role'] as String;
+
+                                        return ListTile(
+                                          contentPadding: const EdgeInsets.only(
+                                              left: 20, right: 20),
+                                          dense: true,
+                                          subtitle: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Container(
+                                                child: Column(
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  0, 10, 0, 0),
+                                                          child: ClipOval(
+                                                            child:
+                                                                Image.network(
+                                                              'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                              fit: BoxFit.cover,
+                                                              height: 40,
+                                                              width: 40,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Expanded(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    10,
+                                                                    10,
+                                                                    0,
+                                                                    0),
+                                                            child: Text(
+                                                              "$displayName",
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        Align(
+                                                          alignment: Alignment
+                                                              .topRight,
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .fromLTRB(
+                                                                    0,
+                                                                    10,
+                                                                    45,
+                                                                    0),
+                                                            child: Text(
+                                                              "$role",
+                                                              style:
+                                                                  const TextStyle(
+                                                                color: Colors
+                                                                    .green,
+                                                                fontSize: 14,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                      .fromLTRB(
+                                                                  240, 0, 0, 0),
+                                                          child: Text(
+                                                            "Status",
+                                                            style: TextStyle(
+                                                              color: Colors.grey
+                                                                  .shade500,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const Divider(
                                                       color: Colors.black,
                                                       thickness: 0,
                                                     ),

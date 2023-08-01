@@ -12,6 +12,7 @@ import 'package:testprojectbc/page/currency.dart';
 import 'package:testprojectbc/page/googleFA.dart';
 import 'package:testprojectbc/page/selectCurency.dart';
 import 'package:testprojectbc/page/smsFA.dart';
+import 'package:testprojectbc/role/SuperAdmin/nav/navHelperSuperAdmin.dart';
 import 'package:testprojectbc/role/admin/nav/navHelperAdmin.dart';
 import 'package:testprojectbc/role/admin/nav/registerAdmin.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
@@ -545,6 +546,12 @@ class _LoginAdminPage extends State<LoginAdminPage> {
                                                                             Navigator.pushReplacement(
                                                                               context,
                                                                               MaterialPageRoute(builder: (context) => NavHleperAdminPage()),
+                                                                            );
+                                                                            break;
+                                                                          case "superadmin":
+                                                                            Navigator.pushReplacement(
+                                                                              context,
+                                                                              MaterialPageRoute(builder: (context) => NavHleperSuperAdminPage()),
                                                                             );
                                                                             break;
                                                                           default:

@@ -72,8 +72,13 @@ class _LoginSuccessPage extends State<LoginSuccessPage> {
 
       // double currentRate = double.parse(
       //     snapshot['QRCode']['Rate'] ?? '0.0'); //Rate from agency Scarping
+      final qrCodeArray = snapshot.data()!['QRCode'] as List;
+      final lastIndex = qrCodeArray.length - 1;
+      final latestQRCode = qrCodeArray[lastIndex];
+      print('lastIDX $lastIndex');
+
       double currentRate = snapshot.data()!.containsKey('QRCode')
-          ? double.parse(snapshot.data()!['QRCode']['Rate'])
+          ? double.parse(snapshot.data()!['QRCode'][0]['Rate'])
           : 0.0;
       print('Notify: $previousRate,  $currentRate');
 

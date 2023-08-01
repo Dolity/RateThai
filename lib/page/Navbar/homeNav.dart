@@ -35,6 +35,12 @@ class _HomeNavState extends State<HomeNav> {
   String Fname = "";
   String Lname = "";
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  Color kycStatusColor = Colors.green; // เปลี่ยนสีตามความเหมาะสม
+  Color reservationStatusColor = Colors.green; // เปลี่ยนสีตามความเหมาะสม
+  Color receiveStatusColor = Colors.green; // เปลี่ยนสีตามความเหมาะสม
+  bool isExpandedKYC = false;
+  bool isExpandedReservation = false;
+  bool isExpandedReceive = false;
 
   @override
   void initState() {
@@ -339,14 +345,14 @@ class _HomeNavState extends State<HomeNav> {
                           child: Container(
                             padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                             child: ListTile(
-                              trailing: const Icon(Icons.arrow_forward),
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            VerificationPage()));
-                              },
+                              // trailing: const Icon(Icons.arrow_forward),
+                              // onTap: () {
+                              //   Navigator.push(
+                              //       context,
+                              //       MaterialPageRoute(
+                              //           builder: (context) =>
+                              //               VerificationPage()));
+                              // },
                               contentPadding:
                                   const EdgeInsets.only(left: 20, right: 20),
                               dense: true,
@@ -370,6 +376,25 @@ class _HomeNavState extends State<HomeNav> {
                                           SizedBox(height: 5),
                                           Row(
                                             children: [
+                                              // Padding(
+                                              //   padding:
+                                              //       const EdgeInsets.fromLTRB(
+                                              //           0, 0, 10, 0),
+                                              //   child: CircleAvatar(
+                                              //     radius: 20,
+                                              //     backgroundImage: userData[
+                                              //                 'imageUrl'] !=
+                                              //             null
+                                              //         ? NetworkImage(
+                                              //             userData['imageUrl']
+                                              //                 as String)
+                                              //         : AssetImage(
+                                              //                 'assets/default_profile_picture.jpg')
+                                              //             as ImageProvider<
+                                              //                 Object>,
+                                              //     backgroundColor: Colors.grey,
+                                              //   ),
+                                              // ),
                                               if (isAdminStatusTrue)
                                                 Text(
                                                   "${userData['FirstName']} ${userData['LastName']} ",
@@ -485,7 +510,7 @@ class _HomeNavState extends State<HomeNav> {
                     ),
                     SizedBox(
                       //Box1
-                      height: MediaQuery.of(context).size.height - 490,
+                      height: MediaQuery.of(context).size.height - 300,
                       width: MediaQuery.of(context).size.width * 1.0,
                       child: Card(
                         color:
@@ -501,15 +526,15 @@ class _HomeNavState extends State<HomeNav> {
                         ),
                         elevation: 8, // Add a shadow
                         child: InkWell(
-                          onTap: () {
-                            // Do something when the ListTile is tapped
-                          },
+                          // onTap: () {
+                          //   // Do something when the ListTile is tapped
+                          // },
                           child: Container(
                               padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
                               child: LayoutBuilder(
                                 builder: (context, constraints) {
                                   return ListTile(
-                                    trailing: Icon(Icons.arrow_forward),
+                                    // trailing: Icon(Icons.arrow_forward),
                                     onTap: () {
                                       // Navigator.push(context,
                                       //     MaterialPageRoute(builder: (context) => CurInfo2()));
@@ -535,437 +560,796 @@ class _HomeNavState extends State<HomeNav> {
                                         ),
                                         Column(
                                           children: [
-                                            Row(children: [
-                                              SizedBox(width: 0),
-                                            ]),
-                                            if (isDropOffStatus)
-                                              Row(
+                                            // Generated code for this carStats Widget...
+                                            Padding(
+                                              padding: EdgeInsetsDirectional
+                                                  .fromSTEB(0, 20, 0, 12),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.max,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
                                                 children: [
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            0, 10, 0, 0),
-                                                    child: ClipOval(
-                                                      child: Image.network(
-                                                        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                        fit: BoxFit.cover,
-                                                        height: 40,
-                                                        width: 40,
-                                                      ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        isExpandedKYC =
+                                                            !isExpandedKYC;
+                                                      });
+                                                    },
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              EdgeInsetsDirectional
+                                                                  .fromSTEB(0,
+                                                                      0, 0, 8),
+                                                          child: CircleAvatar(
+                                                            backgroundColor:
+                                                                kycStatusColor,
+                                                            child: Text('1',
+                                                                style: TextStyle(
+                                                                    color: Colors
+                                                                        .white)),
+                                                          ),
+                                                        ),
+                                                        Text(
+                                                          'KYC',
+                                                          style: TextStyle(
+                                                            color: Colors.black,
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            10, 10, 0, 0),
-                                                    child: Text(
-                                                      "Receive Money ",
-                                                      style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                  Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: [
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            isExpandedReservation =
+                                                                !isExpandedReservation;
+                                                          });
+                                                        },
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceAround,
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          0,
+                                                                          0,
+                                                                          0,
+                                                                          8),
+                                                              child:
+                                                                  CircleAvatar(
+                                                                backgroundColor:
+                                                                    kycStatusColor,
+                                                                child: Text('2',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white)),
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              'Reservation',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
+                                                    ],
                                                   ),
-                                                  SizedBox(width: 10),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            90, 10, 0, 0),
-                                                    child: Text(
-                                                      "Accept",
-                                                      style: TextStyle(
-                                                        color: Colors.green,
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                  Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceAround,
+                                                    children: [
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            isExpandedReceive =
+                                                                !isExpandedReceive;
+                                                          });
+                                                        },
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.max,
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceAround,
+                                                          children: [
+                                                            Padding(
+                                                              padding:
+                                                                  EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          0,
+                                                                          0,
+                                                                          0,
+                                                                          8),
+                                                              child:
+                                                                  CircleAvatar(
+                                                                backgroundColor:
+                                                                    kycStatusColor,
+                                                                child: Text('3',
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .white)),
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              'Receive',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                fontSize: 16,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
-                                            if (isDropOffStatus)
-                                              Column(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            240, 0, 0, 0),
-                                                    child: Text(
-                                                      "Status",
-                                                      style: TextStyle(
-                                                        color: Colors
-                                                            .grey.shade500,
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            if (!isDropOffStatus)
-                                              Row(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            0, 10, 0, 0),
-                                                    child: ClipOval(
-                                                      child: Image.network(
-                                                        'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                        fit: BoxFit.cover,
-                                                        height: 40,
-                                                        width: 40,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            10, 10, 0, 0),
-                                                    child: Text(
-                                                      "Receive Money ",
-                                                      style: TextStyle(
-                                                        color: Colors.black,
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            50, 10, 0, 0),
-                                                    child: Text(
-                                                      "In Progress...",
-                                                      style: TextStyle(
-                                                        color: Colors.red,
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            if (!isDropOffStatus)
-                                              Column(
-                                                children: [
-                                                  Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            240, 0, 0, 0),
-                                                    child: Text(
-                                                      "Status",
-                                                      style: TextStyle(
-                                                        color: Colors
-                                                            .grey.shade500,
-                                                        fontSize: 12,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            Divider(
-                                              color: Colors.black,
-                                              thickness: 0,
                                             ),
+
+                                            // if (isExpandedKYC)
+                                            //   Column(
+                                            //     children: [
+                                            //       Row(children: [
+                                            //         SizedBox(width: 0),
+                                            //       ]),
+                                            //       if (isCheckAdminStatus)
+                                            //         Row(
+                                            //           children: [
+                                            //             Padding(
+                                            //               padding: EdgeInsets
+                                            //                   .fromLTRB(
+                                            //                       0, 10, 0, 0),
+                                            //               child: ClipOval(
+                                            //                 child:
+                                            //                     Image.network(
+                                            //                   'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                            //                   fit: BoxFit.cover,
+                                            //                   height: 40,
+                                            //                   width: 40,
+                                            //                 ),
+                                            //               ),
+                                            //             ),
+                                            //             Padding(
+                                            //               padding: EdgeInsets
+                                            //                   .fromLTRB(
+                                            //                       10, 10, 0, 0),
+                                            //               child: Text(
+                                            //                 "Verify Account(KYC) ",
+                                            //                 style: TextStyle(
+                                            //                   color:
+                                            //                       Colors.black,
+                                            //                   fontSize: 14,
+                                            //                   fontWeight:
+                                            //                       FontWeight
+                                            //                           .bold,
+                                            //                 ),
+                                            //               ),
+                                            //             ),
+                                            //             SizedBox(width: 10),
+                                            //             Padding(
+                                            //               padding: EdgeInsets
+                                            //                   .fromLTRB(
+                                            //                       58, 10, 0, 0),
+                                            //               child: Text(
+                                            //                 "Accept",
+                                            //                 style: TextStyle(
+                                            //                   color:
+                                            //                       Colors.green,
+                                            //                   fontSize: 14,
+                                            //                   fontWeight:
+                                            //                       FontWeight
+                                            //                           .bold,
+                                            //                 ),
+                                            //               ),
+                                            //             ),
+                                            //           ],
+                                            //         ),
+                                            //       if (isCheckAdminStatus)
+                                            //         Column(
+                                            //           children: [
+                                            //             Padding(
+                                            //               padding: EdgeInsets
+                                            //                   .fromLTRB(
+                                            //                       240, 0, 0, 0),
+                                            //               child: Text(
+                                            //                 "Status",
+                                            //                 style: TextStyle(
+                                            //                   color: Colors.grey
+                                            //                       .shade500,
+                                            //                   fontSize: 12,
+                                            //                   fontWeight:
+                                            //                       FontWeight
+                                            //                           .bold,
+                                            //                 ),
+                                            //               ),
+                                            //             ),
+                                            //           ],
+                                            //         ),
+                                            //       if (!isCheckAdminStatus)
+                                            //         Row(
+                                            //           children: [
+                                            //             Padding(
+                                            //               padding: EdgeInsets
+                                            //                   .fromLTRB(
+                                            //                       0, 10, 0, 0),
+                                            //               child: ClipOval(
+                                            //                 child:
+                                            //                     Image.network(
+                                            //                   'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                            //                   fit: BoxFit.cover,
+                                            //                   height: 40,
+                                            //                   width: 40,
+                                            //                 ),
+                                            //               ),
+                                            //             ),
+                                            //             Padding(
+                                            //               padding: EdgeInsets
+                                            //                   .fromLTRB(
+                                            //                       10, 10, 0, 0),
+                                            //               child: Text(
+                                            //                 "Verify Account(KYC) ",
+                                            //                 style: TextStyle(
+                                            //                   color:
+                                            //                       Colors.black,
+                                            //                   fontSize: 14,
+                                            //                   fontWeight:
+                                            //                       FontWeight
+                                            //                           .bold,
+                                            //                 ),
+                                            //               ),
+                                            //             ),
+                                            //             SizedBox(width: 10),
+                                            //             Padding(
+                                            //               padding: EdgeInsets
+                                            //                   .fromLTRB(
+                                            //                       20, 10, 0, 0),
+                                            //               child: Text(
+                                            //                 "In Progress...",
+                                            //                 style: TextStyle(
+                                            //                   color: Colors.red,
+                                            //                   fontSize: 14,
+                                            //                   fontWeight:
+                                            //                       FontWeight
+                                            //                           .bold,
+                                            //                 ),
+                                            //               ),
+                                            //             ),
+                                            //           ],
+                                            //         ),
+                                            //       if (!isCheckAdminStatus)
+                                            //         Column(
+                                            //           children: [
+                                            //             Padding(
+                                            //               padding: EdgeInsets
+                                            //                   .fromLTRB(
+                                            //                       240, 0, 0, 0),
+                                            //               child: Text(
+                                            //                 "Status",
+                                            //                 style: TextStyle(
+                                            //                   color: Colors.grey
+                                            //                       .shade500,
+                                            //                   fontSize: 12,
+                                            //                   fontWeight:
+                                            //                       FontWeight
+                                            //                           .bold,
+                                            //                 ),
+                                            //               ),
+                                            //             ),
+                                            //           ],
+                                            //         ),
+                                            //     ],
+                                            //   ),
+                                            // Divider(
+                                            //   color: Colors.black,
+                                            //   thickness: 0,
+                                            // ),
+
+                                            // Row(children: [
+                                            //   SizedBox(width: 0),
+                                            // ]),
+
                                             Column(
                                               children: [
                                                 Row(children: [
                                                   SizedBox(width: 0),
                                                 ]),
-                                                if (isCheckAgencyStatus)
-                                                  Row(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                0, 10, 0, 0),
-                                                        child: ClipOval(
-                                                          child: Image.network(
-                                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                            fit: BoxFit.cover,
-                                                            height: 40,
-                                                            width: 40,
+                                                if (isExpandedKYC)
+                                                  if (isCheckAdminStatus)
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  0, 10, 0, 0),
+                                                          child: ClipOval(
+                                                            child:
+                                                                Image.network(
+                                                              'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                              fit: BoxFit.cover,
+                                                              height: 40,
+                                                              width: 40,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                10, 10, 0, 0),
-                                                        child: Text(
-                                                          "Reserve Money ",
-                                                          style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  10, 10, 0, 0),
+                                                          child: Text(
+                                                            "Verify Account(KYC) ",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      SizedBox(width: 10),
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                90, 10, 0, 0),
-                                                        child: Text(
-                                                          "Accept",
-                                                          style: TextStyle(
-                                                            color: Colors.green,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        SizedBox(width: 10),
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  58, 10, 0, 0),
+                                                          child: Text(
+                                                            "Accept",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.green,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                if (isCheckAgencyStatus)
-                                                  Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                240, 0, 0, 0),
-                                                        child: Text(
-                                                          "Status",
-                                                          style: TextStyle(
-                                                            color: Colors
-                                                                .grey.shade500,
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                      ],
+                                                    ),
+                                                if (isExpandedKYC)
+                                                  if (isCheckAdminStatus)
+                                                    Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  240, 0, 0, 0),
+                                                          child: Text(
+                                                            "Status",
+                                                            style: TextStyle(
+                                                              color: Colors.grey
+                                                                  .shade500,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                if (!isCheckAgencyStatus)
-                                                  Row(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                0, 10, 0, 0),
-                                                        child: ClipOval(
-                                                          child: Image.network(
-                                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                            fit: BoxFit.cover,
-                                                            height: 40,
-                                                            width: 40,
+                                                      ],
+                                                    ),
+                                                if (isExpandedKYC)
+                                                  if (!isCheckAdminStatus)
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  0, 10, 0, 0),
+                                                          child: ClipOval(
+                                                            child:
+                                                                Image.network(
+                                                              'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                              fit: BoxFit.cover,
+                                                              height: 40,
+                                                              width: 40,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                10, 10, 0, 0),
-                                                        child: Text(
-                                                          "Reserve Money ",
-                                                          style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  10, 10, 0, 0),
+                                                          child: Text(
+                                                            "Verify Account(KYC) ",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      SizedBox(width: 10),
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                50, 10, 0, 0),
-                                                        child: Text(
-                                                          "In Progress...",
-                                                          style: TextStyle(
-                                                            color: Colors.red,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        SizedBox(width: 10),
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  20, 10, 0, 0),
+                                                          child: Text(
+                                                            "In Progress...",
+                                                            style: TextStyle(
+                                                              color: Colors.red,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                if (!isCheckAgencyStatus)
-                                                  Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                240, 0, 0, 0),
-                                                        child: Text(
-                                                          "Status",
-                                                          style: TextStyle(
-                                                            color: Colors
-                                                                .grey.shade500,
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                      ],
+                                                    ),
+                                                if (isExpandedKYC)
+                                                  if (!isCheckAdminStatus)
+                                                    Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  150, 0, 0, 0),
+                                                          child: Text(
+                                                            "Status",
+                                                            style: TextStyle(
+                                                              color: Colors.grey
+                                                                  .shade500,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                      ],
+                                                    ),
                                               ],
                                             ),
-                                            Divider(
-                                              color: Colors.black,
-                                              thickness: 0,
-                                            ),
+
+                                            if (isExpandedReceive)
+                                              if (isDropOffStatus)
+                                                Row(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              0, 10, 0, 0),
+                                                      child: ClipOval(
+                                                        child: Image.network(
+                                                          'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                          fit: BoxFit.cover,
+                                                          height: 40,
+                                                          width: 40,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              10, 10, 0, 0),
+                                                      child: Text(
+                                                        "Receive Money ",
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              90, 10, 0, 0),
+                                                      child: Text(
+                                                        "Accept",
+                                                        style: TextStyle(
+                                                          color: Colors.green,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                            if (isExpandedReceive)
+                                              if (isDropOffStatus)
+                                                Column(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              240, 0, 0, 0),
+                                                      child: Text(
+                                                        "Status",
+                                                        style: TextStyle(
+                                                          color: Colors
+                                                              .grey.shade500,
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                            if (isExpandedReceive)
+                                              if (!isDropOffStatus)
+                                                Row(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              0, 10, 0, 0),
+                                                      child: ClipOval(
+                                                        child: Image.network(
+                                                          'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                          fit: BoxFit.cover,
+                                                          height: 40,
+                                                          width: 40,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              10, 10, 0, 0),
+                                                      child: Text(
+                                                        "Receive Money ",
+                                                        style: TextStyle(
+                                                          color: Colors.black,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 10),
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              50, 10, 0, 0),
+                                                      child: Text(
+                                                        "In Progress...",
+                                                        style: TextStyle(
+                                                          color: Colors.red,
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                            if (isExpandedReceive)
+                                              if (!isDropOffStatus)
+                                                Column(
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              240, 0, 0, 0),
+                                                      child: Text(
+                                                        "Status",
+                                                        style: TextStyle(
+                                                          color: Colors
+                                                              .grey.shade500,
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                            // Divider(
+                                            //   color: Colors.black,
+                                            //   thickness: 0,
+                                            // ),
                                             Column(
                                               children: [
                                                 Row(children: [
                                                   SizedBox(width: 0),
                                                 ]),
-                                                if (isCheckAdminStatus)
-                                                  Row(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                0, 10, 0, 0),
-                                                        child: ClipOval(
-                                                          child: Image.network(
-                                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                            fit: BoxFit.cover,
-                                                            height: 40,
-                                                            width: 40,
+                                                if (isExpandedReservation)
+                                                  if (isCheckAgencyStatus)
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  0, 10, 0, 0),
+                                                          child: ClipOval(
+                                                            child:
+                                                                Image.network(
+                                                              'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                              fit: BoxFit.cover,
+                                                              height: 40,
+                                                              width: 40,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                10, 10, 0, 0),
-                                                        child: Text(
-                                                          "Verify Account(KYC) ",
-                                                          style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  10, 10, 0, 0),
+                                                          child: Text(
+                                                            "Reserve Money ",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      SizedBox(width: 10),
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                58, 10, 0, 0),
-                                                        child: Text(
-                                                          "Accept",
-                                                          style: TextStyle(
-                                                            color: Colors.green,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        SizedBox(width: 10),
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  90, 10, 0, 0),
+                                                          child: Text(
+                                                            "Accept",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.green,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                if (isCheckAdminStatus)
-                                                  Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                240, 0, 0, 0),
-                                                        child: Text(
-                                                          "Status",
-                                                          style: TextStyle(
-                                                            color: Colors
-                                                                .grey.shade500,
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                      ],
+                                                    ),
+                                                if (isExpandedReservation)
+                                                  if (isCheckAgencyStatus)
+                                                    Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  240, 0, 0, 0),
+                                                          child: Text(
+                                                            "Status",
+                                                            style: TextStyle(
+                                                              color: Colors.grey
+                                                                  .shade500,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                if (!isCheckAdminStatus)
-                                                  Row(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                0, 10, 0, 0),
-                                                        child: ClipOval(
-                                                          child: Image.network(
-                                                            'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                            fit: BoxFit.cover,
-                                                            height: 40,
-                                                            width: 40,
+                                                      ],
+                                                    ),
+                                                if (isExpandedReservation)
+                                                  if (!isCheckAgencyStatus)
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  0, 10, 0, 0),
+                                                          child: ClipOval(
+                                                            child:
+                                                                Image.network(
+                                                              'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
+                                                              fit: BoxFit.cover,
+                                                              height: 40,
+                                                              width: 40,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                10, 10, 0, 0),
-                                                        child: Text(
-                                                          "Verify Account(KYC) ",
-                                                          style: TextStyle(
-                                                            color: Colors.black,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  10, 10, 0, 0),
+                                                          child: Text(
+                                                            "Reserve Money ",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.black,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      SizedBox(width: 10),
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                20, 10, 0, 0),
-                                                        child: Text(
-                                                          "In Progress...",
-                                                          style: TextStyle(
-                                                            color: Colors.red,
-                                                            fontSize: 14,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                        SizedBox(width: 10),
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  50, 10, 0, 0),
+                                                          child: Text(
+                                                            "In Progress...",
+                                                            style: TextStyle(
+                                                              color: Colors.red,
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                if (!isCheckAdminStatus)
-                                                  Column(
-                                                    children: [
-                                                      Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                240, 0, 0, 0),
-                                                        child: Text(
-                                                          "Status",
-                                                          style: TextStyle(
-                                                            color: Colors
-                                                                .grey.shade500,
-                                                            fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                      ],
+                                                    ),
+                                                if (isExpandedReservation)
+                                                  if (!isCheckAgencyStatus)
+                                                    Column(
+                                                      children: [
+                                                        Padding(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(
+                                                                  240, 0, 0, 0),
+                                                          child: Text(
+                                                            "Status",
+                                                            style: TextStyle(
+                                                              color: Colors.grey
+                                                                  .shade500,
+                                                              fontSize: 12,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
+                                                      ],
+                                                    ),
                                               ],
                                             ),
-                                            Divider(
-                                              color: Colors.black,
-                                              thickness: 0,
-                                            ),
+                                            // Divider(
+                                            //   color: Colors.black,
+                                            //   thickness: 0,
+                                            // ),
+
+                                            // Divider(
+                                            //   color: Colors.black,
+                                            //   thickness: 0,
+                                            // ),
                                           ],
                                         ),
                                       ],

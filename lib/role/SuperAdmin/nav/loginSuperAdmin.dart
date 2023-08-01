@@ -4,10 +4,8 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_login_facebook/flutter_login_facebook.dart';
 // import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:testprojectbc/Service/WebScrape/testScrape1.dart';
-import 'package:testprojectbc/page/Navbar/ForgotPasswordScreen.dart';
+import 'package:testprojectbc/models/profile.dart';
 import 'package:testprojectbc/page/Navbar/homeNav.dart';
-import 'package:testprojectbc/page/Setting/notifyFCM.dart';
 import 'package:testprojectbc/page/authenticator.dart';
 import 'package:testprojectbc/page/curTest.dart';
 import 'package:testprojectbc/page/currency.dart';
@@ -15,34 +13,33 @@ import 'package:testprojectbc/page/googleFA.dart';
 import 'package:testprojectbc/page/selectCurency.dart';
 import 'package:testprojectbc/page/smsFA.dart';
 import 'package:testprojectbc/role/SuperAdmin/nav/navHelperSuperAdmin.dart';
+import 'package:testprojectbc/role/SuperAdmin/nav/registerSuperAdmin.dart';
 import 'package:testprojectbc/role/admin/nav/navHelperAdmin.dart';
+import 'package:testprojectbc/role/admin/nav/registerAdmin.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
-import '../models/profile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'Setting/Theme.dart';
-import 'addPost.dart';
-import 'curinfo.dart';
-import 'Navbar/loginsuccess.dart';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:testprojectbc/role/agency/nav/registerAgency.dart';
 
 // import com.facebook.FacebookSdk;
 // import com.facebook.appevents.AppEventsLogger;
 
-class LoginPage extends StatefulWidget {
+class LoginSuperAdminPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _LoginPage();
+    return _LoginSuperAdminPage();
   }
 }
 
-class _LoginPage extends State<LoginPage> {
-  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
+class _LoginSuperAdminPage extends State<LoginSuperAdminPage> {
+  // DarkThemeProvider themeChangeProvider = DarkThemeProvider();
   bool isDarkTheme = false;
   bool value = false;
   var _usernameController = TextEditingController();
@@ -63,11 +60,6 @@ class _LoginPage extends State<LoginPage> {
   final usersRef = FirebaseFirestore.instance.collection('usersPIN');
 
   bool valueObscureText = true;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +138,7 @@ class _LoginPage extends State<LoginPage> {
                                               // height: 450,
                                               height: MediaQuery.sizeOf(context)
                                                       .height -
-                                                  200,
+                                                  320,
                                               child: Padding(
                                                 padding: EdgeInsets.all(10),
                                                 child: Column(
@@ -182,7 +174,7 @@ class _LoginPage extends State<LoginPage> {
                                                           EdgeInsets.fromLTRB(
                                                               24, 10, 0, 0),
                                                       child: Text(
-                                                        "Welcome",
+                                                        "Welcome Super Admin",
                                                         textAlign:
                                                             TextAlign.left,
                                                         style: TextStyle(
@@ -414,13 +406,13 @@ class _LoginPage extends State<LoginPage> {
                                                                   24, 0, 0, 0),
                                                           child: TextButton(
                                                             onPressed: () {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                      builder:
-                                                                          (context) {
-                                                                return ForgotPasswordScreen();
-                                                              }));
+                                                              // Navigator.pushReplacement(
+                                                              //     context,
+                                                              //     MaterialPageRoute(
+                                                              //         builder:
+                                                              //             (context) {
+                                                              //   return AddpostPage();
+                                                              // }));
                                                             },
                                                             child: Text(
                                                               "Forgot your password?",
@@ -578,7 +570,7 @@ class _LoginPage extends State<LoginPage> {
                                                                             .doc(user.uid)
                                                                             .update({
                                                                           'role':
-                                                                              "user",
+                                                                              "superadmin",
                                                                           'UID':
                                                                               user.uid,
                                                                           'displayName':
@@ -597,7 +589,7 @@ class _LoginPage extends State<LoginPage> {
                                                                             .pushReplacement(
                                                                           context,
                                                                           MaterialPageRoute(
-                                                                              builder: (context) => GooglefaPage()),
+                                                                              builder: (context) => NavHleperSuperAdminPage()),
                                                                         );
                                                                       }
                                                                     } else {
@@ -608,7 +600,7 @@ class _LoginPage extends State<LoginPage> {
                                                                               .uid)
                                                                           .set({
                                                                         'role':
-                                                                            "user",
+                                                                            "superadmin",
                                                                         'UID': user
                                                                             .uid,
                                                                         'displayName':
@@ -629,7 +621,7 @@ class _LoginPage extends State<LoginPage> {
                                                                         context,
                                                                         MaterialPageRoute(
                                                                             builder: (context) =>
-                                                                                GooglefaPage()),
+                                                                                NavHleperSuperAdminPage()),
                                                                       );
                                                                     }
                                                                   }
@@ -662,101 +654,8 @@ class _LoginPage extends State<LoginPage> {
                                                         ),
                                                       ],
                                                     ),
-                                                    Padding(
-                                                      padding:
-                                                          EdgeInsets.fromLTRB(
-                                                              0, 30, 0, 20),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Expanded(
-                                                            child: Text(
-                                                              'or sign in using',
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                fontFamily:
-                                                                    'Lexend',
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                color:
-                                                                    Colors.grey,
-                                                              ),
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                      padding: const EdgeInsets
-                                                              .fromLTRB(
-                                                          0, 0, 0, 20),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceBetween,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Expanded(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                print(
-                                                                    'facebook');
-                                                                loginWithFacebook(
-                                                                    context);
-                                                              },
-                                                              child: Align(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                child:
-                                                                    Image.asset(
-                                                                  'assets/facebook.png',
-                                                                  fit: BoxFit
-                                                                      .none,
-                                                                  semanticLabel:
-                                                                      'image description',
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                print('google');
-                                                                loginWithGoogle(
-                                                                    context);
-                                                              },
-                                                              child: Align(
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                                child:
-                                                                    Image.asset(
-                                                                  'assets/google.png',
-                                                                  fit: BoxFit
-                                                                      .none,
-                                                                  semanticLabel:
-                                                                      'image description',
-                                                                  scale: 1.2,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                    SizedBox(
+                                                      height: 10,
                                                     ),
                                                     Row(
                                                       mainAxisAlignment:
@@ -783,10 +682,13 @@ class _LoginPage extends State<LoginPage> {
                                                                   24, 0, 4, 0),
                                                           child: TextButton(
                                                             onPressed: () {
-                                                              Navigator.pushReplacementNamed(
+                                                              Navigator.pushReplacement(
                                                                   context,
-                                                                  "/register-page",
-                                                                  arguments: []);
+                                                                  MaterialPageRoute(
+                                                                      builder:
+                                                                          (context) {
+                                                                return RegisterSuperAdminPage();
+                                                              }));
                                                             },
                                                             child: Text(
                                                               'Create',
@@ -844,10 +746,10 @@ class _LoginPage extends State<LoginPage> {
 
   Future loginWithGoogle(BuildContext context) async {
     GoogleSignIn _googleSignIn = GoogleSignIn(
-        // scopes: [
-        //   'https://www.googleapis.com/auth/contacts.readonly',
-        // ],
-        );
+      scopes: [
+        'https://www.googleapis.com/auth/contacts.readonly',
+      ],
+    );
     GoogleSignInAccount? user = await _googleSignIn.signIn();
     GoogleSignInAuthentication userAuth = await user!.authentication;
 
@@ -864,26 +766,25 @@ class _LoginPage extends State<LoginPage> {
       'displayName': user.displayName,
       // เพิ่มข้อมูลอื่นๆ ที่คุณต้องการเก็บได้ตามต้องการ
     };
-    // await FirebaseFirestore.instance
-    //     .collection('usersPIN')
-    //     .doc(userDoc!.uid)
-    //     .set(userData, SetOptions(merge: true));
-
     await FirebaseFirestore.instance
         .collection('usersPIN')
         .doc(userDoc!.uid)
-        .update({
-      'displayName': user.displayName,
-      'UID': userDoc.uid,
-    });
+        .set(userData, SetOptions(merge: true));
 
+    if (!mounted) return;
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return (GooglefaPage());
     })); // after success route to home.
-    print('google OK');
-    // if (mounted) await _googleSignIn.disconnect();
-    // print('google Fail');
   }
+
+  // Future<void> saveUser(GoogleSignInAccount account) async {
+  //   FirebaseFirestore.instance.collection("Users").doc(account.email).set({
+  //     "email": account.email,
+  //     "name": account.displayName,
+  //     "profilepic": account.photoUrl
+  //   });
+  //   print("Saved User data");
+  // }
 
   Future loginWithFacebook(BuildContext context) async {
     try {

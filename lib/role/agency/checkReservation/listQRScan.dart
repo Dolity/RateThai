@@ -80,7 +80,8 @@ class _ListQRPage extends State<ListQRPage> {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('usersPIN')
-            .where('QRCode.Agency', isEqualTo: agencyValue)
+            .where('role', isEqualTo: 'user')
+            .where('AgencyReserva', isEqualTo: agencyValue)
             .snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -106,10 +107,10 @@ class _ListQRPage extends State<ListQRPage> {
                 final String _UserFName = userData['FirstName'] ?? 'Null';
                 final String _UserName = userData['LastName'] ?? 'Null';
                 final String _Gender = userData['Gender'] ?? 'Null';
-                final String _agency =
-                    userData != null && userData['QRCode'] != null
-                        ? userData['QRCode']['Agency'] ?? 'Null'
-                        : 'Null';
+                // final String _agency =
+                //     userData != null && userData['QRCode'] != null
+                //         ? userData['QRCode']['Agency'] ?? 'Null'
+                //         : 'Null';
 
                 return Card(
                     shape: RoundedRectangleBorder(
@@ -206,7 +207,7 @@ class _ListQRPage extends State<ListQRPage> {
                         leading: Icon(Icons.notifications_active_outlined),
                         title: Text('$_UserFName $_UserName $_Total THB'),
                         subtitle: Text(
-                            '${_DateReservation}, ${_SubAgency}, ${_Type}, ${_agency}'),
+                            '${_DateReservation}, ${_SubAgency}, ${_Type}'),
                       ),
                     ));
               } else {

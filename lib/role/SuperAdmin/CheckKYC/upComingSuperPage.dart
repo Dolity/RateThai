@@ -7,14 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:cached_network_image/cached_network_image.dart'; // เพิ่ม package นี้
 
-class UpComingAdminPage extends StatefulWidget {
+class UpComingSuperAdminPage extends StatefulWidget {
   @override
-  _UpComingAdminPageState createState() => _UpComingAdminPageState();
+  _UpComingSuperAdminPageState createState() => _UpComingSuperAdminPageState();
 }
 
-class _UpComingAdminPageState extends State<UpComingAdminPage> {
+class _UpComingSuperAdminPageState extends State<UpComingSuperAdminPage> {
   String? _UID;
   String? Fname;
   String? Lname;
@@ -157,18 +156,6 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
         schedule: NotificationCalendar());
   }
 
-  void showImageDialog(String? imageUrl) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        contentPadding: EdgeInsets.zero,
-        content: imageUrl != null
-            ? Image.network(imageUrl, fit: BoxFit.contain)
-            : Container(),
-      ),
-    );
-  }
-
   void sendNotification(String fcmToken) async {
     if (Platform.isAndroid) {
       // ถ้าแอปพลิเคชันอยู่ใน Foreground (iOS)
@@ -205,7 +192,7 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upcoming'),
+        title: Text('Upcoming Super'),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('usersPIN').snapshots(),
@@ -237,26 +224,9 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
                         builder: (context) => AlertDialog(
                           title: Text('Authenticate'),
                           content: Container(
-                            height: 350,
+                            height: 220,
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                GestureDetector(
-                                  onTap: () =>
-                                      showImageDialog(userData['imageUrl']),
-                                  child: CircleAvatar(
-                                    radius: 50,
-                                    backgroundImage: userData['imageUrl'] !=
-                                            null
-                                        ? NetworkImage(
-                                            userData['imageUrl'] as String)
-                                        : AssetImage(
-                                                'assets/default_profile_picture.jpg')
-                                            as ImageProvider<Object>,
-                                    backgroundColor: Colors.grey,
-                                  ),
-                                ),
-                                SizedBox(height: 10),
                                 RichText(
                                   text: TextSpan(
                                     style: TextStyle(
@@ -399,14 +369,10 @@ class _UpComingAdminPageState extends State<UpComingAdminPage> {
                       );
                     },
                     child: ListTile(
-                      leading: CircleAvatar(
-                        radius: 25,
-                        backgroundImage: userData['imageUrl'] != null
-                            ? NetworkImage(userData['imageUrl'] as String)
-                            : AssetImage('assets/default_profile_picture.jpg')
-                                as ImageProvider<Object>,
-                        backgroundColor: Colors.grey,
-                      ),
+                      // leading: checkStatusAdmin!
+                      //     ? Icon(Icons.check_circle)
+                      // : Icon(Icons.notification_important),
+                      leading: Icon(Icons.notification_important),
                       title: Text(
                           '${userData['FirstName']} ${userData['LastName']} (${userData['Gender']})'),
                       subtitle: Text(

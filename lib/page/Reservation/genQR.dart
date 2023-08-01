@@ -213,7 +213,9 @@ class _QRCodePageState extends State<QRCodePage> {
                               FirebaseAuth.instance.currentUser!.uid;
                           final usersRef =
                               FirebaseFirestore.instance.collection('usersPIN');
-                          usersRef.doc(userPIN).update({'QRCode': jsonMap});
+                          usersRef.doc(userPIN).update({
+                            'QRCode': FieldValue.arrayUnion([jsonMap]),
+                          });
                           print('QR Crate to FS');
                         }
 

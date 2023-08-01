@@ -1,9 +1,15 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ionicons/ionicons.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:testprojectbc/Service/singleton/userUID.dart';
+
 import 'package:testprojectbc/page/Navbar/loginsuccess.dart';
 
 class VerificationPage extends StatefulWidget {
@@ -43,6 +49,54 @@ class _VerificationPageState extends State<VerificationPage> {
   bool keepStatusAdmin = false;
   bool checkStatusAdmin = false;
   bool? isVerify = false;
+
+  XFile? _selectedImage; // For Flutter image picker
+  String? _imageName;
+
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    XFile? pickedImage;
+
+    // Show an action sheet to choose between camera and gallery
+    final actionSheet = await showModalBottomSheet<int>(
+      context: context,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.camera_alt),
+              title: Text('Take a Photo'),
+              onTap: () {
+                Navigator.pop(context, 0); // 0 represents camera option
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.photo),
+              title: Text('Choose from Gallery'),
+              onTap: () {
+                Navigator.pop(context, 1); // 1 represents gallery option
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    // Based on the selected option, either take a photo or pick from gallery
+    if (actionSheet == 0) {
+      pickedImage = await _picker.pickImage(source: ImageSource.camera);
+    } else if (actionSheet == 1) {
+      pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+    }
+
+    setState(() {
+      _selectedImage = pickedImage;
+      if (_selectedImage != null) {
+        _imageName = pickedImage?.name;
+      }
+    });
+  }
 
   void verifyUser() {
     // โค้ดเพื่อทำการยืนยันตัวตนของผู้ใช้
@@ -330,6 +384,20 @@ class _VerificationPageState extends State<VerificationPage> {
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none)),
               ),
+              // Image selection widget
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text(
+                  _imageName != null ? 'Selected: $_imageName' : 'Pick Image',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: 'Lexend',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
               SizedBox(height: 16),
               ElevatedButtonTheme(
                 data: ElevatedButtonThemeData(
@@ -368,6 +436,7 @@ class _VerificationPageState extends State<VerificationPage> {
   }
 
   void _submitForm() async {
+    // ตัวอย่างโค้ดเพิ่มการอัปโหลดรูปภาพเข้าไปในฟังก์ชัน _submitForm
     String firstName = _firstNameController.text;
     String lastName = _lastNameController.text;
     String? day = _selectedDay;
@@ -378,57 +447,84 @@ class _VerificationPageState extends State<VerificationPage> {
     String idCardBackNumber = _idCardBackNumberController.text;
     String phoneNumber = _phoneNumberController.text;
 
-    // ควรใส่โค้ดที่จะส่งข้อมูลไปยัง API หรือบันทึกลงฐานข้อมูลตามที่คุณต้องการในส่วนนี้
+    // If an image was selected, upload it to Firebase Storage and get the download URL
+    String? imageUrl;
+    if (_selectedImage != null) {
+      String imagePath = _selectedImage!.path;
+      Reference storageRef = FirebaseStorage.instance
+          .ref()
+          .child('images')
+          .child(_selectedImage!.name);
+      UploadTask uploadTask = storageRef.putFile(File(imagePath));
+      TaskSnapshot snapshot = await uploadTask;
+      if (snapshot.state == TaskState.success) {
+        imageUrl = await snapshot.ref.getDownloadURL();
+      }
+    }
+
+// Assuming you have defined the 'imageUrl' variable as mentioned before
+
+// Update the Firestore document with the additional image URL
     final user = FirebaseAuth.instance.currentUser!.uid;
     final usersRef = FirebaseFirestore.instance.collection('usersPIN');
-    final data1 = usersRef.doc(user).get();
-    final DocumentSnapshot<Map<String, dynamic>> snapshot = await data1;
+    final DocumentSnapshot<Map<String, dynamic>> snapshot =
+        await usersRef.doc(user).get();
 
-    if (snapshot.data() != null) {
-      print('Updage data');
-      usersRef.doc(user).update({
-        'FirstName': '$firstName',
-        'LastName': '$lastName',
-        'DayofBirth': '$day',
-        'MonthofBirth': '$month',
-        'YearofBirth': '$year',
-        'Gender': '$gender',
-        'IDCardNumber': '$idCardNumber',
-        'IDCardBackNumber': '$idCardBackNumber',
-        'PhoneNumber': '$phoneNumber',
-        'ReservationStatusAdmin': checkStatusAdmin,
-        'ConditionCheckAdmin': keepStatusAdmin,
-        'isVerify': isVerify,
-      }).then((_) {
+    if (snapshot.exists) {
+      print('Updating data');
+
+      Map<String, dynamic> userData = snapshot.data()!;
+
+      // Update the fields with the new values
+      userData['FirstName'] = firstName;
+      userData['LastName'] = lastName;
+      userData['DayofBirth'] = day;
+      userData['MonthofBirth'] = month;
+      userData['YearofBirth'] = year;
+      userData['Gender'] = gender;
+      userData['IDCardNumber'] = idCardNumber;
+      userData['IDCardBackNumber'] = idCardBackNumber;
+      userData['PhoneNumber'] = phoneNumber;
+      userData['ReservationStatusAdmin'] = checkStatusAdmin;
+      userData['ConditionCheckAdmin'] = keepStatusAdmin;
+      userData['isVerify'] = isVerify;
+
+      // If the image URL is not null, update it as well
+      if (imageUrl != null) {
+        userData['imageUrl'] = imageUrl;
+      }
+
+      // Update the Firestore document with the new data
+      usersRef.doc(user).update(userData).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Save to reservation on FireStoreSuccess! (Update)'),
+            content: Text('Save to reservation on Firestore Success! (Update)'),
             duration: Duration(seconds: 2),
           ),
         );
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-                'Failed to save reservation on FireStoreSuccess!! (Update)'),
+            content: Text('Failed to save reservation on Firestore! (Update)'),
             duration: Duration(seconds: 2),
           ),
         );
       });
+    } else {
+      // The document does not exist, handle the case if needed
+      print('Document does not exist!');
     }
 
-    _clearFormFields();
-  }
-
-  void _clearFormFields() {
-    _firstNameController.clear();
-    _lastNameController.clear();
-    _selectedDay = null;
-    _selectedMonth = null;
-    _selectedYear = null;
-    _selectedGender = null;
-    _idCardNumberController.clear();
-    _idCardBackNumberController.clear();
-    _phoneNumberController.clear();
+    void _clearFormFields() {
+      _firstNameController.clear();
+      _lastNameController.clear();
+      _selectedDay = null;
+      _selectedMonth = null;
+      _selectedYear = null;
+      _selectedGender = null;
+      _idCardNumberController.clear();
+      _idCardBackNumberController.clear();
+      _phoneNumberController.clear();
+    }
   }
 }

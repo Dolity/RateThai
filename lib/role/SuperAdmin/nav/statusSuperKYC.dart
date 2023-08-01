@@ -3,20 +3,20 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
-import 'package:testprojectbc/role/admin/CheckKYC/checkURL.dart';
-import 'package:testprojectbc/role/admin/CheckKYC/completedPage.dart';
-import 'package:testprojectbc/role/admin/CheckKYC/upComingPage.dart';
+import 'package:testprojectbc/role/SuperAdmin/CheckKYC/checkSuperURL.dart';
+import 'package:testprojectbc/role/SuperAdmin/CheckKYC/completedSuperPage.dart';
+import 'package:testprojectbc/role/SuperAdmin/CheckKYC/upComingSuperPage.dart';
 
-class KYCStatusPage extends StatefulWidget {
+class KYCStatusSuperAdminPage extends StatefulWidget {
   @override
-  _KYCStatusPage createState() => _KYCStatusPage();
+  _KYCStatusSuperAdminPage createState() => _KYCStatusSuperAdminPage();
 }
 
-class _KYCStatusPage extends State<KYCStatusPage>
+class _KYCStatusSuperAdminPage extends State<KYCStatusSuperAdminPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   QRViewController? _qrViewController;
@@ -67,7 +67,7 @@ class _KYCStatusPage extends State<KYCStatusPage>
   void initState() {
     super.initState();
     fetchUserData();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -76,12 +76,12 @@ class _KYCStatusPage extends State<KYCStatusPage>
     print('Currency on Widget: $_Cur -- Total on Widget: $_Total');
     return Scaffold(
       appBar: AppBar(
-        title: Text('KYC Status'),
+        title: Text('advanced'),
         bottom: TabBar(
           labelColor: Colors.black,
           controller: _tabController,
           tabs: [
-            Tab(text: 'Upcoming'),
+            Tab(text: 'UpcomingSuper'),
             Tab(text: 'Completed'),
             Tab(text: 'Check URL'),
           ],
@@ -90,9 +90,9 @@ class _KYCStatusPage extends State<KYCStatusPage>
       body: TabBarView(
         controller: _tabController,
         children: [
-          UpComingAdminPage(),
-          CompletedAdminPage(),
-          CheckURLPage(),
+          UpComingSuperAdminPage(),
+          CompletedSuperAdminPage(),
+          CheckSuperURLPage(),
         ],
       ),
     );

@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as htmlParser;
 import 'package:html/dom.dart' as htmlDom;
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-class CheckURLPage extends StatefulWidget {
+class CheckSuperURLPage extends StatefulWidget {
   @override
-  _CheckURLPageState createState() => _CheckURLPageState();
+  _CheckSuperURLPageState createState() => _CheckSuperURLPageState();
 }
 
-class _CheckURLPageState extends State<CheckURLPage> {
+class _CheckSuperURLPageState extends State<CheckSuperURLPage> {
   List<String> urls = [];
   Map<String, bool> _canAccessURLs = {};
   Map<String, bool> _foundTags = {};

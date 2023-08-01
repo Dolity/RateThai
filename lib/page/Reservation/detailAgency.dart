@@ -34,6 +34,7 @@ class _DetailAgencyState extends State<DetailAgency> {
   bool keepStatus = false;
   bool? isVerify;
   bool? isReservation;
+  bool? isNotifyLocal = false;
 
   @override
   Widget build(BuildContext context) {
@@ -474,6 +475,46 @@ class _DetailAgencyState extends State<DetailAgency> {
                                 const SnackBar(
                                   content: Text(
                                       'Failed to save reservation on FireStoreSuccess!! (Update)'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            });
+
+                            // เพิ่มค่าเข้าไปใน array ในฐานข้อมูล
+                            usersRef.doc(user).update({
+                              'AgencyArr':
+                                  FieldValue.arrayUnion([agentcyUpdate]),
+                            });
+
+                            // // ข้อมูลที่ต้องการเก็บ
+                            var reservationData = {
+                              // 'UID': '$user',
+                              'DateReservaArr': '$selectedDate',
+                              'SubAgencyReservaArr': '$_fromAgency',
+                              'PayReservaArr': '$_fromPay',
+                              'ReservationStatusArr': checkStatus,
+                              'ConditionCheckAgencyArr': keepStatus,
+                              'ConditionQRArr': 'true',
+                              'AgencyReservaArr': agentcyUpdate,
+                              'isNotifyLocal': isNotifyLocal,
+                            };
+                            // อัปเดตข้อมูลในฟิลด์ reservations โดยเพิ่มข้อมูลใหม่ลงใน List ตัวเดิม
+                            usersRef.doc(user).update({
+                              'ReservationArr':
+                                  FieldValue.arrayUnion([reservationData]),
+                            }).then((_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Save to reservation on Firestore Success! (Update)'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            }).catchError((error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Failed to save reservation on Firestore! (Update)'),
                                   duration: Duration(seconds: 2),
                                 ),
                               );

@@ -31,6 +31,38 @@ class _QRScanPageState extends State<QRScanPage> {
   late User? currentUser;
   String usernameData = "";
   late String userUID; //getByUID
+  List<Map<String, dynamic>>? QRCodeListListAsMap;
+  int idxMap = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    fetchReservationsFromFirestore().then((fetchedReservations) {
+      setState(() {
+        QRCodeListListAsMap = fetchedReservations;
+        print('Reservations FS $QRCodeListListAsMap');
+      });
+    });
+  }
+
+  Future<List<Map<String, dynamic>>?> fetchReservationsFromFirestore() async {
+    // final userPIN = FirebaseAuth.instance.currentUser!.uid;
+    // final usersRef = FirebaseFirestore.instance.collection('usersPIN');
+    // final snapshot = await usersRef.get();
+    final usersRefGetQR = FirebaseFirestore.instance.collection('usersPIN');
+    final snapshot = await usersRefGetQR.doc(widget.uidQR).get();
+
+    if (snapshot.exists) {
+      final QRCodeList = snapshot.get('QRCode') as List<dynamic>;
+      final QRCodeListListAsMap =
+          QRCodeList.map((item) => Map<String, dynamic>.from(item)).toList();
+      print('QRCode List: $QRCodeListListAsMap');
+      return QRCodeListListAsMap;
+    } else {
+      return null;
+    }
+  }
 
   @override
   void dispose() {
@@ -102,8 +134,12 @@ class _QRScanPageState extends State<QRScanPage> {
                     final userData =
                         users[index].data() as Map<String, dynamic>;
 
+                    final qrData = QRCodeListListAsMap![index];
+
+                    // print('QR IDX2: $_totalQR');
+
                     final String _uidQR = userData['UID'];
-                    final String _totalQR = userData['QRCode']['Total'];
+                    // final String _totalQR = userData['QRCode']['Total'];
                     final String _fName = userData['FirstName'];
                     final String _lName = userData['LastName'];
                     final String _Token = userData['FCMToken'];
@@ -113,126 +149,141 @@ class _QRScanPageState extends State<QRScanPage> {
                     print('snap has Data');
                     // final firestoreData = snapshot.data!.data();
                     final qrCodeDataIndex = qrCodeData.join(',');
-                    print('QR Code Data[index]: $qrCodeData');
+                    print('Data in QR: $qrCodeData');
                     print('QR Code Data[8]: ${qrCodeData[8]}');
                     print('QR Code Data[9]: ${qrCodeData[9]}');
-                    print('QR Code Data[9]: ${_uidQR}');
-                    print('QR Code Data[9]: ${_totalQR}');
+                    print('QR Code DataUID: ${_uidQR}');
+                    // print('QR Code Data[9]: ${_totalQR}');
                     // เปรียบเทียบข้อมูลใน qrCodeData กับ firestoreData
                     // if (qrCodeData[9] == firestoreData!['Total'] &&
                     //     qrCodeData[11] == firestoreData['SubAgencyReserva']) {
 
-                    for (var i = 0; i < qrCodeData.length; i++) {
-                      if (qrCodeData[i] == _totalQR
-                          //qrCodeData[i] == _uidQR
-                          ) {
-                        print('Condition QR OK');
+                    for (var qrMap in QRCodeListListAsMap!) {
+                      final _totalQR = qrMap['Total'];
 
-                        // qrCodeData[1] == firestoreData!['DateReserva'] &&
-                        // qrCodeData[16] == firestoreData!['PayReserva'] {
+                      print('QR ARR LOOP: $_totalQR');
+                      // เปรียบเทียบ _totalQR กับค่าที่คุณต้องการ
+                      // ในกรณีที่ต้องการทำอะไรต่อในส่วนนี้
+                      for (var i = 0; i < qrCodeData.length; i++) {
+                        if (qrCodeData[i] == _totalQR) {
+                          print('Condition QR OK');
 
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(0, 300, 0, 0),
-                          child: Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(16), // ปรับขนาดของขอบมน
-                            ),
-                            child: Container(
-                              padding: EdgeInsets.all(16),
-                              // width: 150, // กำหนดความกว้างของ Card
-                              height: 180,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  SizedBox(height: 0),
-                                  // Center(
-                                  //   child: Text(
-                                  //     'ข้อมูลถูกต้องกรุณารอรับเงิน',
-                                  //     style: TextStyle(
-                                  //       color: Colors.black,
-                                  //       fontSize: 22,
-                                  //       fontWeight: FontWeight.bold,
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  SizedBox(height: 5),
-                                  RichText(
-                                    text: TextSpan(
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: 'Your booking information ',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                          // for (var i = 0; i < qrCodeData.length; i++) {
+                          //   final _totalQR = qrData['Total'];
+                          //   print('QR IDX1: $_totalQR');
+                          //   if (qrCodeData[i] == _totalQR
+                          //       //qrCodeData[i] == _uidQR
+                          //       ) {
+                          //     print('Condition QR OK');
+
+                          // qrCodeData[1] == firestoreData!['DateReserva'] &&
+                          // qrCodeData[16] == firestoreData!['PayReserva'] {
+
+                          return Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 300, 0, 0),
+                            child: Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    16), // ปรับขนาดของขอบมน
+                              ),
+                              child: Container(
+                                padding: EdgeInsets.all(16),
+                                // width: 150, // กำหนดความกว้างของ Card
+                                height: 180,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SizedBox(height: 0),
+                                    // Center(
+                                    //   child: Text(
+                                    //     'ข้อมูลถูกต้องกรุณารอรับเงิน',
+                                    //     style: TextStyle(
+                                    //       color: Colors.black,
+                                    //       fontSize: 22,
+                                    //       fontWeight: FontWeight.bold,
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    SizedBox(height: 5),
+                                    RichText(
+                                      text: TextSpan(
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 16,
                                         ),
-                                        TextSpan(
-                                            text:
-                                                '$_fName $_lName That\'s match, please wait to receive the money.'),
+                                        children: [
+                                          TextSpan(
+                                            text: 'Your booking information ',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                              text:
+                                                  '$_fName $_lName That\'s match, please wait to receive the money.'),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () {
+                                            sendNotificationBackground(_Token);
+                                            print(
+                                                'Token ${userData['fcmToken']}');
+                                            dropOffStatus = true;
+                                            // บันทึกข้อมูลลง Firestore หรือทำอย่างอื่นตามที่คุณต้องการ
+                                            final usersRef = FirebaseFirestore
+                                                .instance
+                                                .collection('usersPIN');
+                                            usersRef.doc(_uidQR).update({
+                                              'DropOffStatus': dropOffStatus,
+                                            });
+
+                                            Navigator.pop(
+                                                context); // ปิด Dialog
+                                            isShowingDialog =
+                                                false; // กำหนดให้ตัวแปร isShowingDialog เป็น false เพื่อบอกว่า showDialog ปิดแล้ว
+                                            Navigator.pop(
+                                                context); // Pop หน้าปัจจุบัน
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Allow'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            dropOffStatus = false;
+                                            // ทำอย่างอื่นตามที่คุณต้องการเมื่อบริษัทปฏิเสธการรับเงิน
+                                            final usersRef = FirebaseFirestore
+                                                .instance
+                                                .collection('usersPIN');
+                                            dropOffStatus = false;
+                                            usersRef.doc(_uidQR).update({
+                                              'DropOffStatus': dropOffStatus,
+                                            });
+
+                                            Navigator.pop(
+                                                context); // ปิด Dialog
+                                            isShowingDialog =
+                                                false; // กำหนดให้ตัวแปร isShowingDialog เป็น false เพื่อบอกว่า showDialog ปิดแล้ว
+                                            Navigator.pop(
+                                                context); // Pop หน้าปัจจุบัน
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text('Not Allow'),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () {
-                                          sendNotificationBackground(_Token);
-                                          print(
-                                              'Token ${userData['fcmToken']}');
-                                          dropOffStatus = true;
-                                          // บันทึกข้อมูลลง Firestore หรือทำอย่างอื่นตามที่คุณต้องการ
-                                          final usersRef = FirebaseFirestore
-                                              .instance
-                                              .collection('usersPIN');
-                                          usersRef.doc(_uidQR).update({
-                                            'DropOffStatus': dropOffStatus,
-                                          });
-
-                                          Navigator.pop(context); // ปิด Dialog
-                                          isShowingDialog =
-                                              false; // กำหนดให้ตัวแปร isShowingDialog เป็น false เพื่อบอกว่า showDialog ปิดแล้ว
-                                          Navigator.pop(
-                                              context); // Pop หน้าปัจจุบัน
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('Allow'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          dropOffStatus = false;
-                                          // ทำอย่างอื่นตามที่คุณต้องการเมื่อบริษัทปฏิเสธการรับเงิน
-                                          final usersRef = FirebaseFirestore
-                                              .instance
-                                              .collection('usersPIN');
-                                          dropOffStatus = false;
-                                          usersRef.doc(_uidQR).update({
-                                            'DropOffStatus': dropOffStatus,
-                                          });
-
-                                          Navigator.pop(context); // ปิด Dialog
-                                          isShowingDialog =
-                                              false; // กำหนดให้ตัวแปร isShowingDialog เป็น false เพื่อบอกว่า showDialog ปิดแล้ว
-                                          Navigator.pop(
-                                              context); // Pop หน้าปัจจุบัน
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text('Not Allow'),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
+                          );
+                        }
                       }
                     }
                     // }
@@ -324,6 +375,7 @@ class _QRScanPageState extends State<QRScanPage> {
   @override
   Widget build(BuildContext context) {
     print('pass UID: ${widget.uidQR}');
+    print('UDI: $uidQR');
     return Scaffold(
       appBar: AppBar(
         title: Text('Scan QR Code'),

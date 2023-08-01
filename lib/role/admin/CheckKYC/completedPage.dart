@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:testprojectbc/Service/global/dataGlobal.dart' as globals;
 import 'package:flutter/material.dart';
-import 'package:testprojectbc/Service/singleton/userUID.dart';
 
 class CompletedAdminPage extends StatefulWidget {
   @override
@@ -9,6 +7,200 @@ class CompletedAdminPage extends StatefulWidget {
 }
 
 class _CompletedAdminPageState extends State<CompletedAdminPage> {
+  void updateUserStatus(String userId) async {
+    try {
+      final documentReference =
+          FirebaseFirestore.instance.collection('usersPIN').doc(userId);
+
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(documentReference);
+
+        if (snapshot.exists) {
+          transaction.update(documentReference, {
+            'ConditionCheckAdmin': false,
+            'ReservationStatusAdmin': false,
+            'isVerify': false,
+          });
+        }
+      });
+
+      print('User data updated successfully!');
+    } catch (e) {
+      print('Error updating user data: $e');
+    }
+  }
+
+  void showUserDataDialog(Map<String, dynamic> userData) async {
+    final String firstName = userData['FirstName'] ?? '';
+    final String lastName = userData['LastName'] ?? '';
+
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('usersPIN')
+        .where('FirstName', isEqualTo: firstName)
+        .where('LastName', isEqualTo: lastName)
+        .get();
+
+    if (querySnapshot.size == 1) {
+      final String userId = querySnapshot.docs.first.id;
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('User Information'),
+                content: Container(
+                  height: 350,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => showImageDialog(userData['imageUrl']),
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundImage: userData['imageUrl'] != null
+                              ? NetworkImage(userData['imageUrl'] as String)
+                              : AssetImage('assets/default_profile_picture.jpg')
+                                  as ImageProvider<Object>,
+                          backgroundColor: Colors.grey,
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Name: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  '${userData['FirstName'] ?? 'Null'} ${userData['LastName'] ?? 'Null'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Gender: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${userData['Gender'] ?? 'Null'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Date: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  '${userData['DayofBirth'] ?? 'Null'}:${userData['MonthofBirth'] ?? 'Null'}:${userData['YearofBirth'] ?? 'Null'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'ID Card Number: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${userData['IDCardNumber'] ?? 'Null'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Phone Number: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${userData['PhoneNumber']}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      updateUserStatus(userId);
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('Retired'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('Cancel'),
+                  ),
+                ],
+              ));
+    } else {
+      print(
+          'Cannot find unique user with firstName: $firstName and lastName: $lastName');
+    }
+  }
+
+  void showImageDialog(String? imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: imageUrl != null
+            ? Image.network(imageUrl, fit: BoxFit.contain)
+            : Container(),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,11 +239,14 @@ class _CompletedAdminPageState extends State<CompletedAdminPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: ListTile(
-                    leading: Icon(Icons.check_circle),
-                    title: Text('$firstName $lastName ($gender)'),
-                    subtitle: Text(
-                        '$dayOfBirth:$monthOfBirth:$yearOfBirth, $idCardNumber, $phoneNumber'),
+                  child: InkWell(
+                    onTap: () => showUserDataDialog(userData),
+                    child: ListTile(
+                      leading: Icon(Icons.check_circle),
+                      title: Text('$firstName $lastName ($gender)'),
+                      subtitle: Text(
+                          '$dayOfBirth:$monthOfBirth:$yearOfBirth, $idCardNumber, $phoneNumber'),
+                    ),
                   ),
                 );
               } else {

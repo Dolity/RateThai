@@ -10,7 +10,9 @@ import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/role/agency/checkReservation/completedPage.dart';
 import 'package:testprojectbc/role/agency/checkReservation/listQRScan.dart';
 import 'package:testprojectbc/role/agency/checkReservation/qrCodeScanPage.dart';
+import 'package:testprojectbc/role/agency/checkReservation/reservationsCK.dart';
 import 'package:testprojectbc/role/agency/checkReservation/upComingPage.dart';
+import 'package:testprojectbc/role/agency/checkReservation/upcoming2.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
 import 'package:testprojectbc/screen/testBlockchain.dart';
 import 'package:testprojectbc/screen/testBlockchainNoDel.dart';
@@ -57,19 +59,23 @@ class _BookingStatusPageState extends State<BookingStatusPage>
           controller: _tabController,
           tabs: [
             Tab(text: 'Upcoming'),
+            // Tab(text: 'Reservations'),
             Tab(text: 'Completed'),
             Tab(text: 'QR Decode'),
-            Tab(text: 'Blockchain'),
+            // Tab(text: 'Blockchain'),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          UpComingPage(),
+          UpComing2Page(),
+          // reservationsCKPage(
+          //   uidQR: '',
+          // ),
           CompletedPage(),
           ListQRPage(),
-          testBCNoDel(),
+          // testBCNoDel(),
         ],
       ),
     );

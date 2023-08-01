@@ -19,15 +19,15 @@ class GetQRCodePage extends StatefulWidget {
 }
 
 class _GetQRCodePageState extends State<GetQRCodePage> {
-  Map<String, dynamic>? keepQR;
+  List<Map<String, dynamic>>? qrCodeListAsMap; // เพิ่มตัวแปรนี้ในส่วนของ State
 
   @override
   void initState() {
     super.initState();
     fetchQRCodeFromFirestore().then((fetchedQRCode) {
       setState(() {
-        keepQR = fetchedQRCode;
-        print('QR FS $keepQR');
+        qrCodeListAsMap = fetchedQRCode;
+        print('QR FS $qrCodeListAsMap');
       });
     });
     FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
@@ -39,15 +39,69 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
     super.dispose();
   }
 
-  Future<Map<String, dynamic>?> fetchQRCodeFromFirestore() async {
+  Future<List<Map<String, dynamic>>?> fetchQRCodeFromFirestore() async {
     final userPIN = FirebaseAuth.instance.currentUser!.uid;
     final usersRefGetQR = FirebaseFirestore.instance.collection('usersPIN');
     final snapshot = await usersRefGetQR.doc(userPIN).get();
+
     if (snapshot.exists) {
-      return snapshot.get('QRCode');
+      // return snapshot.get('QRCode');
+      // final getCur = snapshot.get['getCode'];
+      final qrCodeList = snapshot.get('QRCode') as List<dynamic>;
+      final qrCodeListAsMap =
+          qrCodeList.map((item) => Map<String, dynamic>.from(item)).toList();
+      print('QR Code List: $qrCodeListAsMap');
+      return qrCodeListAsMap;
     } else {
       return null;
     }
+  }
+
+  void _showQRCodeDialog(String qrCodeData) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('QR Code'),
+          content: Container(
+            width: 300,
+            height: 320,
+            child: QrImageView(
+              data: qrCodeData,
+              version: QrVersions.auto,
+              size: 50,
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButtonTheme(
+              data: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  primary: Colors.black54,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Close',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: 'Lexend',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -81,11 +135,49 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    if (keepQR != null)
-                      QrImageView(
-                        data: jsonEncode(keepQR),
-                        version: QrVersions.auto,
-                        size: 200,
+                    if (qrCodeListAsMap != null)
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: qrCodeListAsMap!.length,
+                          itemBuilder: (context, index) {
+                            final userData = qrCodeListAsMap![index];
+                            final keepCur = userData['Currency'];
+                            final keepDate = userData['Date'];
+
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                              child: ElevatedButtonTheme(
+                                data: ElevatedButtonThemeData(
+                                  style: ElevatedButton.styleFrom(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 12),
+                                    primary: Colors.black54,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // แสดง QR Code ที่ตำแหน่ง index ที่กดปุ่ม
+                                    String qrCodeData =
+                                        jsonEncode(qrCodeListAsMap![index]);
+                                    _showQRCodeDialog(qrCodeData);
+                                  },
+                                  child: Text(
+                                    'QR Code ${keepCur.toString()}, ${keepDate.toString()}',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontFamily: 'Lexend',
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       )
                     else
                       Container(),
