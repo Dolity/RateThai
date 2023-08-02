@@ -47,19 +47,23 @@ class _CompletedAdminPageState extends State<CompletedAdminPage> {
           builder: (context) => AlertDialog(
                 title: Text('User Information'),
                 content: Container(
-                  height: 350,
+                  height: 280,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      GestureDetector(
-                        onTap: () => showImageDialog(userData['imageUrl']),
-                        child: CircleAvatar(
-                          radius: 50,
-                          backgroundImage: userData['imageUrl'] != null
-                              ? NetworkImage(userData['imageUrl'] as String)
-                              : AssetImage('assets/default_profile_picture.jpg')
-                                  as ImageProvider<Object>,
-                          backgroundColor: Colors.grey,
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                        child: GestureDetector(
+                          onTap: () => showImageDialog(userData['imageUrl']),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: userData['imageUrl'] != null
+                                ? NetworkImage(userData['imageUrl'] as String)
+                                : AssetImage(
+                                        'assets/default_profile_picture.jpg')
+                                    as ImageProvider<Object>,
+                            backgroundColor: Colors.grey,
+                          ),
                         ),
                       ),
                       RichText(

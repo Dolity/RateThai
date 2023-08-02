@@ -17,18 +17,35 @@ class _CompletedSuperAdminPageState extends State<CompletedSuperAdminPage> {
       builder: (context) {
         return AlertDialog(
           title: Text('User Details'),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('First Name: ${userData['FirstName']}'),
-              Text('Last Name: ${userData['LastName']}'),
-              Text('Gender: ${userData['Gender']}'),
-              Text(
-                  'Date of Birth: ${userData['DayofBirth']}:${userData['MonthofBirth']}:${userData['YearofBirth']}'),
-              Text('ID Card Number: ${userData['IDCardNumber']}'),
-              Text('Phone Number: ${userData['PhoneNumber']}'),
-            ],
+          content: Container(
+            height: 280,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                  child: GestureDetector(
+                    onTap: () => showImageDialog(userData['imageUrl']),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: userData['imageUrl'] != null
+                          ? NetworkImage(userData['imageUrl'] as String)
+                          : AssetImage('assets/default_profile_picture.jpg')
+                              as ImageProvider<Object>,
+                      backgroundColor: Colors.grey,
+                    ),
+                  ),
+                ),
+                Text('First Name: ${userData['FirstName']}'),
+                Text('Last Name: ${userData['LastName']}'),
+                Text('Gender: ${userData['Gender']}'),
+                Text(
+                    'Date of Birth: ${userData['DayofBirth']}:${userData['MonthofBirth']}:${userData['YearofBirth']}'),
+                Text('ID Card Number: ${userData['IDCardNumber']}'),
+                Text('Phone Number: ${userData['PhoneNumber']}'),
+              ],
+            ),
           ),
           actions: [
             TextButton(
@@ -38,6 +55,18 @@ class _CompletedSuperAdminPageState extends State<CompletedSuperAdminPage> {
           ],
         );
       },
+    );
+  }
+
+  void showImageDialog(String? imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: imageUrl != null
+            ? Image.network(imageUrl, fit: BoxFit.contain)
+            : Container(),
+      ),
     );
   }
 

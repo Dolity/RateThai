@@ -65,6 +65,69 @@ class _CompletedPageState extends State<CompletedPage> {
     }
   }
 
+  void showImageDialog(String? imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: imageUrl != null
+            ? Image.network(imageUrl, fit: BoxFit.contain)
+            : Container(),
+      ),
+    );
+  }
+
+  void showDetailsDialog(Map<String, dynamic> userData) {
+    final String _Total = userData['Total'];
+    final String _DateReservation = userData['DateReserva'];
+    final String _Type = userData['PayReserva'];
+    final String _SubAgency = userData['SubAgencyReserva'];
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('User Details'),
+          content: Container(
+            height: 280,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                  child: GestureDetector(
+                    onTap: () => showImageDialog(userData['imageUrl']),
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: userData['imageUrl'] != null
+                          ? NetworkImage(userData['imageUrl'] as String)
+                          : AssetImage('assets/default_profile_picture.jpg')
+                              as ImageProvider<Object>,
+                      backgroundColor: Colors.grey,
+                    ),
+                  ),
+                ),
+                Text('First Name: ${userData['FirstName']}'),
+                Text('Last Name: ${userData['LastName']}'),
+                Text('Gender: ${userData['Gender']}'),
+                Text('Date: ${_DateReservation}'),
+                Text('Value ${_Total}'),
+                Text('Pay: ${_Type}'),
+                Text('Subagency: ${_SubAgency}'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,15 +168,18 @@ class _CompletedPageState extends State<CompletedPage> {
                 //         ? userData['QRCode']['Agency'] ?? 'Null'
                 //         : 'Null';
 
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ListTile(
-                    leading: Icon(Icons.check_circle),
-                    title: Text('$_UserFName $_UserName $_Total THB'),
-                    subtitle:
-                        Text('${_DateReservation}, ${_SubAgency}, ${_Type}'),
+                return GestureDetector(
+                  onTap: () => showDetailsDialog(userData),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      leading: Icon(Icons.check_circle),
+                      title: Text('$_UserFName $_UserName $_Total THB'),
+                      subtitle:
+                          Text('${_DateReservation}, ${_SubAgency}, ${_Type}'),
+                    ),
                   ),
                 );
               } else {
