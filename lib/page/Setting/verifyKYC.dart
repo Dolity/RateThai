@@ -386,15 +386,26 @@ class _VerificationPageState extends State<VerificationPage> {
               ),
               // Image selection widget
               SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text(
-                  _imageName != null ? 'Selected: $_imageName' : 'Pick Image',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: 'Lexend',
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+              ElevatedButtonTheme(
+                data: ElevatedButtonThemeData(
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    primary: Colors.black54,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+                child: ElevatedButton(
+                  onPressed: _pickImage,
+                  child: Text(
+                    _imageName != null ? 'Selected: $_imageName' : 'Pick Image',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Lexend',
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -411,11 +422,11 @@ class _VerificationPageState extends State<VerificationPage> {
                 ),
                 child: ElevatedButton(
                   onPressed: () {
-                    _submitForm();
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) {
-                      return LoginSuccessPage();
-                    }));
+                    if (_areFieldsValid()) {
+                      _submitForm();
+                    } else {
+                      _showIncompleteFieldsDialog();
+                    }
                   },
                   child: Text(
                     'Submit',
@@ -433,6 +444,61 @@ class _VerificationPageState extends State<VerificationPage> {
         ),
       ),
     );
+  }
+
+  void _showIncompleteFieldsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(38),
+          ),
+          elevation: 0,
+          title: Text('Incomplete Fields'),
+          content: Text('Please fill in all fields.'),
+          actions: <Widget>[
+            ElevatedButtonTheme(
+              data: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  primary: Colors.black54,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context); // ปิด Dialog
+                },
+                child: Text(
+                  'OK',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontFamily: 'Lexend',
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  bool _areFieldsValid() {
+    return _firstNameController.text.isNotEmpty &&
+        _lastNameController.text.isNotEmpty &&
+        _selectedDay != null &&
+        _selectedMonth != null &&
+        _selectedYear != null &&
+        _selectedGender != null &&
+        _idCardNumberController.text.isNotEmpty &&
+        _idCardBackNumberController.text.isNotEmpty &&
+        _phoneNumberController.text.isNotEmpty;
   }
 
   void _submitForm() async {
@@ -494,6 +560,10 @@ class _VerificationPageState extends State<VerificationPage> {
         userData['imageUrl'] = imageUrl;
       }
 
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        return LoginSuccessPage();
+      }));
+
       // Update the Firestore document with the new data
       usersRef.doc(user).update(userData).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -511,7 +581,7 @@ class _VerificationPageState extends State<VerificationPage> {
         );
       });
     } else {
-      // The document does not exist, handle the case if needed
+//       // The document does not exist, handle the case if needed
       print('Document does not exist!');
     }
 

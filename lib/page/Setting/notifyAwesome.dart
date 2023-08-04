@@ -4,9 +4,12 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:testprojectbc/Service/provider/reservationData.dart';
 import 'package:testprojectbc/page/Setting/notiDate.dart';
+
+import '../../main.dart';
 
 String keepCur = "";
 String keepRate = "";
@@ -14,29 +17,104 @@ String keepResevaProviRateUpdate = "";
 
 // final user = FirebaseAuth.instance.currentUser!.uid;
 
+// FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//     FlutterLocalNotificationsPlugin();
+
+// Future<void> initializeLocalNotifications() async {
+//   const AndroidInitializationSettings initializationSettingsAndroid =
+//       AndroidInitializationSettings('@mipmap/ic_launcher');
+
+//   final InitializationSettings initializationSettings =
+//       InitializationSettings(android: initializationSettingsAndroid);
+
+//   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+// }
+
+// Future<void> sendLocalNotification() async {
+//   final user = FirebaseAuth.instance.currentUser!.uid;
+//   final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
+//   final snapshot = await usersRefD1.doc(user).get();
+//   double previousRate = double.parse(snapshot['RateNoti']);
+//   String CurrFS = snapshot['CurrencyNoti'];
+
+//   const AndroidNotificationDetails androidPlatformChannelSpecifics =
+//       AndroidNotificationDetails(
+//     'your_channel_id',
+//     'Your Channel Name',
+//     importance: Importance.max,
+//     priority: Priority.high,
+//     ticker: 'ticker',
+//     styleInformation: DefaultStyleInformation(true, true),
+//   );
+
+//   const NotificationDetails platformChannelSpecifics =
+//       NotificationDetails(android: androidPlatformChannelSpecifics);
+
+//   await flutterLocalNotificationsPlugin.show(
+//     0, // Notification ID
+//     '${Emojis.money_dollar_banknote}$keepCur Price Alert!', // Title
+//     '1 ${CurrFS} is now ${keepRate} THB ${Emojis.symbols_check_mark}', // Body
+//     platformChannelSpecifics,
+//     payload: 'notification',
+//   );
+// }
+
 int createUniqueId() {
   return DateTime.now().millisecondsSinceEpoch.remainder(100000);
 }
 
-Future<void> createReservationPositiveNotification(BuildContext context) async {
+Future<void> sendNotificationForegroundAwesomeNotify(
+    BuildContext context) async {
+  // keepCur = context.watch<ReservationData>().notifyCur.toString();
+  // keepRate = context.watch<ReservationData>().notifyRate.toString();
+
   final user = FirebaseAuth.instance.currentUser!.uid;
   final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
   final snapshot = await usersRefD1.doc(user).get();
   // keepCur = context.watch<ReservationData>().notifyCur.toString() ?? 'USD';
   // keepRate = context.watch<ReservationData>().notifyRate.toString();
   double previousRate = double.parse(snapshot['RateNoti']); //Rate from User set
-  double currentRate =
-      double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
-  String Curr = snapshot['QRCode']['Currency'];
+  // double currentRate =
+  //     double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
+  // String Curr = snapshot['QRCode']['Currency'];
+  String CurrFS = snapshot['CurrencyNoti'];
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: createUniqueId(),
+      channelKey: 'basic_channel',
+
+      title: '${Emojis.money_dollar_banknote}$keepCur Price Alert!',
+      body: '1 ${CurrFS}  is now ${keepRate} THB ${Emojis.symbols_check_mark}',
+      // locked: true, // ทำให้แจ้งเตือนแม้ว่าจะมีอีกแอปพลิเคชันเปิดขึ้น
+    ),
+    schedule: NotificationCalendar(
+        // allowWhileIdle: true, // ทำให้แจ้งเตือนได้เมื่อแอปพลิเคชันไม่ได้เปิด
+        ),
+  );
+}
+
+Future<void> createReservationPositiveNotification(BuildContext context) async {
+  keepCur = context.watch<ReservationData>().notifyCur.toString();
+  keepRate = context.watch<ReservationData>().notifyRate.toString();
+
+  final user = FirebaseAuth.instance.currentUser!.uid;
+  final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
+  final snapshot = await usersRefD1.doc(user).get();
+  // keepCur = context.watch<ReservationData>().notifyCur.toString() ?? 'USD';
+  // keepRate = context.watch<ReservationData>().notifyRate.toString();
+  double previousRate = double.parse(snapshot['RateNoti']); //Rate from User set
+  // double currentRate =
+  //     double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
+  // String Curr = snapshot['QRCode']['Currency'];
   String CurrFS = snapshot['CurrencyNoti'];
 
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: createUniqueId(),
       channelKey: 'basic_channel',
-      title: '${Emojis.money_dollar_banknote}$Curr Price Alert!',
+      title: '${Emojis.money_dollar_banknote}$keepCur Price Alert!',
       body:
-          '1 ${CurrFS}  is now ${currentRate} THB ${Emojis.symbols_check_mark} better than' +
+          '1 ${CurrFS}  is now ${keepRate} THB ${Emojis.symbols_check_mark} better than' +
               ' ${previousRate} THB',
       notificationLayout: NotificationLayout.Default,
 
@@ -58,24 +136,26 @@ Future<void> createReservationNegativeNotification(BuildContext context) async {
   // keepRate = context.watch<ReservationData>().notifyRate.toString();
   // keepResevaProviRateUpdate =
   //     context.watch<ReservationData>().resevaProviRateUpdate.toString();
+  keepCur = context.watch<ReservationData>().notifyCur.toString();
+  keepRate = context.watch<ReservationData>().notifyRate.toString();
   final user = FirebaseAuth.instance.currentUser!.uid;
   final usersRefD1 = FirebaseFirestore.instance.collection('usersPIN');
   final snapshot = await usersRefD1.doc(user).get();
   // final Keepdata1 = snapshot.data() as Map<String, dynamic>?;
 
   double previousRate = double.parse(snapshot['RateNoti']); //Rate from User set
-  double currentRate =
-      double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
-  String Curr = snapshot['QRCode']['Currency'];
+  // double currentRate =
+  //     double.parse(snapshot['QRCode']['Rate']); //Rate from agency Scarping
+  // String Curr = snapshot['QRCode']['Currency'];
   String CurrFS = snapshot['CurrencyNoti'];
 
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: createUniqueId(),
       channelKey: 'basic_channel',
-      title: '${Emojis.money_dollar_banknote}$Curr Price Alert!',
+      title: '${Emojis.money_dollar_banknote}$keepCur Price Alert!',
       body:
-          '1 ${CurrFS} is now ${currentRate} THB ${Emojis.icon_anger_symbol} worse than' +
+          '1 ${CurrFS} is now ${keepRate} THB ${Emojis.icon_anger_symbol} worse than' +
               ' ${previousRate} THB',
       notificationLayout: NotificationLayout.Default,
     ),

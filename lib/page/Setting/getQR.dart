@@ -57,7 +57,7 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
     }
   }
 
-  void _showQRCodeDialog(String qrCodeData) {
+  void _showQRCodeDialog(String qrCodeData, String keepCur, String keepDate) {
     showDialog(
       context: context,
       builder: (context) {
@@ -73,6 +73,7 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
             ),
           ),
           actions: <Widget>[
+            Text('QR Code ${keepCur.toString()}, ${keepDate.toString()}'),
             ElevatedButtonTheme(
               data: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
@@ -97,7 +98,7 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
                   ),
                 ),
               ),
-            )
+            ),
           ],
         );
       },
@@ -162,7 +163,8 @@ class _GetQRCodePageState extends State<GetQRCodePage> {
                                     // แสดง QR Code ที่ตำแหน่ง index ที่กดปุ่ม
                                     String qrCodeData =
                                         jsonEncode(qrCodeListAsMap![index]);
-                                    _showQRCodeDialog(qrCodeData);
+                                    _showQRCodeDialog(
+                                        qrCodeData, keepCur, keepDate);
                                   },
                                   child: Text(
                                     'QR Code ${keepCur.toString()}, ${keepDate.toString()}',

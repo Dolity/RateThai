@@ -82,8 +82,8 @@ class _testBCUser extends State<testBCUser> {
 
                         if (note.firstnameBC == snapshotData['FirstName']) {
                           // if (dropOff == true) {
-                          // print(
-                          //     'conditionCheck True : ${snapshotData['DropOffStatus']}');
+                          print(
+                              'conditionCheck True : ${snapshotData['DropOffStatus']}');
                           return Column(
                             children: [
                               ListTile(

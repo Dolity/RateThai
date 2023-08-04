@@ -39,6 +39,8 @@ class _notify extends State<notify> {
   late User? currentUser;
   String usernameData = "";
   late String userUID; //getByUID
+  String? CurFS;
+  String? RateFS;
 
   void initState() {
     super.initState();
@@ -47,6 +49,14 @@ class _notify extends State<notify> {
       usernameData = currentUser!.email ?? "";
       userUID = currentUser!.uid;
     }
+
+    // initializeData();
+
+    // print('CurFS $CurFS || RateFS $RateFS');
+
+    // if (keepCur == CurFS) {
+
+    // }
 
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
       if (!isAllowed) {
@@ -112,6 +122,22 @@ class _notify extends State<notify> {
     });
   }
 
+  int createUniqueId() {
+    return DateTime.now().millisecondsSinceEpoch.remainder(100000);
+  }
+
+  // void sendNotificationForegroundAwesomeNotify() {
+  //   AwesomeNotifications().createNotification(
+  //     content: NotificationContent(
+  //       id: createUniqueId(),
+  //       channelKey: 'basic_channel',
+  //       title: 'Rate alert',
+  //       body: '1 ${keepCur} = ${keepRate} THB',
+  //     ),
+  //     schedule: NotificationCalendar(),
+  //   );
+  // }
+
   void dispose() {
     AwesomeNotifications().actionSink.close();
     AwesomeNotifications().createdSink.close();
@@ -119,8 +145,6 @@ class _notify extends State<notify> {
   }
 
   Widget build(BuildContext context) {
-    keepCur = context.watch<ReservationData>().notifyCur.toString();
-    keepRate = context.watch<ReservationData>().notifyRate.toString();
     keepResevaProviRateUpdate =
         context.watch<ReservationData>().resevaProviRateUpdate.toString();
 
@@ -160,14 +184,23 @@ class _notify extends State<notify> {
                 final userData = users[index].data() as Map<String, dynamic>;
                 final rateNotify = userData['RateNoti'];
                 final curNotify = userData['CurrencyNoti'];
-                final bestRate = userData['QRCode']['Rate'];
+                keepCur = context.watch<ReservationData>().notifyCur.toString();
+                keepRate =
+                    context.watch<ReservationData>().notifyRate.toString();
+                // final bestRate = "10";
+                // final bestRate = keepRate;
+
+                if (keepCur == curNotify) {
+                  sendNotificationForegroundAwesomeNotify(context);
+                }
+                print('keepRate $keepCur || keepCur $keepCur');
 
                 if (rateNotify != null && curNotify != null) {
                   // keepCur
                   double previousRate =
                       double.parse(rateNotify); //Rate from User set
                   double currentRate =
-                      double.parse(bestRate); //Rate from agency Scarping
+                      double.parse(keepRate); //Rate from agency Scarping
 
                   print('currentRate:  $currentRate $previousRate');
 
@@ -178,7 +211,7 @@ class _notify extends State<notify> {
                     // แจ้งเตือนว่าราคาสกุลเงินลง
                     createReservationNegativeNotification(context);
                   }
-                  print('FS: $previousRate, $bestRate');
+                  print('FS: $previousRate');
                 }
 
                 print('Provider: $keepRate, $keepCur');
@@ -206,8 +239,9 @@ class _notify extends State<notify> {
                             onTap: () {
                               // NotificationService.showNotification(
                               //   title: 'Rate alert',
-                              //   body: ' 1 ${data?['CurrencyNoti']} = ${data?['RateNoti']} THB',
+                              //   body: '1 ${keepCur} = ${keepRate} THB',
                               // );
+                              sendNotificationForegroundAwesomeNotify(context);
                             },
                             child: Padding(
                               padding: EdgeInsets.symmetric(
@@ -259,7 +293,7 @@ class _notify extends State<notify> {
                                               children: [
                                                 TextSpan(
                                                   text:
-                                                      '1 ${curNotify ?? 'null'} = ${rateNotify ?? 'null'} THB',
+                                                      '1 ${keepCur ?? 'null'} = ${keepRate ?? 'null'} THB',
                                                   style: TextStyle(
                                                     fontSize: 16,
                                                     fontWeight: FontWeight.bold,

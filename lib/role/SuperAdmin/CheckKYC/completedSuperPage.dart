@@ -10,52 +10,190 @@ class CompletedSuperAdminPage extends StatefulWidget {
 }
 
 class _CompletedSuperAdminPageState extends State<CompletedSuperAdminPage> {
-  // Method to show detailed information in a Dialog
-  void showDetailsDialog(Map<String, dynamic> userData) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('User Details'),
-          content: Container(
-            height: 280,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
-                  child: GestureDetector(
-                    onTap: () => showImageDialog(userData['imageUrl']),
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundImage: userData['imageUrl'] != null
-                          ? NetworkImage(userData['imageUrl'] as String)
-                          : AssetImage('assets/default_profile_picture.jpg')
-                              as ImageProvider<Object>,
-                      backgroundColor: Colors.grey,
-                    ),
+  void updateUserStatus(String userId) async {
+    try {
+      final documentReference =
+          FirebaseFirestore.instance.collection('usersPIN').doc(userId);
+
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        final snapshot = await transaction.get(documentReference);
+
+        if (snapshot.exists) {
+          transaction.update(documentReference, {
+            'ConditionCheckAdmin': false,
+            'ReservationStatusAdmin': false,
+            'isVerify': false,
+          });
+        }
+      });
+
+      print('User data updated successfully!');
+    } catch (e) {
+      print('Error updating user data: $e');
+    }
+  }
+
+  void showUserDataDialog(Map<String, dynamic> userData) async {
+    final String firstName = userData['FirstName'] ?? '';
+    final String lastName = userData['LastName'] ?? '';
+
+    final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('usersPIN')
+        .where('FirstName', isEqualTo: firstName)
+        .where('LastName', isEqualTo: lastName)
+        .get();
+
+    if (querySnapshot.size == 1) {
+      final String userId = querySnapshot.docs.first.id;
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('User Information'),
+                content: Container(
+                  height: 280,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                        child: GestureDetector(
+                          onTap: () => showImageDialog(userData['imageUrl']),
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: userData['imageUrl'] != null
+                                ? NetworkImage(userData['imageUrl'] as String)
+                                : AssetImage(
+                                        'assets/default_profile_picture.jpg')
+                                    as ImageProvider<Object>,
+                            backgroundColor: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Name: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  '${userData['FirstName'] ?? 'Null'} ${userData['LastName'] ?? 'Null'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Gender: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${userData['Gender'] ?? 'Null'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Date: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  '${userData['DayofBirth'] ?? 'Null'}:${userData['MonthofBirth'] ?? 'Null'}:${userData['YearofBirth'] ?? 'Null'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'ID Card Number: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${userData['IDCardNumber'] ?? 'Null'}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Phone Number: ',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            TextSpan(
+                              text: '${userData['PhoneNumber']}',
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
                   ),
                 ),
-                Text('First Name: ${userData['FirstName']}'),
-                Text('Last Name: ${userData['LastName']}'),
-                Text('Gender: ${userData['Gender']}'),
-                Text(
-                    'Date of Birth: ${userData['DayofBirth']}:${userData['MonthofBirth']}:${userData['YearofBirth']}'),
-                Text('ID Card Number: ${userData['IDCardNumber']}'),
-                Text('Phone Number: ${userData['PhoneNumber']}'),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      updateUserStatus(userId);
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('Retired'),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text('Cancel'),
+                  ),
+                ],
+              ));
+    } else {
+      print(
+          'Cannot find unique user with firstName: $firstName and lastName: $lastName');
+    }
   }
 
   void showImageDialog(String? imageUrl) {
@@ -104,13 +242,12 @@ class _CompletedSuperAdminPageState extends State<CompletedSuperAdminPage> {
                 final String idCardNumber = userData['IDCardNumber'];
                 final String phoneNumber = userData['PhoneNumber'];
 
-                return GestureDetector(
-                  onTap: () =>
-                      showDetailsDialog(userData), // Show details when tapped
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: InkWell(
+                    onTap: () => showUserDataDialog(userData),
                     child: ListTile(
                       leading: Icon(Icons.check_circle),
                       title: Text('$firstName $lastName ($gender)'),

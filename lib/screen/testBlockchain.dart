@@ -81,8 +81,9 @@ class _testBCState extends State<testBC> {
                       final dropOff = userData['DropOffStatus'];
 
                       // if (dropOff == true) {
-                      print(
-                          'conditionCheck True : ${userData['DropOffStatus']}');
+                      // print(
+                      //     'conditionCheck True : ${userData['DropOffStatus']}');
+
                       return Column(
                         children: [
                           ListTile(
@@ -112,9 +113,15 @@ class _testBCState extends State<testBC> {
                                 Icons.arrow_forward_outlined,
                                 // color: Colors.red,
                               ),
-                              onPressed: () {
-                                // notesServices
+                              onPressed: () async {
+                                // for (var i = 0;
+                                //     i < notesServices.notes.length;
+                                //     i++) {
+                                // await notesServices
                                 //     .deleteNote(notesServices.notes[index].id);
+                                // print(
+                                //     'Deleted item at index $i, ID: ${notesServices.notes[i].id}');
+                                // }
                               },
                             ),
                             onTap: () {

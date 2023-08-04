@@ -263,14 +263,14 @@ class _HomeSuperAdminPage extends State<HomeSuperAdminPage> {
                           child: Container(
                             padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                             child: ListTile(
-                              trailing: const Icon(Icons.arrow_forward),
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            RegisterSuperAdminPage()));
-                              },
+                              // trailing: const Icon(Icons.arrow_forward),
+                              // onTap: () {
+                              //   Navigator.push(
+                              //       context,
+                              //       MaterialPageRoute(
+                              //           builder: (context) =>
+                              //               RegisterSuperAdminPage()));
+                              // },
                               contentPadding:
                                   const EdgeInsets.only(left: 20, right: 20),
                               dense: true,
@@ -343,18 +343,18 @@ class _HomeSuperAdminPage extends State<HomeSuperAdminPage> {
                                       const SizedBox(width: 30),
                                       Tooltip(
                                         message: 'Login SuperAdmin',
-                                        child: IconButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    LoginSuperAdminPage(),
-                                              ),
-                                            );
-                                          },
-                                          icon: const Icon(Icons.login_rounded),
-                                        ),
+                                        // child: IconButton(
+                                        //   onPressed: () {
+                                        //     Navigator.push(
+                                        //       context,
+                                        //       MaterialPageRoute(
+                                        //         builder: (context) =>
+                                        //             LoginSuperAdminPage(),
+                                        //       ),
+                                        //     );
+                                        //   },
+                                        //   icon: const Icon(Icons.login_rounded),
+                                        // ),
                                         preferBelow: false,
                                         decoration: BoxDecoration(
                                           color: Colors.blue,
@@ -535,182 +535,6 @@ class _HomeSuperAdminPage extends State<HomeSuperAdminPage> {
                                                     ),
 
                                                     // if (isDropOffStatus)
-                                                    Column(
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  240, 0, 0, 0),
-                                                          child: Text(
-                                                            "Status",
-                                                            style: TextStyle(
-                                                              color: Colors.grey
-                                                                  .shade500,
-                                                              fontSize: 12,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const Divider(
-                                                      color: Colors.black,
-                                                      thickness: 0,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    SizedBox(
-                      //Box1
-                      height: MediaQuery.of(context).size.height - 490,
-                      width: MediaQuery.of(context).size.width * 1.0,
-                      child: Card(
-                        color: const Color.fromARGB(0, 255, 255, 255)
-                            .withOpacity(0.8),
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 0, vertical: 0),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                          side: BorderSide(
-                            color: Colors.grey.shade300,
-                            width: 1,
-                          ),
-                        ),
-                        elevation: 8,
-                        child: InkWell(
-                          onTap: () {
-                            // Do something when the ListTile is tapped
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                return StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection('usersPIN')
-                                      .where('role', isEqualTo: 'admin')
-                                      .snapshots(),
-                                  builder: (context, snapshot) {
-                                    if (!snapshot.hasData) {
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    }
-
-                                    final adminDocs = snapshot.data!.docs;
-                                    final adminsList = adminDocs
-                                        .map((admin) => admin.data()
-                                            as Map<String, dynamic>)
-                                        .toList();
-
-                                    return ListView.builder(
-                                      itemCount: adminsList.length,
-                                      itemBuilder: (context, index) {
-                                        final adminData = adminsList[index];
-                                        final displayName =
-                                            adminData['displayName'] as String;
-                                        final adminId = adminDocs[index].id;
-                                        final role =
-                                            adminData['role'] as String;
-
-                                        return ListTile(
-                                          contentPadding: const EdgeInsets.only(
-                                              left: 20, right: 20),
-                                          dense: true,
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .fromLTRB(
-                                                                  0, 10, 0, 0),
-                                                          child: ClipOval(
-                                                            child:
-                                                                Image.network(
-                                                              'https://firebasestorage.googleapis.com/v0/b/currencyexchangebc.appspot.com/o/logo%2FcropLOGO.png?alt=media&token=7d02630e-0171-4913-b942-6f53ae8b6bd4',
-                                                              fit: BoxFit.cover,
-                                                              height: 40,
-                                                              width: 40,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .fromLTRB(
-                                                                    10,
-                                                                    10,
-                                                                    0,
-                                                                    0),
-                                                            child: Text(
-                                                              "$displayName",
-                                                              style:
-                                                                  const TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Align(
-                                                          alignment: Alignment
-                                                              .topRight,
-                                                          child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .fromLTRB(
-                                                                    0,
-                                                                    10,
-                                                                    45,
-                                                                    0),
-                                                            child: Text(
-                                                              "$role",
-                                                              style:
-                                                                  const TextStyle(
-                                                                color: Colors
-                                                                    .green,
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
                                                     Column(
                                                       children: [
                                                         Padding(

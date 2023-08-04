@@ -178,7 +178,7 @@ class _AdminListViewState extends State<AdminListView> {
   Future<void> deleteUserAccount(String email) async {
     print(email);
     try {
-      final apiUrl = 'https://fire-store-api.vercel.app/deleteAll/$email';
+      final apiUrl = 'https://fire-store-api.vercel.app/disableUser/$email';  //Del doc, authen = https://fire-store-api.vercel.app/deleteAll/
 
       final response = await http.delete(
         Uri.parse(apiUrl),

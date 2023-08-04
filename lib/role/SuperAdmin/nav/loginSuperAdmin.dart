@@ -12,10 +12,13 @@ import 'package:testprojectbc/page/currency.dart';
 import 'package:testprojectbc/page/googleFA.dart';
 import 'package:testprojectbc/page/selectCurency.dart';
 import 'package:testprojectbc/page/smsFA.dart';
+import 'package:testprojectbc/role/SuperAdmin/googleFA_SPAdmin.dart';
 import 'package:testprojectbc/role/SuperAdmin/nav/navHelperSuperAdmin.dart';
 import 'package:testprojectbc/role/SuperAdmin/nav/registerSuperAdmin.dart';
+import 'package:testprojectbc/role/admin/googleFA_Admin.dart';
 import 'package:testprojectbc/role/admin/nav/navHelperAdmin.dart';
 import 'package:testprojectbc/role/admin/nav/registerAdmin.dart';
+import 'package:testprojectbc/role/agency/googleFA_Agency.dart';
 import 'package:testprojectbc/role/agency/nav/navHelper.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:form_field_validator/form_field_validator.dart';
@@ -540,19 +543,19 @@ class _LoginSuperAdminPage extends State<LoginSuperAdminPage> {
                                                                           case "agency":
                                                                             Navigator.pushReplacement(
                                                                               context,
-                                                                              MaterialPageRoute(builder: (context) => NavHleperAgencyPage()),
+                                                                              MaterialPageRoute(builder: (context) => GooglefaAgencyPage()),
                                                                             );
                                                                             break;
                                                                           case "admin":
                                                                             Navigator.pushReplacement(
                                                                               context,
-                                                                              MaterialPageRoute(builder: (context) => NavHleperAdminPage()),
+                                                                              MaterialPageRoute(builder: (context) => GooglefaAdminPage()),
                                                                             );
                                                                             break;
                                                                           case "superadmin":
                                                                             Navigator.pushReplacement(
                                                                               context,
-                                                                              MaterialPageRoute(builder: (context) => NavHleperSuperAdminPage()),
+                                                                              MaterialPageRoute(builder: (context) => GooglefaSPadminPage()),
                                                                             );
                                                                             break;
                                                                           default:
@@ -589,7 +592,7 @@ class _LoginSuperAdminPage extends State<LoginSuperAdminPage> {
                                                                             .pushReplacement(
                                                                           context,
                                                                           MaterialPageRoute(
-                                                                              builder: (context) => NavHleperSuperAdminPage()),
+                                                                              builder: (context) => GooglefaAdminPage()),
                                                                         );
                                                                       }
                                                                     } else {
@@ -621,7 +624,7 @@ class _LoginSuperAdminPage extends State<LoginSuperAdminPage> {
                                                                         context,
                                                                         MaterialPageRoute(
                                                                             builder: (context) =>
-                                                                                NavHleperSuperAdminPage()),
+                                                                                GooglefaAdminPage()),
                                                                       );
                                                                     }
                                                                   }
